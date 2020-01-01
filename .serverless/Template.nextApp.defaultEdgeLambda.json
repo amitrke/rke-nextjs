@@ -1,0 +1,17 @@
+{
+  "name": "le8ozbp-njvw2j",
+  "hash": "ccNK5JTpFjRa/7JwjJU+HDMNYZSFITl+lvW5urO0GsI=",
+  "description": "Default Lambda@Edge for Next CloudFront distribution",
+  "memory": 512,
+  "timeout": 10,
+  "code": "/Users/amit/dev/source/rke-nextjs/.serverless_nextjs/default-lambda",
+  "shims": [],
+  "handler": "index.handler",
+  "runtime": "nodejs10.x",
+  "env": {},
+  "role": {
+    "arn": "arn:aws:iam::975848467324:role/le8ozbp-jgv0opp"
+  },
+  "arn": "arn:aws:lambda:us-east-1:975848467324:function:le8ozbp-njvw2j",
+  "region": "us-east-1"
+}

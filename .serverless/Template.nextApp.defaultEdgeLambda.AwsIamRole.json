@@ -1,0 +1,12 @@
+{
+  "name": "le8ozbp-jgv0opp",
+  "arn": "arn:aws:iam::975848467324:role/le8ozbp-jgv0opp",
+  "service": [
+    "edgelambda.amazonaws.com",
+    "lambda.amazonaws.com"
+  ],
+  "policy": {
+    "arn": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  },
+  "region": "us-east-1"
+}
