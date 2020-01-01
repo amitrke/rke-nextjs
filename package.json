@@ -1,0 +1,19 @@
+{
+  "name": "rke-nxt",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "9.1.6",
+    "react": "16.12.0",
+    "react-dom": "16.12.0"
+  },
+  "devDependencies": {
+    "serverless": "^1.59.3",
+    "serverless-next.js": "^1.7.0"
+  }
+}
