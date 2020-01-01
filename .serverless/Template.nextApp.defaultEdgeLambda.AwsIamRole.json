@@ -1,9 +1,9 @@
 {
-  "name": "le8ozbp-jgv0opp",
-  "arn": "arn:aws:iam::975848467324:role/le8ozbp-jgv0opp",
+  "name": "o1bq0n-hgp3k5r",
+  "arn": "arn:aws:iam::975848467324:role/o1bq0n-hgp3k5r",
   "service": [
-    "edgelambda.amazonaws.com",
-    "lambda.amazonaws.com"
+    "lambda.amazonaws.com",
+    "edgelambda.amazonaws.com"
   ],
   "policy": {
     "arn": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
