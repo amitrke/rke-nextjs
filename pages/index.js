@@ -6,6 +6,7 @@ import MuiLink from '@material-ui/core/Link';
 import ProTip from '../src/ProTip';
 import Link from '../src/Link';
 import PubCache from '../src/services/pubcache';
+import Blog from '../src/templates/blog/Blog';
 
 function Copyright() {
   return (
@@ -21,21 +22,7 @@ function Copyright() {
 }
 
 const Index = props => (
-    <Container maxWidth="sm">
-      <Box my={4}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Roorkee.org Next.js Website
-        </Typography>
-        <Link href="/about" color="secondary">
-          Go to the about page
-        </Link>
-        <ProTip />
-        <Copyright />
-      </Box>
-      {
-        props.home[0].title
-      }
-    </Container>
+    <Blog />
 );
 
 Index.getInitialProps = async function() {
