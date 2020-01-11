@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "pubCache": "node updatePubCache.js"
   },
   "dependencies": {
     "@material-ui/core": "latest",
@@ -13,7 +14,8 @@
     "next": "latest",
     "prop-types": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "request": "^2.88.0"
   },
   "devDependencies": {
     "serverless": "^1.59.3",

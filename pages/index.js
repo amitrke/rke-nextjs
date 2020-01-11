@@ -5,6 +5,7 @@ import Box from '@material-ui/core/Box';
 import MuiLink from '@material-ui/core/Link';
 import ProTip from '../src/ProTip';
 import Link from '../src/Link';
+import PubCache from '../src/services/pubcache';
 
 function Copyright() {
   return (
@@ -19,8 +20,7 @@ function Copyright() {
   );
 }
 
-export default function Index() {
-  return (
+const Index = props => (
     <Container maxWidth="sm">
       <Box my={4}>
         <Typography variant="h4" component="h1" gutterBottom>
@@ -32,6 +32,14 @@ export default function Index() {
         <ProTip />
         <Copyright />
       </Box>
+      {
+        props.home[0].title
+      }
     </Container>
-  );
+);
+
+Index.getInitialProps = async function() {
+  return PubCache();
 }
+
+export default Index;
