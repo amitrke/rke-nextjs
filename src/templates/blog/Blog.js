@@ -33,9 +33,9 @@ const sections = [
 ];
 
 const mainFeaturedPost = {
-  title: 'Title of a longer featured blog post',
+  title: 'We continue to evolve',
   description:
-    "Multiple lines of text that form the lede, informing new readers quickly and efficiently about what's most interesting in this post's contents.",
+    "Welcome to the refreshing new Roorkee.org website, Developers are welcome to contribute.",
   image: 'https://source.unsplash.com/random',
   imgText: 'main image description',
   linkText: 'Continue reading…',
@@ -43,76 +43,61 @@ const mainFeaturedPost = {
 
 const featuredPosts = [
   {
-    title: 'Featured post',
-    date: 'Nov 12',
+    title: 'Featured Recipe',
+    date: 'Jan 10',
     description:
-      'This is a wider card with supporting text below as a natural lead-in to additional content.',
-    image: 'https://source.unsplash.com/random',
-    imageText: 'Image Text',
+      'Discover something new to cook from across the world.',
+    image: 'https://source.unsplash.com/500x400/?food,recipe',
+    imageText: 'Food',
   },
   {
-    title: 'Post title',
-    date: 'Nov 11',
+    title: 'Town News',
+    date: 'Jan 12',
     description:
-      'This is a wider card with supporting text below as a natural lead-in to additional content.',
-    image: 'https://source.unsplash.com/random',
+      'Updated daily, get to know what\'s happening in town, IIT and nearby areas.',
+    image: 'https://source.unsplash.com/500x400/?news,newspaper',
     imageText: 'Image Text',
   },
 ];
 
-const post1 = `# Sample blog post
+const post1 = `# About the Town
 
-#### April 1, 2020 by [Olivier](/)
+#### Jan 1, 2020 by [Amit](/)
 
-This blog post shows a few different types of content that are supported and styled with
-Material styles. Basic typography, images, and code are all supported.
-You can extend these by modifying Markdown.js.
+Roorkee, which at one point of time was a small village, has today grown into a well developed town and can well be termed as the intellectual capital of Uttarakhand.
 
-Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.
-Sed posuere consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum.
+The famous Ganga Canal which was constructed more than 150 years ago can well be said to be the identity of the place. And a very important one too, after all it was from here that Roorkee started its march towards glory and prosperity.
 
-Curabitur blandit tempus porttitor. **Nullam quis risus eget urna mollis** ornare vel eu leo.
-Nullam id dolor id nibh ultricies vehicula ut id elit.
+### IIT
+IIT is another reason that makes Roorkee a globally recognisable face. It would be of great interest to know that the famed IIT has its genesis in Roorkee College constituted in 1847 with the purpose of providing survey and technical training to the locals for the construction of Ganga Canal.
 
-Etiam porta sem malesuada magna mollis euismod. Cras mattis consectetur purus sit amet fermentum.
-Aenean lacinia bibendum nulla sed consectetur.
+The institute was elevated to the status of Independent India’s first engineering university in 1949. And on September 21, 2001 Government of India elevated this institute to the level of IIT.
+It would not be a misnomer to state that IIT Roorkee is a jewel not only for Roorkee or Uttarakhand, but a pride for the entire nation.
 
-## Heading
+### Cantonment
+No description of Roorkee can be complete without the mention of Roorkee Cantonment. One of the oldest cantonments in the country, it is the headquarter of Indian Army’s Bengal Engineering Group and Centre, also popular as Bengal Sappers.
+War memorial is another highpoint of Roorkee. Replica of Mahmood’s tower, it is one of the attractions of Roorkee and was built to commemorate the bravery of Subedar Devi Singh and his men who stormed the Ghazni fort in Afghanistan.
 
-Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
-Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.
-Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
 
-### Sub-heading
+Roorkee is also home to several important research centres. Some of the important ones are:
 
-Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+- Central Building Research Institute (Government of India)
+- National Institute of Hydrology (M/o of Water Resources, Government of India)
+- Irrigation Research Institute (Under State Government)
+- Irrigation Design Organisation (Under State Government)
+- Government Irrigational Workshop (Under State Government)
 
-### Sub-heading
-
-Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod.
-Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo
-sit amet risus.
-
-- Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
-- Donec id elit non mi porta gravida at eget metus.
-- Nulla vitae elit libero, a pharetra augue.
-
-Donec ullamcorper nulla non metus auctor fringilla. Nulla vitae elit libero, a pharetra augue.
-
-1.  Vestibulum id ligula porta felis euismod semper.
-2.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-3.  Maecenas sed diam eget risus varius blandit sit amet non magna.
-
-Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis.
+Roorkee is also famous for its Drawing and Survey Instrument Industry. Right from the time of British, Roorkee has remained an important place for the manufacture of survey instruments.
+Construction of Ganga Canal, coming up of the engineering college, and later the shifting of Bengal Engineering Group and Centre gave much needed boost to the survey instrument industry.
+Today there are 75 big, small survey and drawing instrument units which are into production of instruments worth crores of rupees annually.
+With the export-oriented industry expecting a boom, the annual export of the industries of Roorkee is expected to touch a whopping Rs. 70 crore mark.
 `;
-const posts = [post1, post1, post1];
+const posts = [post1];
 
 const sidebar = {
   title: 'About',
   description:
-    'Etiam porta sem malesuada magna mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.',
+    'This website is a personal project to bring people of this town together, not affiliated to government/corporation.',
   archives: [
     { title: 'March 2020', url: '#' },
     { title: 'February 2020', url: '#' },
