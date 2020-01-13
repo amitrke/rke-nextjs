@@ -33,7 +33,7 @@ const sections = [
 ];
 
 const mainFeaturedPost = {
-  title: 'We continue to evolve',
+  title: '2020 RKE',
   description:
     "Welcome to the refreshing new Roorkee.org website, Developers are welcome to contribute.",
   image: 'https://source.unsplash.com/random',
@@ -97,7 +97,7 @@ const posts = [post1];
 const sidebar = {
   title: 'About',
   description:
-    'This website is a personal project to bring people of this town together, not affiliated to government/corporation.',
+    'Born in 2001, this website is a personal project to bring people of this town together, not affiliated to government/corporation.',
   archives: [
     { title: 'March 2020', url: '#' },
     { title: 'February 2020', url: '#' },
