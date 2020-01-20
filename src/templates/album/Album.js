@@ -83,7 +83,7 @@ export default function Album() {
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="lg">
-        <Header title="Roorkee Photo Gallery" sections={sections} />
+        <Header title="Photos" sections={sections} />
         <main>
           {/* <div className={classes.heroContent}>
             <Container maxWidth="sm">
