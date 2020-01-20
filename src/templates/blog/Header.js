@@ -46,7 +46,7 @@ export default function Header(props) {
         <IconButton>
           <SearchIcon />
         </IconButton>
-        <Button variant="outlined" size="small">
+        <Button variant="outlined" size="small" href="/login">
           Sign up
         </Button>
       </Toolbar>

@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const sections = [
-  { title: 'Technology', url: '#' },
+  { title: 'Photo Gallery', url: '/album' },
   { title: 'Design', url: '#' },
   { title: 'Culture', url: '#' },
   { title: 'Business', url: '#' },
@@ -43,12 +43,13 @@ const mainFeaturedPost = {
 
 const featuredPosts = [
   {
-    title: 'Featured Recipe',
-    date: 'Jan 10',
+    title: 'Photo Gallery',
+    date: 'Jan 20',
     description:
-      'Discover something new to cook from across the world.',
-    image: 'https://source.unsplash.com/500x400/?food,recipe',
-    imageText: 'Food',
+      'Discover and upload awesome pictures of this beautiful town',
+    image: 'https://source.unsplash.com/500x400/?india,ganges',
+    imageText: 'Photogallery',
+    link: '/album'
   },
   {
     title: 'Town News',
@@ -57,6 +58,7 @@ const featuredPosts = [
       'Updated daily, get to know what\'s happening in town, IIT and nearby areas.',
     image: 'https://source.unsplash.com/500x400/?news,newspaper',
     imageText: 'Image Text',
+    link: '#'
   },
 ];
 
