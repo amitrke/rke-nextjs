@@ -1,6 +1,5 @@
 import React from "react";
 import PubCache from "../src/services/pubcache";
-import shareddata from "../src/services/shareddata";
 import { getPost } from "../src/services/firebasedb";
 import { CssBaseline, Container, Grid, makeStyles } from "@material-ui/core";
 import Header from "../src/templates/blog/Header";
