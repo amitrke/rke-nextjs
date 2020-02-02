@@ -5,16 +5,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "pubCache": "node updatePubCache.js"
+    "start": "next start"
   },
   "dependencies": {
     "@material-ui/core": "latest",
     "@material-ui/icons": "^4.5.1",
     "clsx": "latest",
-    "firebase": "^7.8.0",
     "markdown-to-jsx": "^6.10.3",
     "next": "latest",
+    "node-fetch": "^2.6.0",
     "prop-types": "latest",
     "react": "latest",
     "react-dom": "latest",

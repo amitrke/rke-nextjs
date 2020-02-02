@@ -1,5 +1,4 @@
 import React from 'react';
-import PubCache from '../src/services/pubcache';
 import Album from '../src/templates/album/Album';
 
 const Albumpage = props => (
@@ -7,7 +6,7 @@ const Albumpage = props => (
 );
 
 Albumpage.getInitialProps = async function() {
-  return PubCache();
+  return {};
 }
 
 export default Albumpage;
