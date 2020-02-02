@@ -2,7 +2,7 @@ import * as firebase from "firebase";
 
 if (!firebase.apps.length) {
   var app = firebase.initializeApp({
-    apiKey: "AIzaSyAgvZh2TZUc_n2dvu0oOo6tUgA1nJzEkwM",
+    apiKey: "key",
     databaseURL: "https://myrke-189201.firebaseio.com/",
     projectId: "myrke-189201"
   });
