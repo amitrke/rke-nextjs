@@ -20,14 +20,14 @@ jobs:
         
     - name: Environment variable GoogleId
       uses: jacobtomlinson/gha-find-replace@master
-        with:
-          find: "#GoogleId"
-          replace: "world"
+      with:
+        find: "#GoogleId"
+        replace: "world"
     - name: Environment variable GoogleSec
       uses: jacobtomlinson/gha-find-replace@master
-        with:
-          find: "#GoogleSecret"
-          replace: "world"
+      with:
+        find: "#GoogleSecret"
+        replace: "world"
 
     - name: npm install, build, and test
       run: |
