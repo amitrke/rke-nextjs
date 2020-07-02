@@ -17,6 +17,18 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+        
+    - name: Environment variable GoogleId
+      uses: jacobtomlinson/gha-find-replace@master
+        with:
+          find: "#GoogleId"
+          replace: "world"
+    - name: Environment variable GoogleSec
+      uses: jacobtomlinson/gha-find-replace@master
+        with:
+          find: "#GoogleSecret"
+          replace: "world"
+
     - name: npm install, build, and test
       run: |
         npm i

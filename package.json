@@ -15,6 +15,7 @@
     "firebaseui": "latest",
     "markdown-to-jsx": "^6.10.3",
     "next": "latest",
+    "next-auth": "^1.12.1",
     "node-fetch": "^2.6.0",
     "prop-types": "latest",
     "react": "latest",
