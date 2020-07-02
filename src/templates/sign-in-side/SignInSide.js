@@ -15,7 +15,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Header from '../blog/Header';
 import { Container } from '@material-ui/core';
 import Footer from '../blog/Footer';
-import GoogleSignin from './GoogleSignin';
 
 function Copyright() {
   return (
@@ -94,7 +93,6 @@ export default function SignInSide() {
               <Typography component="h1" variant="h5">
                 Sign in
               </Typography>
-              <GoogleSignin></GoogleSignin>
             </div>
           </Grid>
         </Grid>

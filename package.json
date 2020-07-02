@@ -8,22 +8,17 @@
     "start": "next start"
   },
   "dependencies": {
-    "@material-ui/core": "latest",
+    "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.5.1",
     "clsx": "latest",
-    "firebase": "latest",
-    "firebaseui": "latest",
     "markdown-to-jsx": "^6.10.3",
     "next": "latest",
-    "next-auth": "^1.12.1",
     "node-fetch": "^2.6.0",
     "prop-types": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "request": "^2.88.0"
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   },
   "devDependencies": {
-    "serverless": "^1.59.3",
-    "serverless-next.js": "^1.7.0"
+    "serverless": "^1.71.1"
   }
 }
