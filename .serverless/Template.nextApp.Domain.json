@@ -1,0 +1,13 @@
+{
+  "region": "us-east-1",
+  "privateZone": false,
+  "domain": "aws.roorkee.org",
+  "subdomains": [
+    {
+      "domain": "next.aws.roorkee.org",
+      "distributionId": "E3174ABR1EL2TP",
+      "url": "https://d3w2mxyni24dye.cloudfront.net",
+      "type": "awsCloudFront"
+    }
+  ]
+}

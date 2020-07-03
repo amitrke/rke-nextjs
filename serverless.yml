@@ -3,3 +3,6 @@ nextApp:
     inputs:
         domain: ["next", "aws.roorkee.org"]
         bucketName: "rkenextjs"
+        name:
+            defaultLambda: nxtAppDefLmda
+            apiLambda: nxtAppApiLmda
