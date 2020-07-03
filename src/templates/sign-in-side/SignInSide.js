@@ -15,6 +15,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Header from '../blog/Header';
 import { Container } from '@material-ui/core';
 import Footer from '../blog/Footer';
+import ReactDOM from 'react-dom';
+import { GoogleLogin } from 'react-google-login';
 
 function Copyright() {
   return (
@@ -27,6 +29,10 @@ function Copyright() {
       {'.'}
     </Typography>
   );
+}
+
+const responseGoogle = (response) => {
+  console.log(response);
 }
 
 const useStyles = makeStyles(theme => ({
@@ -93,6 +99,13 @@ export default function SignInSide() {
               <Typography component="h1" variant="h5">
                 Sign in
               </Typography>
+              <GoogleLogin
+                clientId="670134176077-h5g5nn6catjdo2uoo36d5eji03ccf186.apps.googleusercontent.com"
+                buttonText="Login"
+                onSuccess={responseGoogle}
+                onFailure={responseGoogle}
+                cookiePolicy={'single_host_origin'}
+              />
             </div>
           </Grid>
         </Grid>
