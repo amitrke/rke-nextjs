@@ -1,8 +1,5 @@
 nextApp:
-    component: "serverless-next.js@1.14.0"
+    component: "serverless-next.js@1.9.5"
     inputs:
         domain: ["next", "aws.roorkee.org"]
         bucketName: "rkenextjs"
-        name:
-            defaultLambda: nxtAppDefLmda
-            apiLambda: nxtAppApiLmda

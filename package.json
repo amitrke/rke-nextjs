@@ -10,6 +10,7 @@
   "dependencies": {
     "@material-ui/core": "latest",
     "@material-ui/icons": "^4.5.1",
+    "@sls-next/next-aws-cloudfront": "^1.4.0-alpha.1",
     "clsx": "latest",
     "markdown-to-jsx": "^6.10.3",
     "next": "latest",
@@ -21,7 +22,7 @@
     "request": "^2.88.0"
   },
   "devDependencies": {
-    "serverless": "^1.74.1",
-    "serverless-next.js": "^1.14.0"
+    "serverless": "1.59.3",
+    "serverless-next.js": "1.9.5"
   }
 }
