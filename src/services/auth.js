@@ -3,10 +3,11 @@ export function setUser(userObject) {
     var expiry = new Date();
     expiry.setHours(expiry.getHours() + 4);
     var user = {
-        name: userObject.displayName,
+        name: userObject.user.displayName,
         validTill: expiry.getTime(),
-        photoURL: userObject.photoURL,
-        token: userObject.ma
+        photoURL: userObject.user.photoURL,
+        token: userObject.ma,
+        accessToken: userObject.credential.accessToken
     }
     console.log("Storing "+JSON.stringify(user))
     localStorage.setItem('user', JSON.stringify(user));
