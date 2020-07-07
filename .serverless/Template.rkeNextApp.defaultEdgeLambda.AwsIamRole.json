@@ -1,0 +1,12 @@
+{
+  "name": "5nynnqv-2sbcgia",
+  "arn": "arn:aws:iam::975848467324:role/5nynnqv-2sbcgia",
+  "service": [
+    "edgelambda.amazonaws.com",
+    "lambda.amazonaws.com"
+  ],
+  "policy": {
+    "arn": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  },
+  "region": "us-east-1"
+}
