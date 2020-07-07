@@ -8,21 +8,21 @@
     "start": "next start"
   },
   "dependencies": {
-    "@material-ui/core": "latest",
+    "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.5.1",
-    "@sls-next/next-aws-cloudfront": "^1.4.0-alpha.1",
-    "clsx": "latest",
+    "clsx": "^1.1.1",
     "firebase": "^7.15.5",
+    "google-auth-library": "^6.0.3",
     "markdown-to-jsx": "^6.10.3",
-    "next": "latest",
+    "next": "9.3.1",
     "node-fetch": "^2.6.0",
-    "prop-types": "latest",
-    "react": "latest",
-    "react-dom": "latest",
+    "prop-types": "^15.7.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "request": "^2.88.0"
   },
   "devDependencies": {
-    "serverless": "1.59.3",
-    "serverless-next.js": "1.9.5"
+    "serverless": "^1.59.3",
+    "serverless-next.js": "^1.7.1"
   }
 }

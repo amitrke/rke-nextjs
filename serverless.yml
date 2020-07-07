@@ -1,5 +1,5 @@
-nextApp:
-    component: "serverless-next.js@1.9.5"
+rkeNextApp:
+    component: "serverless-next.js@1.7.1"
     inputs:
         domain: ["next", "aws.roorkee.org"]
-        bucketName: "rkenextjs"
+        bucketName: "rkenextjs2"

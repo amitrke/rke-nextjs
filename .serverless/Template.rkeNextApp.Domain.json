@@ -5,8 +5,8 @@
   "subdomains": [
     {
       "domain": "next.aws.roorkee.org",
-      "distributionId": "E1XQS0AIPHGDZQ",
-      "url": "https://d3h4ne6e854u9q.cloudfront.net",
+      "distributionId": "E1GQMW9APMYMAK",
+      "url": "https://d2lj0n9olyy3t6.cloudfront.net",
       "type": "awsCloudFront"
     }
   ]
