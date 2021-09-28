@@ -1,5 +1,5 @@
 {
-  "name": "rke-nxt",
+  "name": "firebase-with-nextjs",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,21 +8,14 @@
     "start": "next start"
   },
   "dependencies": {
-    "@material-ui/core": "latest",
-    "@material-ui/icons": "^4.5.1",
-    "@sls-next/next-aws-cloudfront": "^1.4.0-alpha.1",
-    "clsx": "latest",
-    "markdown-to-jsx": "^6.10.3",
-    "next": "latest",
-    "node-fetch": "^2.6.1",
-    "prop-types": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "react-google-login": "^5.1.20",
-    "request": "^2.88.0"
-  },
-  "devDependencies": {
-    "serverless": "1.59.3",
-    "serverless-next.js": "1.9.5"
+    "bootstrap": "^4.6.0",
+    "firebase": "^8.3.0",
+    "firebase-admin": "^9.5.0",
+    "js-cookie": "^2.2.1",
+    "next": "10.0.8",
+    "react": "17.0.1",
+    "react-bootstrap": "^1.5.2",
+    "react-dom": "17.0.1",
+    "react-firebaseui": "^4.1.0"
   }
 }

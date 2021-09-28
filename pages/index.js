@@ -1,128 +1,105 @@
-import React from "react";
-import { getPost } from "../src/services/firebasedb";
-import { CssBaseline, Container, Grid, makeStyles } from "@material-ui/core";
-import Header from "../src/templates/blog/Header";
-import MainFeaturedPost from "../src/templates/blog/MainFeaturedPost";
-import FeaturedPost from "../src/templates/blog/FeaturedPost";
-import Main from "../src/templates/blog/Main";
-import Sidebar from "../src/templates/blog/Sidebar";
+import Head from 'next/head'
+import styles from '../styles/Home.module.css'
+import WriteToCloudFirestore from '../components/cloudFirestore/Write'
+import ReadDataFromCloudFirestore from '../components/cloudFirestore/Read'
+import { useUser } from '../firebase/useUser'
+import Counter from '../components/realtimeDatabase/Counter'
+import UploadFile from '../components/storage/UploadFile'
+import Card from 'react-bootstrap/Card'
+import Button from 'react-bootstrap/Button'
 
-import GitHubIcon from "@material-ui/icons/GitHub";
-import FacebookIcon from "@material-ui/icons/Facebook";
-import TwitterIcon from "@material-ui/icons/Twitter";
-import Footer from "../src/templates/blog/Footer";
+export default function Home() {
+  const { user, logout } = useUser()
 
-const useStyles = makeStyles(theme => ({
-  mainGrid: {
-    marginTop: theme.spacing(3)
+  if (user) {
+    return (
+      <div className={styles.container}>
+        <Card>
+          <Card.Body>
+            <Card.Title>{user.name}</Card.Title>
+            <Card.Text>{user.email}</Card.Text>
+            <hr />
+            {user.profilePic ? <image src={user.profilePic} height={100} width={100}></image> : <p>No profile pic</p>}
+            <hr />
+            <WriteToCloudFirestore />
+            <ReadDataFromCloudFirestore />
+            <hr />
+            <Counter id={user.id} />
+            <hr />
+            <UploadFile />
+            <hr />
+            <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+              <Button onClick={() => logout()} style={{ width: '100px' }}>Log Out</Button>
+              <a href="https://github.com/bjcarlson42/nextjs-with-firebase" target="_blank">
+                <Button variant="outline-secondary" style={{ width: '100px' }}>Code</Button>
+              </a>
+            </div>
+          </Card.Body>
+        </Card>
+      </div>
+    )
   }
-}));
 
-const sections = [
-  { title: "Photo Gallery", url: "/album" },
-  { title: "Design", url: "#" },
-  { title: "Culture", url: "#" },
-  { title: "Business", url: "#" },
-  { title: "Politics", url: "#" },
-  { title: "Opinion", url: "#" },
-  { title: "Science", url: "#" },
-  { title: "Health", url: "#" },
-  { title: "Style", url: "#" },
-  { title: "Travel", url: "#" }
-];
+  else return (
+    <div className={styles.container}>
+      <p><a href="/auth">Log In!</a></p>
 
-const mainFeaturedPost = {
-  title: "2020 RKE",
-  description:
-    "Welcome to the refreshing new Roorkee.org website, Developers are welcome to contribute.",
-  image: "https://source.unsplash.com/random",
-  imgText: "main image description",
-  linkText: "Continue reading…"
-};
+      <Head>
+        <title>Create Next App</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-const featuredPosts = [
-  {
-    title: "Photo Gallery",
-    date: "Jan 20",
-    description: "Discover and upload awesome pictures of this beautiful town",
-    image: "https://source.unsplash.com/500x400/?india,ganges",
-    imageText: "Photogallery",
-    link: "/album"
-  },
-  {
-    title: "Town News",
-    date: "Jan 12",
-    description:
-      "Updated daily, get to know what's happening in town, IIT and nearby areas.",
-    image: "https://source.unsplash.com/500x400/?news,newspaper",
-    imageText: "Image Text",
-    link: "#"
-  }
-];
+      <main className={styles.main}>
+        <h1 className={styles.title}>
+          Welcome to <a href="https://nextjs.org">Next.js!</a>
+        </h1>
 
-const sidebar = {
-  title: "About",
-  description:
-    "Born in 2001, this website is a personal project to bring people of this town together, not affiliated to government/corporation.",
-  archives: [
-    { title: "March 2020", url: "#" },
-    { title: "February 2020", url: "#" },
-    { title: "January 2020", url: "#" },
-    { title: "November 1999", url: "#" },
-    { title: "October 1999", url: "#" },
-    { title: "September 1999", url: "#" },
-    { title: "August 1999", url: "#" },
-    { title: "July 1999", url: "#" },
-    { title: "June 1999", url: "#" },
-    { title: "May 1999", url: "#" },
-    { title: "April 1999", url: "#" }
-  ],
-  social: [
-    { name: "GitHub", icon: GitHubIcon },
-    { name: "Twitter", icon: TwitterIcon },
-    { name: "Facebook", icon: FacebookIcon }
-  ]
-};
+        <p className={styles.description}>
+          Get started by editing{' '}
+          <code className={styles.code}>pages/index.js</code>
+        </p>
 
-const Index = props => {
-  const post1 = props.post1;
-  const posts = [post1];
+        <div className={styles.grid}>
+          <a href="https://nextjs.org/docs" className={styles.card}>
+            <h3>Documentation &rarr;</h3>
+            <p>Find in-depth information about Next.js features and API.</p>
+          </a>
 
-  const classes = useStyles();
-  return (
-    <React.Fragment>
-      <CssBaseline />
-      <Container maxWidth="lg">
-        <Header title="Roorkee.org" sections={sections} />
-        <main>
-          <MainFeaturedPost post={mainFeaturedPost} />
-          <Grid container spacing={4}>
-            {featuredPosts.map(post => (
-              <FeaturedPost key={post.title} post={post} />
-            ))}
-          </Grid>
-          <Grid container spacing={5} className={classes.mainGrid}>
-            <Main title="From the firehose" posts={posts} />
-            <Sidebar
-              title={sidebar.title}
-              description={sidebar.description}
-              archives={sidebar.archives}
-              social={sidebar.social}
-            />
-          </Grid>
-        </main>
-      </Container>
-      <Footer
-        title="Footer"
-        description="Something here to give the footer a purpose!"
-      />
-    </React.Fragment>
-  );
-};
+          <a href="https://nextjs.org/learn" className={styles.card}>
+            <h3>Learn &rarr;</h3>
+            <p>Learn about Next.js in an interactive course with quizzes!</p>
+          </a>
 
-Index.getInitialProps = async function() {
-  let postBody = await getPost("aboutrke");
-  return { post1: postBody.body };
-};
+          <a
+            href="https://github.com/vercel/next.js/tree/master/examples"
+            className={styles.card}
+          >
+            <h3>Examples &rarr;</h3>
+            <p>Discover and deploy boilerplate example Next.js projects.</p>
+          </a>
 
-export default Index;
+          <a
+            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+            className={styles.card}
+          >
+            <h3>Deploy &rarr;</h3>
+            <p>
+              Instantly deploy your Next.js site to a public URL with Vercel.
+            </p>
+          </a>
+        </div>
+      </main>
+
+      <footer className={styles.footer}>
+        <a
+          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Powered by{' '}
+          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
+        </a>
+      </footer>
+    </div>
+  )
+}
