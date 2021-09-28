@@ -1,1 +1,0 @@
-{"pages":{"ssr":{"dynamic":{},"nonDynamic":{"/_error":"pages/_error.js","/album":"pages/album.js","/index":"pages/index.js","/":"pages/index.js","/_app":"pages/_app.js","/_document":"pages/_document.js"}},"html":{"dynamic":{},"nonDynamic":{"/about":"pages/about.html","/login":"pages/login.html","/404":"pages/404.html"}}},"publicFiles":{},"cloudFrontOrigins":{}}
