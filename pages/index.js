@@ -7,7 +7,7 @@ import Counter from '../components/realtimeDatabase/Counter'
 import UploadFile from '../components/storage/UploadFile'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
-import TopNavigationBar from '../components/nav/topNavigationBar'
+import TopNavigationBar from '../components/nav/TopNavigationBar'
 
 export default function Home() {
   const { user, logout } = useUser()
