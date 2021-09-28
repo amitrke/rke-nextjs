@@ -7,6 +7,7 @@ import Counter from '../components/realtimeDatabase/Counter'
 import UploadFile from '../components/storage/UploadFile'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
+import TopNavigationBar from '../components/nav/TopNavigationBar'
 
 export default function Home() {
   const { user, logout } = useUser()
@@ -14,6 +15,7 @@ export default function Home() {
   if (user) {
     return (
       <div className={styles.container}>
+        <TopNavigationBar/>
         <Card>
           <Card.Body>
             <Card.Title>{user.name}</Card.Title>
@@ -42,6 +44,7 @@ export default function Home() {
 
   else return (
     <div className={styles.container}>
+      <TopNavigationBar/>
       <p><a href="/auth">Log In!</a></p>
 
       <Head>
