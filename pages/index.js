@@ -19,7 +19,7 @@ export default function Home() {
             <Card.Title>{user.name}</Card.Title>
             <Card.Text>{user.email}</Card.Text>
             <hr />
-            {user.profilePic ? <image src={user.profilePic} height={100} width={100}></image> : <p>No profile pic.</p>}
+            {user.profilePic ? <image src={user.profilePic} height={100} width={100}></image> : <p>No profile pic</p>}
             <hr />
             <WriteToCloudFirestore />
             <ReadDataFromCloudFirestore />
