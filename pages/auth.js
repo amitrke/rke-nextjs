@@ -11,4 +11,6 @@ const Auth = () => {
     )
 }
 
+Auth.noLayout = true;
+
 export default Auth
