@@ -4,7 +4,7 @@ import Layout from '../components/layout'
 import { SSRProvider } from '@react-aria/ssr';
 
 function MyApp({ Component, pageProps }) {
-  if (Component.name == 'Auth') {
+  if (Component.noLayout) {
     return (
       <>
           <Component {...pageProps} />
