@@ -29,7 +29,7 @@ export default function TopNavigationBar() {
 }
 
 function UserInfo() {
-    const { user, logout } = useUser()
+    const { user } = useUser()
     if (user) {
         return (
             <Nav.Link href="/myaccount">MyAccount</Nav.Link>

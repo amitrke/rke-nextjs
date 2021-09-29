@@ -5,10 +5,9 @@ import Counter from '../components/realtimeDatabase/Counter'
 import UploadFile from '../components/storage/UploadFile'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
-import styles from '../styles/Home.module.css'
 
 export default function MyAccount() {
-    const { user } = useUser()
+    const { user, logout } = useUser()
 
     if (user) {
         return (
@@ -39,8 +38,10 @@ export default function MyAccount() {
         )
     }
     else {
-        return(<div className={styles.container}>
-            Please login to view the contents of this page.
-        </div>);
+        return(
+          <>
+            <p>Please login to view the contents of this page.</p>
+          </>
+        );
     }
 }
