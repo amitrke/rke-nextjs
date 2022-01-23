@@ -7,7 +7,7 @@ export default function Home() {
   return (
       <>
           <h1 className={styles.title}>
-            Welcome to <a href="https://nextjs.org">Next.js!</a>
+            Welcome to Roorkee.org!
           </h1>
 
           <p className={styles.description}>
@@ -40,7 +40,7 @@ export default function Home() {
             >
               <h3>Deploy &rarr;</h3>
               <p>
-                Instantly deploy your Next.js site to a public URL with Vercel.
+                Instantly deploy your Next.js site to a public URL with Vercel. V1
               </p>
             </a>
           </div>
