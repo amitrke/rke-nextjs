@@ -10,7 +10,16 @@ function MyApp({ Component, pageProps }) {
           <Component {...pageProps} />
       </>
     )
-  } else {
+  } else if (Component.noSSR) {
+    return (
+      <>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </>
+    )
+  } 
+  else {
     return (
       <SSRProvider>
         <Layout>

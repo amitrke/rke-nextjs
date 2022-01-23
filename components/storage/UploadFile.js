@@ -1,8 +1,8 @@
 // to learn how to download a file, get/use file metadata, delete files, and list files see https://firebase.google.com/docs/storage/web/start
 
 import { useRef, useState } from 'react'
-import firebase from 'firebase/app'
-import 'firebase/storage'
+import firebase from 'firebase/compat/app'
+import 'firebase/compat/storage'
 
 const UploadFile = () => {
     const inputEl = useRef(null)

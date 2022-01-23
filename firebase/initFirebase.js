@@ -1,10 +1,12 @@
-import firebase from 'firebase/app'
+import firebase from 'firebase/compat/app';
 // the below imports are option - comment out what you don't need
-import 'firebase/auth'
-import 'firebase/firestore'
-import 'firebase/storage'
-import 'firebase/analytics'
-import 'firebase/performance'
+import 'firebase/compat/auth'
+import 'firebase/compat/firestore'
+import 'firebase/compat/storage'
+import 'firebase/compat/analytics'
+import 'firebase/compat/performance'
+
+//TODO: Refactor firebase to use https://firebase.google.com/docs/web/modular-upgrade
 
 const clientCredentials = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
