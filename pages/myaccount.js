@@ -6,12 +6,14 @@ import UploadFile from '../components/storage/UploadFile'
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 
-export default function MyAccount() {
+const MyAccount = () => {
+
     const { user, logout } = useUser()
 
     if (user) {
         return (
           <>
+            <Button href="/account/editpost">Add Post</Button>
             <Card>
               <Card.Body>
                 <Card.Title>{user.name}</Card.Title>
@@ -38,10 +40,13 @@ export default function MyAccount() {
         )
     }
     else {
-        return(
-          <>
-            <p>Please login to view the contents of this page.</p>
-          </>
-        );
+      return (
+        <>
+        </>
+      )
     }
 }
+
+MyAccount.noSSR = true;
+
+export default MyAccount;
