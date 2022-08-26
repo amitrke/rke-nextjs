@@ -22,8 +22,9 @@ const EditPost = () => {
             <Form.Label>Example textarea</Form.Label>
             <Form.Control as="textarea" rows={3} />
           </Form.Group>
+          <Editor/>
         </Form>
-        <Editor/>
+        
       </>
     )
   }
