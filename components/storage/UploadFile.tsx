@@ -3,17 +3,21 @@
 import { useRef, useState } from 'react'
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/storage'
+import { useUser } from '../../firebase/useUser'
 
 const UploadFile = () => {
     const inputEl = useRef(null)
     const [value, setValue] = useState(0)
+    const { user } = useUser();
 
     function uploadFile() {
+        if (!user) return;
+
         // get file
         var file = inputEl.current.files[0]
-
+        
         // create a storage ref
-        var storageRef = firebase.storage().ref('user_uploads/' + file.name)
+        var storageRef = firebase.storage().ref(`users/${user.id}/upload/` + file.name)
 
         // upload file
         var task = storageRef.put(file)

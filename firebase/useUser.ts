@@ -2,18 +2,19 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
-import initFirebase from '../firebase/initFirebase'
+import initFirebase from './initFirebase'
 import {
     removeUserCookie,
     setUserCookie,
     getUserFromCookie,
 } from './userCookies'
 import { mapUserData } from './mapUserData'
+import { User } from './types'
 
 initFirebase()
 
 const useUser = () => {
-    const [user, setUser] = useState()
+    const [user, setUser] = useState<User>()
     const router = useRouter()
 
     const logout = async () => {
@@ -40,7 +41,7 @@ const useUser = () => {
                 setUser(userData)
             } else {
                 removeUserCookie()
-                setUser()
+                //setUser({})
             }
         })
 
