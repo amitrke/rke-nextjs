@@ -16,7 +16,7 @@ export default function Layout({ children }) {
 function Footer() {
   return (
     <footer className={styles.footer}>
-      Version 0.0.1
+      Version 0.0.2
     </footer>
   )
 }
