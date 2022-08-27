@@ -1,6 +1,7 @@
 import { Form } from 'react-bootstrap'
 import { useUser } from '../../firebase/useUser'
 import dynamic from 'next/dynamic'
+import ImageUpload from '../../components/ui/imageUpload'
 
 var Editor = dynamic(() => import("../../components/ui/richTextEditor"), {
   ssr: false
@@ -13,31 +14,32 @@ const EditPost = () => {
   if (user) {
     return (
       <>
-        <div className="container text-center">
+        <div className="container">
           <div className="row">
-            <div className="col col-lg-2 border">
-              Column
+            <div className="col col-lg-2 d-none d-md-block border">
+              Column 1
             </div>
-            <div className="col col-xxl-auto border">
-              Column
+            <div className="col col-xxl border">
+              <Form >
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>Title</Form.Label>
+                  <Form.Control type="Text" placeholder="Content Title" />
+                </Form.Group>
+                <Form.Group controlId="exampleForm.ControlTextarea1">
+                  <Form.Label>Intro</Form.Label>
+                  <Form.Control as="textarea" rows={3} />
+                </Form.Group>
+
+                <ImageUpload />
+
+                <Editor />
+              </Form>
             </div>
-            <div className="col col-xxl-2 border">
-              Column
+            <div className="col col-xxl-2 d-none d-xxl-block border">
+              Column 3
             </div>
           </div>
         </div>
-        <Form >
-          <Form.Group controlId="exampleForm.ControlInput1">
-            <Form.Label>Email address</Form.Label>
-            <Form.Control type="email" placeholder="name@example.com" />
-          </Form.Group>
-          <Form.Group controlId="exampleForm.ControlTextarea1">
-            <Form.Label>Example textarea</Form.Label>
-            <Form.Control as="textarea" rows={3} />
-          </Form.Group>
-          <Editor />
-        </Form>
-
       </>
     )
   }
