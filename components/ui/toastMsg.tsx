@@ -1,15 +1,21 @@
+import { useState } from 'react';
 import Toast from 'react-bootstrap/Toast';
 
 export type ToastMsgProps = {
     header: string;
     body: string;
-    show: boolean;
 }
 
 const ToastMsg = (props: ToastMsgProps) => {
 
+    const [show, setShow] = useState<boolean>(true);
+
+    const onClose = () => {
+        setShow(false);
+    }
+
     return (
-        <Toast show={props.show}>
+        <Toast show={show} onClose={onClose}>
             <Toast.Header>
                 <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
                 <strong className="me-auto">{props.header}</strong>

@@ -11,17 +11,19 @@ var Editor = dynamic(() => import("../../components/ui/richTextEditor"), {
 })
 
 const EditPost = () => {
-  const [toast, setToast] = useState<ToastMsgProps>({body: "", header: "", show: false});
+  const [toasts, setToasts] = useState<ToastMsgProps[]>([]);
   const { user } = useUser()
 
   const toastCallback = (props: ToastMsgProps) => {
-    setToast(props);
+    setToasts([...toasts, props]);
   }
 
   if (user) {
     return (
       <>
-        <ToastMsg show={toast.show} header={toast.header} body={toast.body} />
+        {[...toasts].map((x, i) =>
+          <ToastMsg header={x.header} body={x.body} />
+        )}
         <div className="container">
           <div className="row">
             <div className="col col-lg-2 d-none d-md-block border">
