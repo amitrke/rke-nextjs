@@ -3,18 +3,25 @@ import { useUser } from '../../firebase/useUser'
 import dynamic from 'next/dynamic'
 import ImageUpload from '../../components/ui/imageUpload'
 import UploadFile from '../../components/storage/UploadFile'
+import ToastMsg, { ToastMsgProps } from '../../components/ui/toastMsg'
+import { useState } from 'react'
 
 var Editor = dynamic(() => import("../../components/ui/richTextEditor"), {
   ssr: false
 })
 
 const EditPost = () => {
-
+  const [toast, setToast] = useState<ToastMsgProps>({body: "", header: "", show: false});
   const { user } = useUser()
+
+  const toastCallback = (props: ToastMsgProps) => {
+    setToast(props);
+  }
 
   if (user) {
     return (
       <>
+        <ToastMsg show={toast.show} header={toast.header} body={toast.body} />
         <div className="container">
           <div className="row">
             <div className="col col-lg-2 d-none d-md-block border">
@@ -31,7 +38,7 @@ const EditPost = () => {
                   <Form.Control as="textarea" rows={3} />
                 </Form.Group>
 
-                <UploadFile/>
+                <UploadFile toastCallback={toastCallback}/>
 
                 <Editor />
               </Form>

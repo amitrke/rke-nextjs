@@ -4,8 +4,13 @@ import { useRef, useState } from 'react'
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/storage'
 import { useUser } from '../../firebase/useUser'
+import { ToastMsgProps } from '../ui/toastMsg'
 
-const UploadFile = () => {
+type UploadFileParam = {
+    toastCallback: (props: ToastMsgProps) => void
+}
+
+const UploadFile = (props: UploadFileParam) => {
     const inputEl = useRef(null)
     const [value, setValue] = useState(0)
     const { user } = useUser();
@@ -15,6 +20,14 @@ const UploadFile = () => {
 
         // get file
         var file = inputEl.current.files[0]
+
+        console.log(`FileType=${file.type}`);
+
+        if (file.type !== 'image/png') {
+            props.toastCallback({body: "FileType should be image/png", header: "Incorrect file type", show: true});
+            return;
+        }
+
         
         // create a storage ref
         var storageRef = firebase.storage().ref(`users/${user.id}/upload/` + file.name)
