@@ -23,8 +23,8 @@ const UploadFile = (props: UploadFileParam) => {
 
         console.log(`FileType=${file.type}`);
 
-        if (file.type !== 'image/png') {
-            props.toastCallback({body: "FileType should be image/png", header: "Incorrect file type"});
+        if (file.type !== 'image/png' || file.type !== 'image/jpeg') {
+            props.toastCallback({body: "FileType should be jpeg or png", header: "Incorrect file type"});
             return;
         }
 
