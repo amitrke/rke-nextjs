@@ -1,4 +1,4 @@
-import { doc, DocumentReference, getFirestore } from "firebase/firestore";
+import { doc, DocumentReference, getFirestore, updateDoc } from "firebase/firestore";
 import { initApp } from "./initFirebase";
 import { collection, addDoc } from "firebase/firestore";
 
@@ -11,12 +11,16 @@ type FirestoreParams = {
 }
 
 export type FirestoreWriteParams<T> = FirestoreParams & {
-    data: T
+    data: T;
+    existingDocId?: string;
 }
 
 export const write = async <T>(params: FirestoreWriteParams<T>): Promise<DocumentReference> => {
-    const docRef = await addDoc(collection(db, params.path), params.data);
-    console.log("Document written with ID: ", docRef.id);
+    const docRef = params.existingDocId ? doc(db, params.path, params.existingDocId) : await addDoc(collection(db, params.path), params.data);
+    if (params.existingDocId) {
+        await updateDoc(docRef, params.data);
+    }
+    console.debug("Document written with ID: ", docRef.id);
     return docRef;
 }
 
