@@ -45,7 +45,7 @@ const UploadFile = (props: UploadFileParam) => {
             function error(err) {
                 console.error(err);
                 props.toastCallback({body: err.message, header: "Image Upload"});
-                setInputKey(Date.now())
+                // setInputKey(Date.now())
             },
 
             function compleete() {

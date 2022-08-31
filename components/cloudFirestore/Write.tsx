@@ -21,7 +21,7 @@ const WriteToCloudFirestore = () => {
                     time_stamp: firebase.firestore.Timestamp.fromDate(new Date('December 17, 1995 03:24:00')),
                     geo_point: new firebase.firestore.GeoPoint(34.714322, -131.468435)
                 })
-                .then(alert('Data was successfully sent to cloud firestore!'))
+                // .then(alert('Data was successfully sent to cloud firestore!'))
         } catch (error) {
             console.log(error)
             alert(error)
