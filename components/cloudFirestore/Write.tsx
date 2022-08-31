@@ -1,4 +1,4 @@
-import firebase from 'firebase/app'
+import firebase from 'firebase/compat/app'; //TODO: Update to latest version, stop using compat.
 import 'firebase/firestore'
 import { useUser } from '../../firebase/useUser'
 import Button from 'react-bootstrap/Button'

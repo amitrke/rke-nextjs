@@ -24,10 +24,10 @@ const UploadFile = (props: UploadFileParam) => {
         console.log(`FileType=${file.type}`);
 
         if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
-            props.toastCallback({body: "FileType should be jpeg or png", header: "Incorrect file type"});
+            props.toastCallback({body: "Failed to upload, FileType should be jpeg or png", header: "Image Upload"});
+            inputEl.current.value = null
             return;
         }
-
         
         // create a storage ref
         var storageRef = firebase.storage().ref(`users/${user.id}/upload/` + file.name)
@@ -43,11 +43,13 @@ const UploadFile = (props: UploadFileParam) => {
             },
 
             function error(err) {
-                alert(error)
+                console.error(err);
+                props.toastCallback({body: err.message, header: "Image Upload"});
+                setInputKey(Date.now())
             },
 
             function compleete() {
-                alert('Uploaded to firebase storage successfully!')
+                props.toastCallback({body: 'Uploaded to firebase storage successfully!', header: "Image Upload"});
             }
         )
     }
