@@ -1,4 +1,4 @@
-import { arrayUnion, doc, DocumentReference, getFirestore, updateDoc } from "firebase/firestore";
+import { AddPrefixToKeys, arrayUnion, doc, DocumentReference, getFirestore, updateDoc } from "firebase/firestore";
 import { initApp } from "./initFirebase";
 import { collection, addDoc } from "firebase/firestore";
 
@@ -11,7 +11,7 @@ type FirestoreParams = {
 }
 
 export type FirestoreWriteParams<T> = FirestoreParams & {
-    data: T;
+    data: any;
     existingDocId?: string;
 }
 

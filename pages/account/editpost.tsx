@@ -22,7 +22,7 @@ const EditPost = (params: EditPostParams) => {
   const [docId, setDocId] = useState<string>("");
   const [docState, setDocState] = useState<string>(DOC_STATE_NEW);
 
-  const toastCallback = (props: ToastMsgProps) => {
+  const toastCallback = async (props: ToastMsgProps) => {
     setToasts([...toasts, props]);
   }
 
