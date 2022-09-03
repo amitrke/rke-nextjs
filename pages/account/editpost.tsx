@@ -1,12 +1,11 @@
 import { Button, Form } from 'react-bootstrap'
 import { useUser } from '../../firebase/useUser'
 import dynamic from 'next/dynamic'
-import UploadFile from '../../components/storage/UploadFile'
+import UploadFile, { UploadStatusType } from '../../components/storage/UploadFile'
 import ToastMsg, { ToastMsgProps } from '../../components/ui/toastMsg'
-import { ChangeEvent, useState } from 'react'
-import { write } from '../../firebase/firestore'
-import { DocumentReference } from 'firebase/firestore'
-var Editor = dynamic(() => import("../../components/ui/richTextEditor"), {
+import { ChangeEvent, useEffect, useState } from 'react'
+import { arrayAppend, write } from '../../firebase/firestore'
+const Editor = dynamic(() => import("../../components/ui/richTextEditor"), {
   ssr: false
 })
 
@@ -15,36 +14,51 @@ type EditPostParams = {
 }
 
 const EditPost = (params: EditPostParams) => {
+  const DOC_STATE_NEW = "";
   const [toasts, setToasts] = useState<ToastMsgProps[]>([]);
   const { user } = useUser()
   const [title, setTitle] = useState<string>("")
   const [intro, setIntro] = useState<string>("")
   const [docId, setDocId] = useState<string>("");
+  const [docState, setDocState] = useState<string>(DOC_STATE_NEW);
 
   const toastCallback = (props: ToastMsgProps) => {
     setToasts([...toasts, props]);
   }
 
   const onUpdateForm = (e: ChangeEvent<HTMLInputElement>) => {
-    const {name, value} = e.currentTarget;
-    if (name == 'title'){
+    const { name, value } = e.currentTarget;
+    if (name == 'title') {
       setTitle(value);
     }
-    if (name == 'intro'){
+    if (name == 'intro') {
       setIntro(value);
     }
   }
 
-  const onSave = async() => {
+  const onSave = async () => {
     if (docId) {
-      const doc = await write({path: `users/${user.id}/posts`, existingDocId: docId, data: {title, intro}});
+      const doc = await write({ path: `users/${user.id}/posts`, existingDocId: docId, data: { title, intro } });
       console.log(`Updated document id=${docId}`)
     } else {
-      const doc = await write({path: `users/${user.id}/posts`, data: {title, intro}});
+      const doc = await write({ path: `users/${user.id}/posts`, data: { title, intro } });
       setDocId(doc.id);
       console.log(`doc id=${doc.id}, path=${doc.path}`)
     }
   }
+
+  const onFileUpload = async (props: UploadStatusType) => {
+    if (!props.status) return;
+    if (docState === DOC_STATE_NEW) return;
+    const doc = await arrayAppend({ path: `users/${user.id}/posts`, existingDocId: docId, arrayAttribute: "images", newArrayItem: props.filename });
+    console.log(`Updated document id=${docId}`)
+  }
+
+  useEffect(() => {
+    if (docId.length < 1) return;
+    if (docState !== DOC_STATE_NEW) return;
+    setDocState("Draft");
+  }, [docId])
 
   if (user && typeof window !== 'undefined') {
     return (
@@ -61,19 +75,20 @@ const EditPost = (params: EditPostParams) => {
               <Form >
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>Title</Form.Label>
-                  <Form.Control type="Text" placeholder="Content Title" name='title' value={title} onChange={onUpdateForm}/>
+                  <Form.Control type="Text" placeholder="Content Title" name='title' value={title} onChange={onUpdateForm} />
                 </Form.Group>
                 <Form.Group controlId="exampleForm.ControlTextarea1">
                   <Form.Label>Intro</Form.Label>
-                  <Form.Control as="textarea" rows={3} name='intro' value={intro} onChange={onUpdateForm}/>
+                  <Form.Control as="textarea" rows={3} name='intro' value={intro} onChange={onUpdateForm} />
                 </Form.Group>
-
-                <UploadFile toastCallback={toastCallback} />
-
+                Images
+                <UploadFile toastCallback={toastCallback} disabled={docState == DOC_STATE_NEW} statusCallback={onFileUpload} />
+                Body
                 <Editor />
                 <Button variant="primary" onClick={onSave}>
                   Save
                 </Button>
+                State: {docState}
               </Form>
             </div>
             <div className="col col-xxl-2 d-none d-xxl-block border">

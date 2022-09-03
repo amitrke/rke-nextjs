@@ -6,8 +6,15 @@ import 'firebase/compat/storage'
 import { useUser } from '../../firebase/useUser'
 import { ToastMsgProps } from '../ui/toastMsg'
 
+export type UploadStatusType = {
+    status: boolean;
+    filename: string;
+}
+
 type UploadFileParam = {
-    toastCallback: (props: ToastMsgProps) => void
+    toastCallback: (props: ToastMsgProps) => Promise<void>
+    disabled: boolean
+    statusCallback?: (props: UploadStatusType) => void
 }
 
 const UploadFile = (props: UploadFileParam) => {
@@ -20,8 +27,6 @@ const UploadFile = (props: UploadFileParam) => {
 
         // get file
         var file = inputEl.current.files[0]
-
-        console.log(`FileType=${file.type}`);
 
         if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
             props.toastCallback({body: "Failed to upload, FileType should be jpeg or png", header: "Image Upload"});
@@ -42,13 +47,14 @@ const UploadFile = (props: UploadFileParam) => {
                 setValue((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
             },
 
-            function error(err) {
+            async function error(err) {
                 console.error(err);
+                await props.statusCallback({filename: file.name, status: false})
                 props.toastCallback({body: err.message, header: "Image Upload"});
-                // setInputKey(Date.now())
             },
 
-            function compleete() {
+            async function compleete() {
+                await props.statusCallback({filename: file.name, status: true})
                 props.toastCallback({body: 'Uploaded to firebase storage successfully!', header: "Image Upload"});
             }
         )
@@ -62,6 +68,7 @@ const UploadFile = (props: UploadFileParam) => {
                 type="file"
                 onChange={uploadFile}
                 ref={inputEl}
+                disabled={props.disabled}
             />
         </div>
     )
