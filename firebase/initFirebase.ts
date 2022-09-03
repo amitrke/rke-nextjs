@@ -5,6 +5,7 @@ import 'firebase/compat/firestore'
 import 'firebase/compat/storage'
 import 'firebase/compat/analytics'
 import 'firebase/compat/performance'
+import { FirebaseApp, initializeApp } from "firebase/app";
 
 //TODO: Refactor firebase to use https://firebase.google.com/docs/web/modular-upgrade
 
@@ -31,4 +32,8 @@ export default function initFirebase() {
         }
         console.log('Firebase was successfully init.')
     }
+}
+
+export function initApp(): FirebaseApp {
+    return initializeApp(clientCredentials);
 }
