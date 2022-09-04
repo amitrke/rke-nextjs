@@ -53,9 +53,10 @@ export const queryOnce = async<T>(params: FirestoreParams):Promise<Array<T>> => 
     const querySnapshot = await getDocs(q);
     const resp:Array<T> = [];
     querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, " => ", doc.data());
-        resp.push(<T>doc.data())
+        const item = doc.data();
+        item['id'] = doc.id;
+        item['path'] = doc.ref.path;
+        resp.push(<T>item)
     });
     return resp;
 }

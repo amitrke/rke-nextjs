@@ -10,7 +10,7 @@ const MyAccount = () => {
   if (user) {
     return (
       <>
-        <Container fluid>
+        <Container>
           <Row>
             <Col>
               Posts
