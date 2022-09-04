@@ -1,4 +1,4 @@
-import { Button, Form } from 'react-bootstrap'
+import { Button, Container, Form, Row } from 'react-bootstrap'
 import { useUser } from '../../firebase/useUser'
 import dynamic from 'next/dynamic'
 import UploadFile, { UploadStatusType } from '../../components/storage/UploadFile'
@@ -66,8 +66,8 @@ const EditPost = (params: EditPostParams) => {
         {[...toasts].map((x, i) =>
           <ToastMsg header={x.header} body={x.body} />
         )}
-        <div className="container">
-          <div className="row">
+        <Container fluid>
+          <Row>
             <div className="col col-lg-2 d-none d-md-block border">
               Column 1
             </div>
@@ -94,8 +94,8 @@ const EditPost = (params: EditPostParams) => {
             <div className="col col-xxl-2 d-none d-xxl-block border">
               Column 3
             </div>
-          </div>
-        </div>
+          </Row>
+        </Container>
       </>
     )
   }

@@ -1,4 +1,4 @@
-import { AddPrefixToKeys, arrayUnion, doc, DocumentReference, getFirestore, updateDoc } from "firebase/firestore";
+import { AddPrefixToKeys, arrayUnion, doc, DocumentData, DocumentReference, getDocs, getFirestore, query, QuerySnapshot, updateDoc } from "firebase/firestore";
 import { initApp } from "./initFirebase";
 import { collection, addDoc } from "firebase/firestore";
 
@@ -8,6 +8,7 @@ const db = getFirestore(app);
 type FirestoreParams = {
     path: string;
     pathSegments?: string[];
+    converter?: any;
 }
 
 export type FirestoreWriteParams<T> = FirestoreParams & {
@@ -42,4 +43,19 @@ export const arrayAppend = async <T>(params: FirestoreAppendToArrayParams<T>): P
 
 const read = () => {
 
+}
+
+export const queryOnce = async<T>(params: FirestoreParams):Promise<Array<T>> => {
+    const q = query(collection(db, params.path));
+    if (params.converter) {
+        q.withConverter(params.converter);
+    }
+    const querySnapshot = await getDocs(q);
+    const resp:Array<T> = [];
+    querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data());
+        resp.push(<T>doc.data())
+    });
+    return resp;
 }
