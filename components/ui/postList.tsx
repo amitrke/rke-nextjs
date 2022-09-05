@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { queryOnce } from "../../firebase/firestore";
 import { useUser } from "../../firebase/useUser";
-import PostItem, { postConverter, PostType } from "./postItem";
+import PostItem, { PostType } from "./postItem";
 
 export type PostListParams = {
     count: number;
@@ -20,7 +20,7 @@ const PostList = (params: PostListParams) => {
     const updateData = async() => {
         if (params.visibility == "private") {
             if (!user) return;     
-            const dbList = await queryOnce<PostType>({path: `users/${user.id}/posts`, converter: postConverter})
+            const dbList = await queryOnce<PostType>({path: `users/${user.id}/posts`})
             setPosts(dbList);
         }
     }
