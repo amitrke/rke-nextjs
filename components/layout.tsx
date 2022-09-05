@@ -1,4 +1,4 @@
-import TopNavigationBar from '../components/nav/TopNavigationBar'
+import TopNavigationBar from './nav/TopNavigationBar'
 import styles from '../styles/Home.module.css'
 
 export default function Layout({ children }) {
