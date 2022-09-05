@@ -1,4 +1,4 @@
-import { AddPrefixToKeys, arrayUnion, doc, DocumentData, DocumentReference, getDocs, getFirestore, query, QuerySnapshot, updateDoc } from "firebase/firestore";
+import { AddPrefixToKeys, arrayUnion, deleteDoc, doc, DocumentData, DocumentReference, getDocs, getFirestore, query, QuerySnapshot, updateDoc } from "firebase/firestore";
 import { initApp } from "./initFirebase";
 import { collection, addDoc } from "firebase/firestore";
 
@@ -41,8 +41,8 @@ export const arrayAppend = async <T>(params: FirestoreAppendToArrayParams<T>): P
     return docRef;
 }
 
-const read = () => {
-
+export const deleteDocument = async (params: FirestoreParams) => {
+    await deleteDoc(doc(db, params.path));
 }
 
 export const queryOnce = async<T>(params: FirestoreParams):Promise<Array<T>> => {

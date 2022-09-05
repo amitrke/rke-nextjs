@@ -1,8 +1,11 @@
 import { Button, Col, Container, Row } from "react-bootstrap";
+import { deleteDocument } from "../../firebase/firestore";
 import ShowImage from "./showImage";
+import { ShowModalParams } from "./showModal";
 
 export type DisplayPostParams = {
     post: PostType
+    confirmModalCB: (props: ShowModalParams) => void
 }
 
 export type PostType = {
@@ -34,6 +37,14 @@ const PostItem = (params: DisplayPostParams) => {
     const authorId = params.post.path.split("/")[1];
     const mainImage = mainFile ? `users/${authorId}/images/${mainFile}` : undefined;
 
+    const onDelete = async () => {
+        await deleteDocument({ path: params.post.path });
+    }
+
+    const onDeleteClick = () => {
+        params.confirmModalCB({ show: true, yesCallback: onDelete });
+    }
+
     return (
         <Container className="border">
             <Row>
@@ -52,7 +63,7 @@ const PostItem = (params: DisplayPostParams) => {
                 </Col>
                 <Col>
                     <Button variant="primary">Edit</Button>{' '}
-                    <Button variant="secondary">Delete</Button>
+                    <Button variant="secondary" onClick={onDeleteClick}>Delete</Button>
                 </Col>
             </Row>
         </Container>

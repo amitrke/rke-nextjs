@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { queryOnce } from "../../firebase/firestore";
 import { useUser } from "../../firebase/useUser";
 import PostItem, { PostType } from "./postItem";
+import { ShowModalParams } from "./showModal";
 
 export type PostListParams = {
-    count: number;
+    count: number
     visibility: "public" | "private"
+    confirmModalCB: (props: ShowModalParams) => void
 }
 
 const PostList = (params: PostListParams) => {
@@ -28,7 +30,7 @@ const PostList = (params: PostListParams) => {
     return (
         <div>
             {[...posts].map((x, i) =>
-                <PostItem post={x} />
+                <PostItem post={x} confirmModalCB={params.confirmModalCB} />
             )}
         </div>
     )
