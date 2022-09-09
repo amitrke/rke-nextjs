@@ -1,4 +1,4 @@
-import { AddPrefixToKeys, arrayUnion, deleteDoc, doc, DocumentData, DocumentReference, getDocs, getFirestore, query, QuerySnapshot, updateDoc } from "firebase/firestore";
+import { AddPrefixToKeys, arrayUnion, deleteDoc, doc, DocumentData, DocumentReference, getDoc, getDocs, getFirestore, query, QuerySnapshot, updateDoc } from "firebase/firestore";
 import { initApp } from "./initFirebase";
 import { collection, addDoc } from "firebase/firestore";
 
@@ -33,9 +33,9 @@ export const write = async <T>(params: FirestoreWriteParams<T>): Promise<Documen
 
 export const arrayAppend = async <T>(params: FirestoreAppendToArrayParams<T>): Promise<DocumentReference> => {
     const docRef = doc(db, params.path, params.existingDocId);
-    
+
     await updateDoc(docRef, {
-        [params.arrayAttribute] : arrayUnion(params.newArrayItem)
+        [params.arrayAttribute]: arrayUnion(params.newArrayItem)
     });
     console.debug("Document array updated");
     return docRef;
@@ -45,13 +45,13 @@ export const deleteDocument = async (params: FirestoreParams) => {
     await deleteDoc(doc(db, params.path));
 }
 
-export const queryOnce = async<T>(params: FirestoreParams):Promise<Array<T>> => {
+export const queryOnce = async<T>(params: FirestoreParams): Promise<Array<T>> => {
     const q = query(collection(db, params.path));
     if (params.converter) {
         q.withConverter(params.converter);
     }
     const querySnapshot = await getDocs(q);
-    const resp:Array<T> = [];
+    const resp: Array<T> = [];
     querySnapshot.forEach((doc) => {
         const item = doc.data();
         item['id'] = doc.id;
@@ -59,4 +59,14 @@ export const queryOnce = async<T>(params: FirestoreParams):Promise<Array<T>> => 
         resp.push(<T>item)
     });
     return resp;
+}
+
+export const getDocument = async<T>(params: FirestoreParams): Promise<T | undefined> => {
+    const docSnap = await getDoc(doc(db, params.path, params.pathSegments[0]));
+    if (docSnap.exists()) {
+        return <T>docSnap.data();
+    } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+    }
 }

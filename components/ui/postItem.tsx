@@ -13,7 +13,7 @@ export type PostType = {
     path: string;
     title: string;
     intro: string;
-    body: string;
+    edState: string;
     images: string[];
 }
 
@@ -62,7 +62,7 @@ const PostItem = (params: DisplayPostParams) => {
                     State: Draft
                 </Col>
                 <Col>
-                    <Button variant="primary">Edit</Button>{' '}
+                    <Button variant="primary" href={'/account/editpost?id='+params.post.id}>Edit</Button>{' '}
                     <Button variant="secondary" onClick={onDeleteClick}>Delete</Button>
                 </Col>
             </Row>
