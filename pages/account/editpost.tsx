@@ -83,6 +83,10 @@ const EditPost = () => {
     console.log(`Updated document id=${docId}`)
   }
 
+  const onEditorStateChange = (state: string) => {
+    console.log(`Editor State: ${state}`);
+  }
+
   useEffect(() => {
     if (!docId) return;
     if (docId.length < 1) return;
@@ -117,7 +121,7 @@ const EditPost = () => {
                 )}
                 <UploadFile toastCallback={toastCallback} disabled={docState == DOC_STATE_NEW} statusCallback={onFileUpload} />
                 Body
-                <Editor />
+                <Editor onEdStateChange={onEditorStateChange}/>
                 <Button variant="primary" onClick={onSave}>
                   Save
                 </Button>
