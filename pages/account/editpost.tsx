@@ -16,7 +16,6 @@ const Editor = dynamic(() => import("../../components/ui/richTextEditor"), {
 const EditPost = () => {
   const router = useRouter()
   const { id } = router.query
-  console.log(`PostID=${id}`);
 
   const DOC_STATE_NEW = "";
   const [toasts, setToasts] = useState<ToastMsgProps[]>([]);
@@ -25,10 +24,12 @@ const EditPost = () => {
   const [title, setTitle] = useState<string>("")
   const [intro, setIntro] = useState<string>("")
   const [docId, setDocId] = useState<string>("");
+  const [edState, setEdState] = useState<string>("");
+  const [initEdState, setInitEdState] = useState<string>("");
   const [images, setImages] = useState<string[]>([]);
   const [docState, setDocState] = useState<string>(DOC_STATE_NEW);
 
-  if (id && typeof(id) == "string" && !pId) {
+  if (id && typeof (id) == "string" && !pId) {
     setPId(id);
   }
 
@@ -41,14 +42,15 @@ const EditPost = () => {
   const loadPost = async (postId: string) => {
     const post = await getDocument<PostType>({ path: `users/${user.id}/posts`, pathSegments: [postId] })
     if (post) {
-      setTitle(post.title)
-      setIntro(post.intro)
-      setImages(post.images)
-      setDocId(post.id)
+      if (post.title) setTitle(post.title)
+      if (post.intro) setIntro(post.intro)
+      if (post.images) setImages(post.images)
+      if (post.edState) setInitEdState(post.edState)
+      setDocId(postId)
     }
   }
 
-  
+
 
   const toastCallback = async (props: ToastMsgProps) => {
     setToasts([...toasts, props]);
@@ -66,10 +68,10 @@ const EditPost = () => {
 
   const onSave = async () => {
     if (docId) {
-      const doc = await write({ path: `users/${user.id}/posts`, existingDocId: docId, data: { title, intro } });
+      const doc = await write({ path: `users/${user.id}/posts`, existingDocId: docId, data: { title, intro, edState } });
       console.log(`Updated document id=${docId}`)
     } else {
-      const doc = await write({ path: `users/${user.id}/posts`, data: { title, intro } });
+      const doc = await write({ path: `users/${user.id}/posts`, data: { title, intro, edState } });
       setDocId(doc.id);
       console.log(`doc id=${doc.id}, path=${doc.path}`)
     }
@@ -83,16 +85,26 @@ const EditPost = () => {
     console.log(`Updated document id=${docId}`)
   }
 
-  const onEditorStateChange = (state: string) => {
-    console.log(`Editor State: ${state}`);
-  }
-
   useEffect(() => {
     if (!docId) return;
     if (docId.length < 1) return;
     if (docState !== DOC_STATE_NEW) return;
     setDocState("Draft");
   }, [docId])
+
+  const ImagesSection = () => {
+    if (images) {
+      return (
+        <>
+          {
+            [...images].map((x, i) =>
+              <ShowImage size="s" key={x} file={`users/${user.id}/images/${x}`} />
+            )
+          }
+        </>
+      );
+    }
+  }
 
   if (user && typeof window !== 'undefined') {
     return (
@@ -115,13 +127,14 @@ const EditPost = () => {
                   <Form.Label>Intro</Form.Label>
                   <Form.Control as="textarea" rows={3} name='intro' value={intro} onChange={onUpdateForm} />
                 </Form.Group>
-                Images
+                Images <br />
+                {/* <ImagesSection /> */}
                 {[...images].map((x, i) =>
                   <ShowImage size="s" key={x} file={`users/${user.id}/images/${x}`} />
                 )}
                 <UploadFile toastCallback={toastCallback} disabled={docState == DOC_STATE_NEW} statusCallback={onFileUpload} />
                 Body
-                <Editor onEdStateChange={onEditorStateChange}/>
+                <Editor onEdStateChange={setEdState} initState={initEdState} />
                 <Button variant="primary" onClick={onSave}>
                   Save
                 </Button>

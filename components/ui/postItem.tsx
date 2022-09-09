@@ -13,7 +13,7 @@ export type PostType = {
     path: string;
     title: string;
     intro: string;
-    body: string;
+    edState: string;
     images: string[];
 }
 
