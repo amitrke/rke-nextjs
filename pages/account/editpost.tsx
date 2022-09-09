@@ -4,23 +4,51 @@ import dynamic from 'next/dynamic'
 import UploadFile, { UploadStatusType } from '../../components/storage/UploadFile'
 import ToastMsg, { ToastMsgProps } from '../../components/ui/toastMsg'
 import { ChangeEvent, useEffect, useState } from 'react'
-import { arrayAppend, write } from '../../firebase/firestore'
+import { arrayAppend, getDocument, queryOnce, write } from '../../firebase/firestore'
+import { useRouter } from 'next/router'
+import { PostType } from '../../components/ui/postItem'
+import ShowImage from '../../components/ui/showImage'
+
 const Editor = dynamic(() => import("../../components/ui/richTextEditor"), {
   ssr: false
 })
 
-type EditPostParams = {
-  postId?: string;
-}
+const EditPost = () => {
+  const router = useRouter()
+  const { id } = router.query
+  console.log(`PostID=${id}`);
 
-const EditPost = (params: EditPostParams) => {
   const DOC_STATE_NEW = "";
   const [toasts, setToasts] = useState<ToastMsgProps[]>([]);
   const { user } = useUser()
+  const [pId, setPId] = useState<string>();
   const [title, setTitle] = useState<string>("")
   const [intro, setIntro] = useState<string>("")
   const [docId, setDocId] = useState<string>("");
+  const [images, setImages] = useState<string[]>([]);
   const [docState, setDocState] = useState<string>(DOC_STATE_NEW);
+
+  if (id && typeof(id) == "string" && !pId) {
+    setPId(id);
+  }
+
+  useEffect(() => {
+    if (!pId) return;
+    console.log(`pId change PostID=${pId}`);
+    loadPost(pId);
+  }, [pId])
+
+  const loadPost = async (postId: string) => {
+    const post = await getDocument<PostType>({ path: `users/${user.id}/posts`, pathSegments: [postId] })
+    if (post) {
+      setTitle(post.title)
+      setIntro(post.intro)
+      setImages(post.images)
+      setDocId(post.id)
+    }
+  }
+
+  
 
   const toastCallback = async (props: ToastMsgProps) => {
     setToasts([...toasts, props]);
@@ -50,11 +78,13 @@ const EditPost = (params: EditPostParams) => {
   const onFileUpload = async (props: UploadStatusType) => {
     if (!props.status) return;
     if (docState === DOC_STATE_NEW) return;
-    const doc = await arrayAppend({ path: `users/${user.id}/posts`, existingDocId: docId, arrayAttribute: "images", newArrayItem: props.filename });
+    await arrayAppend({ path: `users/${user.id}/posts`, existingDocId: docId, arrayAttribute: "images", newArrayItem: props.filename });
+    setImages([...images, props.filename])
     console.log(`Updated document id=${docId}`)
   }
 
   useEffect(() => {
+    if (!docId) return;
     if (docId.length < 1) return;
     if (docState !== DOC_STATE_NEW) return;
     setDocState("Draft");
@@ -64,7 +94,7 @@ const EditPost = (params: EditPostParams) => {
     return (
       <>
         {[...toasts].map((x, i) =>
-          <ToastMsg header={x.header} body={x.body} />
+          <ToastMsg key={x.body} header={x.header} body={x.body} />
         )}
         <Container fluid>
           <Row>
@@ -82,6 +112,9 @@ const EditPost = (params: EditPostParams) => {
                   <Form.Control as="textarea" rows={3} name='intro' value={intro} onChange={onUpdateForm} />
                 </Form.Group>
                 Images
+                {[...images].map((x, i) =>
+                  <ShowImage size="s" key={x} file={`users/${user.id}/images/${x}`} />
+                )}
                 <UploadFile toastCallback={toastCallback} disabled={docState == DOC_STATE_NEW} statusCallback={onFileUpload} />
                 Body
                 <Editor />

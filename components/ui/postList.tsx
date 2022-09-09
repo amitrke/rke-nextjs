@@ -30,7 +30,7 @@ const PostList = (params: PostListParams) => {
     return (
         <div>
             {[...posts].map((x, i) =>
-                <PostItem post={x} confirmModalCB={params.confirmModalCB} />
+                <PostItem key={x.id} post={x} confirmModalCB={params.confirmModalCB} />
             )}
         </div>
     )
