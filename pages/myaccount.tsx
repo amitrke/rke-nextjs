@@ -4,6 +4,7 @@ import { Col, Container, Row } from 'react-bootstrap'
 import PostList from '../components/ui/postList'
 import { useState } from 'react'
 import ShowModal, { ShowModalParams } from '../components/ui/showModal'
+import AlbumList from '../components/ui/albumList'
 
 const MyAccount = () => {
   const modalYesCB = async() => {
@@ -30,7 +31,9 @@ const MyAccount = () => {
               <Button href="/account/editpost">Add Post</Button>
               <PostList visibility='private' count={5} confirmModalCB={confirmModalCB} />
             </Col>
-            <Col>Images
+            <Col>Photo Albums
+              <Button href="/account/editAlbum">Add Photoalbum</Button>
+              <AlbumList publicOnly={false} count={5} confirmModalCB={confirmModalCB} />
             </Col>
           </Row>
         </Container>

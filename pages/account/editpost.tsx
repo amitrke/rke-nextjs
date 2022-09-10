@@ -92,20 +92,6 @@ const EditPost = () => {
     setDocState("Draft");
   }, [docId])
 
-  const ImagesSection = () => {
-    if (images) {
-      return (
-        <>
-          {
-            [...images].map((x, i) =>
-              <ShowImage size="s" key={x} file={`users/${user.id}/images/${x}`} />
-            )
-          }
-        </>
-      );
-    }
-  }
-
   if (user && typeof window !== 'undefined') {
     return (
       <>
