@@ -1,3 +1,4 @@
+import { where } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { Button, Col, Container, Row } from "react-bootstrap"
 import { subscribeToCollectionUpdates } from "../../firebase/firestore"
@@ -18,7 +19,7 @@ const AlbumList = (params: AlbumListParams) => {
 
     useEffect(() => {
         if (!params.publicOnly && user) {
-            subscribeToCollectionUpdates<AlbumType>({ path: `users/${user.id}/albums`, updateCB: setAlbums })
+            subscribeToCollectionUpdates<AlbumType>({ path: `albums`, updateCB: setAlbums, queryConstraints: [ where("userId", "==", user.id) ] })
         }
     }, [user])
 

@@ -1,3 +1,4 @@
+import { where } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
@@ -11,9 +12,10 @@ export type AlbumType = {
     id: string;
     name: string;
     description: string;
-    updateDate: Date;
+    updateDate: number;
     images: string[];
     public: boolean;
+    userId: string;
 }
 
 const EditAlbum = () => {
@@ -25,15 +27,15 @@ const EditAlbum = () => {
     const [albumId, setAlbumId] = useState<string>('')
 
     const [album, setAlbum] = useState<AlbumType>({
-        id: '', name: '', description: '', updateDate: new Date(), images: [], public: false
+        id: '', name: '', description: '', updateDate: (new Date()).getTime(), images: [], public: false, userId: ''
     })
 
     if (id && typeof (id) == "string" && !albumId) {
         setAlbumId(id);
     }
 
-    const loadAlbum = async(alId) => {
-        const albumData = await getDocument<AlbumType>({ path: `users/${user.id}/albums`, pathSegments: [alId] })
+    const loadAlbum = async (alId) => {
+        const albumData = await getDocument<AlbumType>({ path: `albums`, pathSegments: [alId], queryConstraints: [where("userId", "==", user.id)] })
         if (albumData) {
             setAlbum(albumData)
         }
@@ -45,14 +47,19 @@ const EditAlbum = () => {
         }
     }, [albumId])
 
+    useEffect(() => {
+        if (!user) return
+        setAlbum({ ...album, userId: user.id })
+    }, [user]);
+
     const onSave = async () => {
         if (albumId === '' && album.id === '') {
             console.log(`Create new album`);
-            const doc = await write<AlbumType>({ path: `users/${user.id}/albums`, data: album });
+            const doc = await write<AlbumType>({ path: `albums`, data: album });
             setAlbumId(doc.id);
             console.log(`doc id=${doc.id}, path=${doc.path}`)
         } else {
-            const doc = await write({ path: `users/${user.id}/albums`, existingDocId: albumId, data: album });
+            const doc = await write({ path: `albums`, existingDocId: albumId, data: album });
             console.log(`Updated document id=${doc.id}`)
         }
     }
@@ -64,8 +71,8 @@ const EditAlbum = () => {
     const onFileUpload = async (props: UploadStatusType) => {
         if (!props.status) return;
         if (albumId === '') return;
-        await arrayAppend({ path: `users/${user.id}/albums`, existingDocId: albumId, arrayAttribute: "images", newArrayItem: props.filename });
-        setAlbum({...album, images: [...album.images, props.filename]})
+        await arrayAppend({ path: `albums`, existingDocId: albumId, arrayAttribute: "images", newArrayItem: props.filename });
+        setAlbum({ ...album, images: [...album.images, props.filename] })
         console.log(`Updated document id=${albumId}`)
     }
 

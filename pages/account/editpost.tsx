@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import UploadFile, { UploadStatusType } from '../../components/storage/UploadFile'
 import ToastMsg, { ToastMsgProps } from '../../components/ui/toastMsg'
 import { ChangeEvent, useEffect, useState } from 'react'
-import { arrayAppend, getDocument, queryOnce, write } from '../../firebase/firestore'
+import { arrayAppend, getDocument, write } from '../../firebase/firestore'
 import { useRouter } from 'next/router'
 import { PostType } from '../../components/ui/postItem'
 import ShowImage from '../../components/ui/showImage'
@@ -40,7 +40,7 @@ const EditPost = () => {
   }, [pId])
 
   const loadPost = async (postId: string) => {
-    const post = await getDocument<PostType>({ path: `users/${user.id}/posts`, pathSegments: [postId] })
+    const post = await getDocument<PostType>({ path: `posts`, pathSegments: [postId] })
     if (post) {
       if (post.title) setTitle(post.title)
       if (post.intro) setIntro(post.intro)
@@ -68,10 +68,10 @@ const EditPost = () => {
 
   const onSave = async () => {
     if (docId) {
-      const doc = await write({ path: `users/${user.id}/posts`, existingDocId: docId, data: { title, intro, edState } });
+      await write({ path: `posts`, existingDocId: docId, data: { title, intro, edState, userId: user.id, public: false } });
       console.log(`Updated document id=${docId}`)
     } else {
-      const doc = await write({ path: `users/${user.id}/posts`, data: { title, intro, edState } });
+      const doc = await write({ path: `posts`, data: { title, intro, edState, userId: user.id, public: false } });
       setDocId(doc.id);
       console.log(`doc id=${doc.id}, path=${doc.path}`)
     }
@@ -80,7 +80,7 @@ const EditPost = () => {
   const onFileUpload = async (props: UploadStatusType) => {
     if (!props.status) return;
     if (docState === DOC_STATE_NEW) return;
-    await arrayAppend({ path: `users/${user.id}/posts`, existingDocId: docId, arrayAttribute: "images", newArrayItem: props.filename });
+    await arrayAppend({ path: `posts`, existingDocId: docId, arrayAttribute: "images", newArrayItem: props.filename });
     setImages([...images, props.filename])
     console.log(`Updated document id=${docId}`)
   }
@@ -114,7 +114,6 @@ const EditPost = () => {
                   <Form.Control as="textarea" rows={3} name='intro' value={intro} onChange={onUpdateForm} />
                 </Form.Group>
                 Images <br />
-                {/* <ImagesSection /> */}
                 {[...images].map((x, i) =>
                   <ShowImage size="s" key={x} file={`users/${user.id}/images/${x}`} />
                 )}

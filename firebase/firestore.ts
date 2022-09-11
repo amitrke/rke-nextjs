@@ -1,4 +1,4 @@
-import { AddPrefixToKeys, arrayUnion, deleteDoc, doc, DocumentData, DocumentReference, getDoc, getDocs, getFirestore, onSnapshot, query, QuerySnapshot, updateDoc } from "firebase/firestore";
+import { AddPrefixToKeys, arrayUnion, deleteDoc, doc, DocumentData, DocumentReference, getDoc, getDocs, getFirestore, onSnapshot, query, QueryConstraint, QuerySnapshot, updateDoc } from "firebase/firestore";
 import { initApp } from "./initFirebase";
 import { collection, addDoc } from "firebase/firestore";
 
@@ -9,6 +9,7 @@ type FirestoreParams = {
     path: string;
     pathSegments?: string[];
     converter?: any;
+    queryConstraints?: QueryConstraint[];
 }
 
 type FirestoreSubscribe<T> = FirestoreParams & {
@@ -51,7 +52,8 @@ export const deleteDocument = async (params: FirestoreParams) => {
 }
 
 export const queryOnce = async<T>(params: FirestoreParams): Promise<Array<T>> => {
-    const q = query(collection(db, params.path));
+    if (!params.queryConstraints) params.queryConstraints = []
+    const q = query(collection(db, params.path), ...params.queryConstraints);
     if (params.converter) {
         q.withConverter(params.converter);
     }
@@ -67,7 +69,8 @@ export const queryOnce = async<T>(params: FirestoreParams): Promise<Array<T>> =>
 }
 
 export const subscribeToCollectionUpdates = <T>(params: FirestoreSubscribe<T>) => {
-    const q = query(collection(db, params.path));
+    if (!params.queryConstraints) params.queryConstraints = []
+    const q = query(collection(db, params.path), ...params.queryConstraints);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const items:T[] = [];
         querySnapshot.forEach((doc) => {

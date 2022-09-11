@@ -15,11 +15,12 @@ export type PostType = {
     intro: string;
     edState: string;
     images: string[];
+    userId: string;
 }
 
 const PostItem = (params: DisplayPostParams) => {
     const mainFile = params.post.images && params.post.images.length > 0 ? params.post.images[0] : undefined;
-    const authorId = params.post.path.split("/")[1];
+    const authorId = params.post.userId
     const mainImage = mainFile ? `users/${authorId}/images/${mainFile}` : undefined;
 
     const onDelete = async () => {
