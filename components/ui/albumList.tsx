@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Button, Col, Container, Row } from "react-bootstrap"
 import { subscribeToCollectionUpdates } from "../../firebase/firestore"
 import { useUser } from "../../firebase/useUser"
 import { AlbumType } from "../../pages/account/editAlbum"
@@ -22,12 +23,19 @@ const AlbumList = (params: AlbumListParams) => {
     }, [user])
 
     return (
-        <div>
+        <Container>
             {[...albums].map((x, i) =>
-                <span>{x.id} - {x.name}</span>
-                // <PostItem key={x.id} post={x} confirmModalCB={params.confirmModalCB} />
+                <Row>
+                    <Col>
+                        {x.name}
+                    </Col>
+                    <Col>
+                        <Button variant="primary" href={'/account/editAlbum?id='+x.id}>Edit</Button>{' '}
+                        <Button variant="secondary">Delete</Button>
+                    </Col>
+                </Row>
             )}
-        </div>
+        </Container>
     )
 }
 

@@ -17,21 +17,6 @@ export type PostType = {
     images: string[];
 }
 
-// export const postConverter = {
-//     toFirestore: (post: PostType) => {
-//         return {
-//             title: post.title,
-//             intro: post.intro,
-//             body: post.body,
-//             images: post.images
-//         };
-//     },
-//     fromFirestore: (snapshot, options): PostType => {
-//         const data = snapshot.data(options);
-//         return ({ title: data.title, body: data.body, intro: data.intro, images: data.images });
-//     }
-// };
-
 const PostItem = (params: DisplayPostParams) => {
     const mainFile = params.post.images && params.post.images.length > 0 ? params.post.images[0] : undefined;
     const authorId = params.post.path.split("/")[1];

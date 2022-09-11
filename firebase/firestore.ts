@@ -71,7 +71,9 @@ export const subscribeToCollectionUpdates = <T>(params: FirestoreSubscribe<T>) =
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const items:T[] = [];
         querySnapshot.forEach((doc) => {
-            items.push(<T>doc.data());
+            const item = doc.data();
+            item['id'] = doc.id;
+            items.push(<T>item);
         });
         params.updateCB(items);
     });
