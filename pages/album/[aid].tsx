@@ -12,7 +12,7 @@ const AlbumSSR = (props: AlbumPropType) => {
         <>
             <p>Album: {props.album.name}</p>
             {[...props.album.images].map((x, i) =>
-                <ShowImage file={`users/${props.album.userId}/images/${x}`} />
+                <ShowImage key={x} file={`users/${props.album.userId}/images/${x}`} />
             )}
         </>
     )

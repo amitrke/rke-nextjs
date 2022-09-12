@@ -26,7 +26,7 @@ const AlbumList = (params: AlbumListParams) => {
     return (
         <Container>
             {[...albums].map((x, i) =>
-                <Row>
+                <Row key={x.id}>
                     <Col>
                         {x.name}
                     </Col>
