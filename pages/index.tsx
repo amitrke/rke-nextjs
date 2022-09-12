@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import Link from 'next/link'
 import styles from '../styles/Home.module.css'
 
@@ -7,7 +6,6 @@ export default function Home() {
 
   return (
     <>
-
       <h1 className={styles.title}>
         Welcome to Roorkee.org!
       </h1>
@@ -19,8 +17,7 @@ export default function Home() {
 
       <div className={styles.grid}>
         <Link href="/albums" className={styles.card}>
-          <h3>Photos &rarr;</h3>
-          <p>Town pictures, Lions, Canal, Memories !</p>
+          Photos
         </Link>
 
         <a href="https://nextjs.org/learn" className={styles.card}>
