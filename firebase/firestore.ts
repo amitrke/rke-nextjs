@@ -1,4 +1,4 @@
-import { AddPrefixToKeys, arrayUnion, deleteDoc, doc, DocumentData, DocumentReference, getDoc, getDocs, getFirestore, query, QuerySnapshot, updateDoc } from "firebase/firestore";
+import { AddPrefixToKeys, arrayUnion, deleteDoc, doc, DocumentData, DocumentReference, getDoc, getDocs, getFirestore, onSnapshot, query, QueryConstraint, QuerySnapshot, updateDoc } from "firebase/firestore";
 import { initApp } from "./initFirebase";
 import { collection, addDoc } from "firebase/firestore";
 
@@ -9,6 +9,12 @@ type FirestoreParams = {
     path: string;
     pathSegments?: string[];
     converter?: any;
+    queryConstraints?: QueryConstraint[];
+}
+
+type FirestoreSubscribe<T> = FirestoreParams & {
+    updateCB: (updatedList: T[]) => void,
+    unsubscribe?: () => void,
 }
 
 export type FirestoreWriteParams<T> = FirestoreParams & {
@@ -46,7 +52,8 @@ export const deleteDocument = async (params: FirestoreParams) => {
 }
 
 export const queryOnce = async<T>(params: FirestoreParams): Promise<Array<T>> => {
-    const q = query(collection(db, params.path));
+    if (!params.queryConstraints) params.queryConstraints = []
+    const q = query(collection(db, params.path), ...params.queryConstraints);
     if (params.converter) {
         q.withConverter(params.converter);
     }
@@ -59,6 +66,21 @@ export const queryOnce = async<T>(params: FirestoreParams): Promise<Array<T>> =>
         resp.push(<T>item)
     });
     return resp;
+}
+
+export const subscribeToCollectionUpdates = <T>(params: FirestoreSubscribe<T>) => {
+    if (!params.queryConstraints) params.queryConstraints = []
+    const q = query(collection(db, params.path), ...params.queryConstraints);
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const items:T[] = [];
+        querySnapshot.forEach((doc) => {
+            const item = doc.data();
+            item['id'] = doc.id;
+            items.push(<T>item);
+        });
+        params.updateCB(items);
+    });
+    params.unsubscribe = unsubscribe;
 }
 
 export const getDocument = async<T>(params: FirestoreParams): Promise<T | undefined> => {

@@ -1,3 +1,4 @@
+import { where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { queryOnce } from "../../firebase/firestore";
 import { useUser } from "../../firebase/useUser";
@@ -11,7 +12,7 @@ export type PostListParams = {
 }
 
 const PostList = (params: PostListParams) => {
-    
+
     const [posts, setPosts] = useState<Array<PostType>>([]);
     const { user } = useUser()
 
@@ -19,10 +20,10 @@ const PostList = (params: PostListParams) => {
         updateData();
     }, [user])
 
-    const updateData = async() => {
+    const updateData = async () => {
         if (params.visibility == "private") {
-            if (!user) return;     
-            const dbList = await queryOnce<PostType>({path: `users/${user.id}/posts`})
+            if (!user) return;
+            const dbList = await queryOnce<PostType>({ path: `posts`, queryConstraints: [ where("userId", "==", user.id) ] });
             setPosts(dbList);
         }
     }
