@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "next": "next"
+    "next": "next",
+    "lint:fix": "eslint --fix --ext .tsx"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.6",
