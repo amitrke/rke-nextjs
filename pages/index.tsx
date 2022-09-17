@@ -1,7 +1,6 @@
-import Link from 'next/link'
 import { Container } from 'react-bootstrap'
-import styles from '../styles/Home.module.css'
-
+import initApp from '../firebase/firebaseAdmin';
+import { getRemoteConfigValue } from '../firebase/remoteConfig';
 
 export default function Home() {
 
@@ -217,4 +216,14 @@ export default function Home() {
       </Container>
     </>
   )
+}
+
+/**
+ * This function gets called at build time on server-side.
+ * It won't be called on client-side
+ */
+export async function getStaticProps() {
+  const app = initApp();
+  const val = await getRemoteConfigValue('homeHero');
+  console.log('val', val);
 }
