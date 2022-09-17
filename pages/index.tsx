@@ -1,16 +1,16 @@
-import { Container } from 'react-bootstrap'
-import initApp from '../firebase/firebaseAdmin';
-import { getRemoteConfigValue } from '../firebase/remoteConfig';
 
-export default function Home() {
+import { Container } from 'react-bootstrap'
+import { getDocument } from '../firebase/firestore';
+
+export default function Home({ data }) {
 
   return (
     <>
       <Container>
         <div className="p-4 p-md-5 mb-4 rounded text-bg-dark">
           <div className="col-md-6 px-0">
-            <h1 className="display-4 fst-italic">Title of a longer featured blog post</h1>
-            <p className="lead my-3">Multiple lines of text that form the lede, informing new readers quickly and efficiently about what’s most interesting in this post’s contents.</p>
+            <h1 className="display-4 fst-italic">{data.heroTextMain}</h1>
+            <p className="lead my-3">{data.heroTextDesc}</p>
             <p className="lead mb-0"><a href="#" className="text-white fw-bold">Continue reading...</a></p>
           </div>
         </div>
@@ -223,7 +223,10 @@ export default function Home() {
  * It won't be called on client-side
  */
 export async function getStaticProps() {
-  const app = initApp();
-  const val = await getRemoteConfigValue('homeHero');
-  console.log('val', val);
+  const resp = await getDocument({path: 'appconfig', pathSegments:['homepage']});
+  return {
+    props: {
+      data: resp
+    }
+  }
 }
