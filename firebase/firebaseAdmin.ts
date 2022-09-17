@@ -1,23 +1,25 @@
-import { initializeApp, cert } from 'firebase-admin/app';
-import { getApp } from 'firebase/app';
+import { initializeApp, cert, App, getApp } from 'firebase-admin/app';
 
 const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY
 
-const initApp = () => {
-    const existingApp = getApp();
-    if (existingApp) {
-        return existingApp;
-    }
-    return initializeApp({
-        credential: cert({
+const initApp = (): App => {
+    try{
+        const existingApp = getApp();
+        if (existingApp) {
+            return existingApp;
+        }
+    } catch (err) {
+        return initializeApp({
+            credential: cert({
+                projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+                // https://stackoverflow.com/a/41044630/1332513
+                privateKey: firebasePrivateKey.replace(/\\n/g, '\n'),
+            }),
             projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-            // https://stackoverflow.com/a/41044630/1332513
-            privateKey: firebasePrivateKey.replace(/\\n/g, '\n'),
-        }),
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-        databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL
-    });
+            databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL
+        });
+    }
 }
 
 export default initApp;
