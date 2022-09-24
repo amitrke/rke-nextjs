@@ -1,6 +1,6 @@
-import ShowImage from "../components/ui/showImage";
-import { getDocument } from "../firebase/firestore";
-import { PostType } from "./account/editpost";
+import ShowImage from "../../components/ui/showImage";
+import { getDocument } from "../../firebase/firestore";
+import { PostType } from "../account/editpost";
 import draftToHtml from 'draftjs-to-html';
 
 type PostPropType = {
