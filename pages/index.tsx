@@ -57,7 +57,7 @@ export default function Home({ data, posts }) {
             </h3>
 
             {[...posts].map((x, i) =>
-              <article className="blog-post">
+              <article key={x.id} className="blog-post">
                 <h2 className="blog-post-title mb-1">{x.title}</h2>
                 <p className="blog-post-meta">January 1, 2021 by <a href="#">Mark</a></p>
 
@@ -123,7 +123,6 @@ export default function Home({ data, posts }) {
 export async function getStaticProps() {
   const resp = await getDocument({path: 'appconfig', pathSegments:['homepage']});
   const posts = await queryOnce<PostType>({ path: `posts`, queryConstraints: [where("public", "==", true)] })
-  console.dir(posts);
   return {
     props: {
       data: resp,
