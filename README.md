@@ -6,6 +6,9 @@
 
 ## Development Notes
 
+### Commit messages
+Use icons along with commit messages https://gist.github.com/parmentf/035de27d6ed1dce0b36a
+
 ### Upgrade packages
 
 See https://nextjs.org/docs/upgrading
