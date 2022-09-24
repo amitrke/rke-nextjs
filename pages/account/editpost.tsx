@@ -6,91 +6,85 @@ import ToastMsg, { ToastMsgProps } from '../../components/ui/toastMsg'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { arrayAppend, getDocument, write } from '../../firebase/firestore'
 import { useRouter } from 'next/router'
-import { PostType } from '../../components/ui/postItem'
 import ShowImage from '../../components/ui/showImage'
 
 const Editor = dynamic(() => import("../../components/ui/richTextEditor"), {
   ssr: false
 })
 
+export type PostType = {
+  id: string;
+  title: string;
+  intro: string;
+  edState: string;
+  updateDate: number;
+  images: string[];
+  public: boolean;
+  userId: string;
+}
+
 const EditPost = () => {
   const router = useRouter()
   const { id } = router.query
 
-  const DOC_STATE_NEW = "";
   const [toasts, setToasts] = useState<ToastMsgProps[]>([]);
   const { user } = useUser()
-  const [pId, setPId] = useState<string>();
-  const [title, setTitle] = useState<string>("")
-  const [intro, setIntro] = useState<string>("")
-  const [docId, setDocId] = useState<string>("");
-  const [edState, setEdState] = useState<string>("");
-  const [initEdState, setInitEdState] = useState<string>("");
-  const [images, setImages] = useState<string[]>([]);
-  const [docState, setDocState] = useState<string>(DOC_STATE_NEW);
 
-  if (id && typeof (id) == "string" && !pId) {
-    setPId(id);
+  const [post, setPost] = useState<PostType>({
+    id: "",
+    edState: "",
+    images: [],
+    intro: "",
+    updateDate: (new Date()).getTime(),
+    public: false,
+    title: "",
+    userId: ""
+  })
+
+  if (id && typeof (id) == "string" && post.id === "") {
+    setPost({ ...post, id });
   }
 
   useEffect(() => {
-    if (!pId) return;
-    console.log(`pId change PostID=${pId}`);
-    loadPost(pId);
-  }, [pId])
+    if (!post.id) return;
+    console.log(`Post id change PostID=${post.id}`);
+    loadPost(post.id);
+  }, [post.id])
+
+  useEffect(() => {
+    if (!user) return
+    setPost({ ...post, userId: user.id })
+  }, [user]);
 
   const loadPost = async (postId: string) => {
     const post = await getDocument<PostType>({ path: `posts`, pathSegments: [postId] })
     if (post) {
-      if (post.title) setTitle(post.title)
-      if (post.intro) setIntro(post.intro)
-      if (post.images) setImages(post.images)
-      if (post.edState) setInitEdState(post.edState)
-      setDocId(postId)
+      setPost(post);
     }
   }
-
-
 
   const toastCallback = async (props: ToastMsgProps) => {
     setToasts([...toasts, props]);
   }
 
-  const onUpdateForm = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.currentTarget;
-    if (name == 'title') {
-      setTitle(value);
-    }
-    if (name == 'intro') {
-      setIntro(value);
-    }
-  }
-
   const onSave = async () => {
-    if (docId) {
-      await write({ path: `posts`, existingDocId: docId, data: { title, intro, edState, userId: user.id, public: false } });
-      console.log(`Updated document id=${docId}`)
+    if (post.id) {
+      await write({ path: `posts`, existingDocId: post.id, data: post });
+      console.log(`Updated document id=${post.id}`)
     } else {
-      const doc = await write({ path: `posts`, data: { title, intro, edState, userId: user.id, public: false } });
-      setDocId(doc.id);
+      const doc = await write({ path: `posts`, data: post });
+      setPost({ ...post, id: doc.id });
       console.log(`doc id=${doc.id}, path=${doc.path}`)
     }
   }
 
   const onFileUpload = async (props: UploadStatusType) => {
     if (!props.status) return;
-    if (docState === DOC_STATE_NEW) return;
-    await arrayAppend({ path: `posts`, existingDocId: docId, arrayAttribute: "images", newArrayItem: props.filename });
-    setImages([...images, props.filename])
-    console.log(`Updated document id=${docId}`)
+    if (post.id === "") return;
+    await arrayAppend({ path: `posts`, existingDocId: post.id, arrayAttribute: "images", newArrayItem: props.filename });
+    setPost({ ...post, images: [...post.images, props.filename] })
+    console.log(`Updated document id=${post.id}`)
   }
-
-  useEffect(() => {
-    if (!docId) return;
-    if (docId.length < 1) return;
-    if (docState !== DOC_STATE_NEW) return;
-    setDocState("Draft");
-  }, [docId])
 
   if (user && typeof window !== 'undefined') {
     return (
@@ -107,23 +101,23 @@ const EditPost = () => {
               <Form >
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>Title</Form.Label>
-                  <Form.Control type="Text" placeholder="Content Title" name='title' value={title} onChange={onUpdateForm} />
+                  <Form.Control type="Text" placeholder="Content Title" name='title' value={post.title} onChange={(e) => { setPost({ ...post, title: e.target.value }) }} />
                 </Form.Group>
                 <Form.Group controlId="exampleForm.ControlTextarea1">
                   <Form.Label>Intro</Form.Label>
-                  <Form.Control as="textarea" rows={3} name='intro' value={intro} onChange={onUpdateForm} />
+                  <Form.Control as="textarea" rows={3} name='intro' value={post.intro} onChange={(e) => { setPost({ ...post, intro: e.target.value }) }} />
                 </Form.Group>
                 Images <br />
-                {[...images].map((x, i) =>
+                {[...post.images].map((x, i) =>
                   <ShowImage size="s" key={x} file={`users/${user.id}/images/${x}`} />
                 )}
-                <UploadFile toastCallback={toastCallback} disabled={docState == DOC_STATE_NEW} statusCallback={onFileUpload} />
+                <UploadFile toastCallback={toastCallback} disabled={post.id === ""} statusCallback={onFileUpload} />
                 Body
-                <Editor onEdStateChange={setEdState} initState={initEdState} />
+                <Editor onEdStateChange={(edState) => { setPost({ ...post, edState }) }} initState={post.edState} />
                 <Button variant="primary" onClick={onSave}>
                   Save
                 </Button>
-                State: {docState}
+                <Form.Check type="checkbox" label="Publish to Everyone" checked={post.public} onChange={(e) => { console.log(e.target.value); setPost({ ...post, public: e.target.value === "on" }) }} />
               </Form>
             </div>
             <div className="col col-xxl-2 d-none d-xxl-block border">

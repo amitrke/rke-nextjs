@@ -2,7 +2,8 @@ import { where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { queryOnce } from "../../firebase/firestore";
 import { useUser } from "../../firebase/useUser";
-import PostItem, { PostType } from "./postItem";
+import { PostType } from "../../pages/account/editpost";
+import PostItem from "./postItem";
 import { ShowModalParams } from "./showModal";
 
 export type PostListParams = {
