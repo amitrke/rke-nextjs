@@ -1,8 +1,10 @@
 
 import { where } from 'firebase/firestore';
 import { Container } from 'react-bootstrap'
+import { uiDateFormat } from '../components/ui/uiUtils';
 import { getDocument, queryOnce } from '../firebase/firestore';
 import { PostType } from './account/editpost';
+import { PostDisplayType } from './posts/[id]';
 
 export default function Home({ data, posts }) {
 
@@ -56,10 +58,10 @@ export default function Home({ data, posts }) {
               From the Firehose
             </h3>
 
-            {[...posts].map((x, i) =>
+            {[...posts].map((x: PostDisplayType, i) =>
               <article key={x.id} className="blog-post">
                 <h2 className="blog-post-title mb-1">{x.title}</h2>
-                <p className="blog-post-meta">January 1, 2021 by <a href="#">Mark</a></p>
+                <p className="blog-post-meta">{x.formattedUpdateDate} by <a href="#">Mark</a></p>
 
                 <p>{x.intro}</p>
                 <p><a href={`posts/${x.id}`}>Read more</a></p>
@@ -78,24 +80,14 @@ export default function Home({ data, posts }) {
             <div className="position-sticky">
               <div className="p-4 mb-3 bg-light rounded">
                 <h4 className="fst-italic">About</h4>
-                <p className="mb-0">Customize this section to tell your visitors a little bit about your publication, writers, content, or something else entirely. Totally up to you.</p>
+                <p className="mb-0">Born in 2001, this website is a personal project to bring people of this town together, not affiliated to government / corporation.</p>
               </div>
 
               <div className="p-4">
-                <h4 className="fst-italic">Archives</h4>
+                <h4 className="fst-italic">Recent Posts</h4>
                 <ol className="list-unstyled mb-0">
-                  <li><a href="#">March 2021</a></li>
+                  <li><a href="/posts/m3BbY0r1SfDprLkyUJc6">IIT Roorkee</a></li>
                   <li><a href="#">February 2021</a></li>
-                  <li><a href="#">January 2021</a></li>
-                  <li><a href="#">December 2020</a></li>
-                  <li><a href="#">November 2020</a></li>
-                  <li><a href="#">October 2020</a></li>
-                  <li><a href="#">September 2020</a></li>
-                  <li><a href="#">August 2020</a></li>
-                  <li><a href="#">July 2020</a></li>
-                  <li><a href="#">June 2020</a></li>
-                  <li><a href="#">May 2020</a></li>
-                  <li><a href="#">April 2020</a></li>
                 </ol>
               </div>
 
@@ -123,10 +115,16 @@ export default function Home({ data, posts }) {
 export async function getStaticProps() {
   const resp = await getDocument({path: 'appconfig', pathSegments:['homepage']});
   const posts = await queryOnce<PostType>({ path: `posts`, queryConstraints: [where("public", "==", true)] })
+  const postDisplay = new Array<PostDisplayType>();
+  
+  for (const post of posts) {
+    postDisplay.push({...post, formattedUpdateDate: uiDateFormat(post.updateDate)})
+  }
+
   return {
     props: {
       data: resp,
-      posts: posts || []
+      posts: postDisplay
     }
   }
 }
