@@ -3,6 +3,7 @@ import { where } from 'firebase/firestore';
 import { Container } from 'react-bootstrap'
 import { uiDateFormat } from '../components/ui/uiUtils';
 import { getDocument, queryOnce } from '../firebase/firestore';
+import { User } from '../firebase/types';
 import { PostType } from './account/editpost';
 import { PostDisplayType } from './posts/[id]';
 
@@ -61,8 +62,7 @@ export default function Home({ data, posts }) {
             {[...posts].map((x: PostDisplayType, i) =>
               <article key={x.id} className="blog-post">
                 <h2 className="blog-post-title mb-1">{x.title}</h2>
-                <p className="blog-post-meta">{x.formattedUpdateDate} by <a href="#">Mark</a></p>
-
+                <p className="blog-post-meta">{x.formattedUpdateDate} by <a href={`users/${x.userId}`}>{x.authorName}</a></p>
                 <p>{x.intro}</p>
                 <p><a href={`posts/${x.id}`}>Read more</a></p>
                 <hr />
@@ -116,9 +116,13 @@ export async function getStaticProps() {
   const resp = await getDocument({path: 'appconfig', pathSegments:['homepage']});
   const posts = await queryOnce<PostType>({ path: `posts`, queryConstraints: [where("public", "==", true)] })
   const postDisplay = new Array<PostDisplayType>();
-  
+  const userLookup = {};
   for (const post of posts) {
-    postDisplay.push({...post, formattedUpdateDate: uiDateFormat(post.updateDate)})
+    if (!userLookup[post.userId]){
+      const userInfo = await getDocument({path: 'users', pathSegments:[post.userId]});
+      userLookup[post.userId] = userInfo;
+    }
+    postDisplay.push({...post, formattedUpdateDate: uiDateFormat(post.updateDate), authorName: userLookup[post.userId]['name']})
   }
 
   return {

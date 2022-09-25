@@ -6,6 +6,7 @@ import DOMPurify from 'isomorphic-dompurify';
 
 export type PostDisplayType = PostType & {
     formattedUpdateDate: string;
+    authorName: string;
 }
 
 type PostPropType = {
