@@ -1,7 +1,7 @@
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/database'
 
-export default (req, res) => {
+const fetchCountAPI = (req, res) => {
     const ref = firebase.database().ref('counts').child(req.query.id)
 
     return ref.once('value', (snapshot) => {
@@ -10,3 +10,5 @@ export default (req, res) => {
         })
     })
 }
+
+export default fetchCountAPI;

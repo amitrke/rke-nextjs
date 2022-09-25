@@ -1,5 +1,6 @@
 
 import { where } from 'firebase/firestore';
+import Link from 'next/link';
 import { Container } from 'react-bootstrap'
 import { uiDateFormat } from '../components/ui/uiUtils';
 import { getDocument, queryOnce } from '../firebase/firestore';
@@ -86,7 +87,7 @@ export default function Home({ data, posts }) {
               <div className="p-4">
                 <h4 className="fst-italic">Recent Posts</h4>
                 <ol className="list-unstyled mb-0">
-                  <li><a href="/posts/m3BbY0r1SfDprLkyUJc6">IIT Roorkee</a></li>
+                  <li><Link href="/posts/m3BbY0r1SfDprLkyUJc6">IIT Roorkee</Link></li>
                   <li><a href="#">February 2021</a></li>
                 </ol>
               </div>

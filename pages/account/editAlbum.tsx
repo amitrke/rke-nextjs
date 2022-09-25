@@ -34,7 +34,7 @@ const EditAlbum = () => {
         setAlbumId(id);
     }
 
-    const loadAlbum = async (alId) => {
+    async function loadAlbum (alId) {
         const albumData = await getDocument<AlbumType>({ path: `albums`, pathSegments: [alId], queryConstraints: [where("userId", "==", user.id)] })
         if (albumData) {
             setAlbum(albumData)
@@ -45,7 +45,7 @@ const EditAlbum = () => {
         if (albumId && !album.id) {
             loadAlbum(albumId);
         }
-    }, [albumId])
+    }, [albumId, album.id])
 
     useEffect(() => {
         if (!user) return
