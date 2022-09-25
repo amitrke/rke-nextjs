@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { Container } from 'react-bootstrap'
 import { uiDateFormat } from '../components/ui/uiUtils';
 import { getDocument, queryOnce } from '../firebase/firestore';
-import { User } from '../firebase/types';
 import { PostType } from './account/editpost';
 import { PostDisplayType } from './posts/[id]';
 
@@ -14,7 +13,7 @@ export default function Home({ data, posts }) {
     <>
       <Container>
         <div className="p-4 p-md-5 mb-4 rounded text-bg-dark">
-          <div className="col-md-6 px-0">
+          <div className="col-md-10 px-0">
             <h1 className="display-4 fst-italic">{data.heroTextMain}</h1>
             <p className="lead my-3">{data.heroTextDesc}</p>
             <p className="lead mb-0"><a href="#" className="text-white fw-bold">Continue reading...</a></p>
@@ -26,10 +25,10 @@ export default function Home({ data, posts }) {
             <div className="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
               <div className="col p-4 d-flex flex-column position-static">
                 <strong className="d-inline-block mb-2 text-primary">World</strong>
-                <h3 className="mb-0">Featured post</h3>
+                <h3 className="mb-0">Photo Albums</h3>
                 <div className="mb-1 text-muted">Nov 12</div>
-                <p className="card-text mb-auto">This is a wider card with supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" className="stretched-link">Continue reading</a>
+                <p className="card-text mb-auto">Discover and upload awesome pictures of this beautiful town</p>
+                <a href="/albums/" className="stretched-link">Continue to albums</a>
               </div>
               <div className="col-auto d-none d-lg-block">
                 <svg className="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
