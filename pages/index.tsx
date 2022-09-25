@@ -28,7 +28,7 @@ export default function Home({ data, posts }) {
                 <h3 className="mb-0">Photo Albums</h3>
                 <div className="mb-1 text-muted">Nov 12</div>
                 <p className="card-text mb-auto">Discover and upload awesome pictures of this beautiful town</p>
-                <a href="/albums/" className="stretched-link">Continue to albums</a>
+                <Link href="/albums/" className="stretched-link">Continue to albums</Link>
               </div>
               <div className="col-auto d-none d-lg-block">
                 <svg className="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
