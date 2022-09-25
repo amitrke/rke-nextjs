@@ -104,7 +104,7 @@ const EditAlbum = () => {
                             <Button variant="primary" onClick={onSave}>
                                 Save
                             </Button>
-                            <Form.Check type="checkbox" label="Publish to Everyone" checked={album.public} onChange={(e) => { console.log(e.target.value); setAlbum({ ...album, public: e.target.value === "on" }) }} />
+                            <Form.Check type="checkbox" label="Publish to Everyone" checked={album.public} onChange={(e) => { setAlbum({ ...album, public: e.target.checked }) }} />
                         </Form.Group>
                     </Form>
                 </Col>

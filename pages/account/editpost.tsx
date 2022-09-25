@@ -117,7 +117,7 @@ const EditPost = () => {
                 <Button variant="primary" onClick={onSave}>
                   Save
                 </Button>
-                <Form.Check type="checkbox" label="Publish to Everyone" checked={post.public} onChange={(e) => { console.log(e.target.value); setPost({ ...post, public: e.target.value === "on" }) }} />
+                <Form.Check type="checkbox" label="Publish to Everyone" checked={post.public} onChange={(e) => { setPost({ ...post, public: e.target.checked })  }} />
               </Form>
             </div>
             <div className="col col-xxl-2 d-none d-xxl-block border">

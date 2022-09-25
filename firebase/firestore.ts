@@ -1,4 +1,4 @@
-import { AddPrefixToKeys, arrayUnion, deleteDoc, doc, DocumentData, DocumentReference, getDoc, getDocs, getFirestore, onSnapshot, query, QueryConstraint, QuerySnapshot, updateDoc } from "firebase/firestore";
+import { AddPrefixToKeys, arrayUnion, deleteDoc, doc, DocumentData, DocumentReference, getDoc, getDocs, getFirestore, onSnapshot, query, QueryConstraint, QuerySnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { initApp } from "./initFirebase";
 import { collection, addDoc } from "firebase/firestore";
 
@@ -20,6 +20,7 @@ type FirestoreSubscribe<T> = FirestoreParams & {
 export type FirestoreWriteParams<T> = FirestoreParams & {
     data: any;
     existingDocId?: string;
+    newDocId?: string;
 }
 
 export type FirestoreAppendToArrayParams<T> = FirestoreParams & {
@@ -29,9 +30,13 @@ export type FirestoreAppendToArrayParams<T> = FirestoreParams & {
 }
 
 export const write = async <T>(params: FirestoreWriteParams<T>): Promise<DocumentReference> => {
-    const docRef = params.existingDocId ? doc(db, params.path, params.existingDocId) : await addDoc(collection(db, params.path), params.data);
+    let docRef = params.existingDocId ? doc(db, params.path, params.existingDocId) : await addDoc(collection(db, params.path), params.data);
     if (params.existingDocId) {
         await updateDoc(docRef, params.data);
+    }
+    if (params.newDocId) {
+        docRef = await doc(db, params.path, params.newDocId);
+        await setDoc(docRef, params.data);
     }
     console.debug("Document written with ID: ", docRef.id);
     return docRef;
