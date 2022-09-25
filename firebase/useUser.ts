@@ -10,6 +10,7 @@ import {
 } from './userCookies'
 import { mapUserData } from './mapUserData'
 import { User } from './types'
+import { getDocument, write } from './firestore'
 
 initFirebase()
 
@@ -30,6 +31,12 @@ const useUser = () => {
             })
     }
 
+    const updateUserPublicInfo = async(user: User) => {
+        const dbUser = await getDocument({ path: `users`, pathSegments: [user.id] });
+        if (dbUser) return;
+        await write({ path: `users`, newDocId: user.id, data: {name: user.name, profilePic: user.profilePic || "", updateDate: (new Date()).getTime()} });
+    }
+
     useEffect(() => {
         // Firebase updates the id token every hour, this
         // makes sure the react state and the cookie are
@@ -37,6 +44,7 @@ const useUser = () => {
         const cancelAuthListener = firebase.auth().onIdTokenChanged((user) => {
             if (user) {
                 const userData = mapUserData(user)
+                updateUserPublicInfo(userData);
                 setUserCookie(userData)
                 setUser(userData)
             } else {

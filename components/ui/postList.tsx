@@ -21,7 +21,7 @@ const PostList = (params: PostListParams) => {
         updateData();
     }, [user])
 
-    const updateData = async () => {
+    async function updateData() {
         if (params.visibility == "private") {
             if (!user) return;
             const dbList = await queryOnce<PostType>({ path: `posts`, queryConstraints: [ where("userId", "==", user.id) ] });

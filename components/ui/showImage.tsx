@@ -67,7 +67,7 @@ const ShowImage = (props: ShowImageParams) => {
     }
 
     return (
-        <Image src={imageUrl} width={imageSizeMap[size]['w']} />
+        <Image src={imageUrl} width={imageSizeMap[size]['w']} alt="" />
     )
 }
 

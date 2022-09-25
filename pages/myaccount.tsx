@@ -37,6 +37,7 @@ const MyAccount = () => {
             </Col>
           </Row>
         </Container>
+        <Button onClick={logout}>Logout</Button>
       </>
     )
   }

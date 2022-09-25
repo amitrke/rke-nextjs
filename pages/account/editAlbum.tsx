@@ -34,7 +34,7 @@ const EditAlbum = () => {
         setAlbumId(id);
     }
 
-    const loadAlbum = async (alId) => {
+    async function loadAlbum (alId) {
         const albumData = await getDocument<AlbumType>({ path: `albums`, pathSegments: [alId], queryConstraints: [where("userId", "==", user.id)] })
         if (albumData) {
             setAlbum(albumData)
@@ -45,7 +45,7 @@ const EditAlbum = () => {
         if (albumId && !album.id) {
             loadAlbum(albumId);
         }
-    }, [albumId])
+    }, [albumId, album.id])
 
     useEffect(() => {
         if (!user) return
@@ -104,7 +104,7 @@ const EditAlbum = () => {
                             <Button variant="primary" onClick={onSave}>
                                 Save
                             </Button>
-                            <Form.Check type="checkbox" label="Publish to Everyone" checked={album.public} onChange={(e) => { console.log(e.target.value); setAlbum({ ...album, public: e.target.value === "on" }) }} />
+                            <Form.Check type="checkbox" label="Publish to Everyone" checked={album.public} onChange={(e) => { setAlbum({ ...album, public: e.target.checked }) }} />
                         </Form.Group>
                     </Form>
                 </Col>
