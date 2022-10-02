@@ -1,5 +1,6 @@
 import TopNavigationBar from './nav/TopNavigationBar'
 import styles from '../styles/Home.module.css'
+import Link from 'next/link'
 
 export default function Layout({ children }) {
   return (
@@ -16,7 +17,7 @@ export default function Layout({ children }) {
 function Footer() {
   return (
     <footer className={styles.footer}>
-      Version 0.0.2
+      Version 1.0.0 | &copy; 2022 &nbsp; | &nbsp; <Link href="/disclaimer">Disclaimer</Link>&nbsp;|&nbsp;  <Link href="/privacy">Privacy Policy</Link> &nbsp; |&nbsp;  <Link href="/contact">Contact</Link>
     </footer>
   )
 }
