@@ -1,7 +1,8 @@
 
 import { where } from 'firebase/firestore';
 import Link from 'next/link';
-import { Container } from 'react-bootstrap'
+import { Col, Container, Row } from 'react-bootstrap'
+import { getImageDownloadURL, ShowImageRaw } from '../components/ui/showImage';
 import { uiDateFormat } from '../components/ui/uiUtils';
 import { getDocument, queryOnce } from '../firebase/firestore';
 import { PostType } from './account/editpost';
@@ -13,14 +14,14 @@ export default function Home({ data, posts }) {
     <>
       <Container>
         <div className="p-4 p-md-5 mb-4 rounded text-bg-dark">
-          <div className="col-md-10 px-0">
+          <div className="jumbotron col-md-10 px-0">
             <h1 className="display-4 fst-italic">{data.heroTextMain}</h1>
             <p className="lead my-3">{data.heroTextDesc}</p>
             <p className="lead mb-0"><a href="#" className="text-white fw-bold">Continue reading...</a></p>
           </div>
         </div>
 
-        <div className="row mb-2">
+        <Row className="mb-2">
           <div className="col-md-6">
             <div className="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
               <div className="col p-4 d-flex flex-column position-static">
@@ -51,32 +52,38 @@ export default function Home({ data, posts }) {
               </div>
             </div>
           </div>
-        </div>
+        </Row>
 
-        <div className="row g-5">
-          <div className="col-md-8">
+        <Row className="g-5">
+          <Col md={8}>
             <h3 className="pb-4 mb-4 fst-italic border-bottom">
               From the Firehose
             </h3>
 
             {[...posts].map((x: PostDisplayType, i) =>
-              <article key={x.id} className="blog-post">
-                <h2 className="blog-post-title mb-1">{x.title}</h2>
-                <p className="blog-post-meta">{x.formattedUpdateDate} by <a href={`users/${x.userId}`}>{x.authorName}</a></p>
-                <p>{x.intro}</p>
-                <p><a href={`posts/${x.id}`}>Read more</a></p>
-                <hr />
-                <p>This is some additional paragraph placeholder content. It&apos;s a slightly shorter version of the other highly repetitive body text used throughout.</p>
-              </article>
+                <Row key={x.id} className="blog-post">
+                  <Col md={8}>
+                    <h2 className="blog-post-title mb-1">{x.title}</h2>
+                    <p className="blog-post-meta">{x.formattedUpdateDate} by <a href={`users/${x.userId}`}>{x.authorName}</a></p>
+                    <p>
+                      {x.intro}
+                    </p>
+                    <p><a href={`posts/${x.id}`}>Read more</a></p>
+                  </Col>
+                  <Col md={4}>
+                    <ShowImageRaw size="s" imageUrl={x.images[0]} classes="img-thumbnail imgshadow"/>
+                  </Col>
+                  <hr />
+                </Row>
             )}
             <nav className="blog-pagination" aria-label="Pagination">
               <a className="btn btn-outline-primary rounded-pill" href="#">Older</a>
               <a className="btn btn-outline-secondary rounded-pill disabled">Newer</a>
             </nav>
 
-          </div>
+          </Col>
 
-          <div className="col-md-4">
+          <Col md={4}>
             <div className="position-sticky">
               <div className="p-4 mb-3 bg-light rounded">
                 <h4 className="fst-italic">About</h4>
@@ -100,8 +107,8 @@ export default function Home({ data, posts }) {
                 </ol>
               </div>
             </div>
-          </div>
-        </div>
+          </Col>
+        </Row>
 
       </Container>
     </>
@@ -122,7 +129,13 @@ export async function getStaticProps() {
       const userInfo = await getDocument({path: 'users', pathSegments:[post.userId]});
       userLookup[post.userId] = userInfo;
     }
-    postDisplay.push({...post, formattedUpdateDate: uiDateFormat(post.updateDate), authorName: userLookup[post.userId]['name']})
+    const postImages = [];
+    if (post.images && post.images.length > 0) {
+      const imageUrl = await getImageDownloadURL({ file: `users/${post.userId}/images/${post.images[0]}`, size: 's'});
+      postImages.push(imageUrl);
+    }
+    // console.log(postImages);
+    postDisplay.push({...post, images: postImages, formattedUpdateDate: uiDateFormat(post.updateDate), authorName: userLookup[post.userId]['name']})
   }
 
   return {
