@@ -8,6 +8,7 @@ export type ImageDownloadParams = {
 }
 export type ShowImageParams = ImageDownloadParams & {
     imageUrl?: string;
+    classes?: string;
 }
 
 const imageSizeMap = {
@@ -43,6 +44,7 @@ export async function getImageDownloadURL(params: ImageDownloadParams): Promise<
 
 const ShowImage = (props: ShowImageParams) => {
     const size = props.size ? props.size : "m";
+    let classes = props.classes ? props.classes : "";
     const [imageUrl, setImageUrl] = useState<string>();
 
     const getUrl = async () => {
@@ -58,7 +60,18 @@ const ShowImage = (props: ShowImageParams) => {
 
     getUrl();
 
-    if (!imageUrl) {
+    if (size === "s" && classes.indexOf("img-thumbnail") === -1) {
+        classes += " img-thumbnail";
+    }
+
+    return (
+        <ShowImageRaw imageUrl={imageUrl} size={size} classes={classes} />
+    )
+}
+
+export const ShowImageRaw = (props: ShowImageParams) => {
+
+    if (!props.imageUrl) {
         return (
             <div>
                 Placeholder
@@ -67,7 +80,7 @@ const ShowImage = (props: ShowImageParams) => {
     }
 
     return (
-        <Image src={imageUrl} width={imageSizeMap[size]['w']} alt="" />
+        <Image src={props.imageUrl} width={imageSizeMap[props.size]['w']} alt="" className={props.classes}/>
     )
 }
 
