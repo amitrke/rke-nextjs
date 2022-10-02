@@ -15,12 +15,12 @@ export default function Disclaimer() {
                 <li><strong>Company</strong> (referred to as either &quot;the Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Disclaimer) refers to Roorkee.org.</li>
                 <li><strong>Service</strong> refers to the Website.</li>
                 <li><strong>You</strong> means the individual accessing the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.</li>
-                <li><strong>Website</strong> refers to Roorkee.org, accessible from <a href="http://www.roorkee.org" rel="external nofollow noopener" target="_blank">http://www.roorkee.org</a></li>
+                <li><strong>Website</strong> refers to Roorkee.org, accessible from <a href="http://www.roorkee.org" rel="noreferrer external nofollow noopener" target="_blank">http://www.roorkee.org</a></li>
             </ul>
             <h1>Disclaimer</h1>
             <p>The information contained on the Service is for general information purposes only.</p>
             <p>The Company assumes no responsibility for errors or omissions in the contents of the Service.</p>
-            <p>In no event shall the Company be liable for any special, direct, indirect, consequential, or incidental damages or any damages whatsoever, whether in an action of contract, negligence or other tort, arising out of or in connection with the use of the Service or the contents of the Service. The Company reserves the right to make additions, deletions, or modifications to the contents on the Service at any time without prior notice. This Disclaimer has been created with the help of the <a href="https://www.termsfeed.com/disclaimer-generator/" target="_blank">TermsFeed Disclaimer Generator</a>.</p>
+            <p>In no event shall the Company be liable for any special, direct, indirect, consequential, or incidental damages or any damages whatsoever, whether in an action of contract, negligence or other tort, arising out of or in connection with the use of the Service or the contents of the Service. The Company reserves the right to make additions, deletions, or modifications to the contents on the Service at any time without prior notice. This Disclaimer has been created with the help of the <a href="https://www.termsfeed.com/disclaimer-generator/" rel="noreferrer" target="_blank">TermsFeed Disclaimer Generator</a>.</p>
             <p>The Company does not warrant that the Service is free of viruses or other harmful components.</p>
             <h1>External Links Disclaimer</h1>
             <p>The Service may contain links to external websites that are not provided or maintained by or in any way affiliated with the Company.</p>
@@ -44,7 +44,7 @@ export default function Disclaimer() {
             <h1>Contact Us</h1>
             <p>If you have any questions about this Disclaimer, You can contact Us:</p>
             <ul>
-                <li>By visiting this page on our website: <a href="http://www.roorkee.org/contact" rel="external nofollow noopener" target="_blank">http://www.roorkee.org/contact</a></li>
+                <li>By visiting this page on our website: <a href="http://www.roorkee.org/contact" rel="external nofollow noopener noreferrer" target="_blank">http://www.roorkee.org/contact</a></li>
             </ul>
         </Container>
     );
