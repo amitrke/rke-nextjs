@@ -1,4 +1,5 @@
 import '../styles/globals.css'
+import '../styles/main.scss'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Layout from '../components/layout'
 import { SSRProvider } from '@react-aria/ssr';
