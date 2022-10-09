@@ -15,8 +15,7 @@ const PostItem = (params: DisplayPostParams) => {
     const mainImage = mainFile ? `users/${authorId}/images/${mainFile}` : undefined;
 
     const onDelete = async () => {
-        //await deleteDocument({ path: params.post.path });
-        console.log("Fix onDelete")
+        await deleteDocument({ path: `posts/${params.post.id}` });
     }
 
     const onDeleteClick = () => {

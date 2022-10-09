@@ -1,6 +1,6 @@
 import { where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { queryOnce } from "../../firebase/firestore";
+import { subscribeToCollectionUpdates } from "../../firebase/firestore";
 import { useUser } from "../../firebase/useUser";
 import { PostType } from "../../pages/account/editpost";
 import PostItem from "./postItem";
@@ -18,16 +18,10 @@ const PostList = (params: PostListParams) => {
     const { user } = useUser()
 
     useEffect(() => {
-        updateData();
-    }, [user])
-
-    async function updateData() {
-        if (params.visibility == "private") {
-            if (!user) return;
-            const dbList = await queryOnce<PostType>({ path: `posts`, queryConstraints: [ where("userId", "==", user.id) ] });
-            setPosts(dbList);
+        if (user) {
+            subscribeToCollectionUpdates<PostType>({ path: `posts`, updateCB: setPosts, queryConstraints: [ where("userId", "==", user.id) ] })
         }
-    }
+    }, [user])
 
     return (
         <div>
