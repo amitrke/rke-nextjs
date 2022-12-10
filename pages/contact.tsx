@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
+import { useUser } from "../firebase/useUser";
 
 export default function Contact() {
     const [validated, setValidated] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const { user } = useUser();
 
     const handleSubmit = (event) => {
         const form = event.currentTarget;
@@ -23,7 +25,7 @@ export default function Contact() {
                 <Form validated={validated} onSubmit={handleSubmit}>
                     <Form.Group className="mb-3" controlId="formName">
                         <Form.Label>Name</Form.Label>
-                        <Form.Control required type="text" placeholder="Enter your name" />
+                        <Form.Control required type="text" placeholder="Enter your name" value={user?.name} />
                         <Form.Text className="text-muted">
                             Your Name.
                         </Form.Text>
@@ -43,7 +45,7 @@ export default function Contact() {
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>Email address</Form.Label>
-                        <Form.Control required type="email" placeholder="Enter email" />
+                        <Form.Control required type="email" placeholder="Enter email" value={user?.email} />
                         <Form.Text className="text-muted">
                             We&apos;ll never share your email with anyone else.
                         </Form.Text>
