@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
+import { write } from "../firebase/firestore";
+import { MessageType } from "../firebase/types";
 import { useUser } from "../firebase/useUser";
 
 export default function Contact() {
@@ -7,13 +9,18 @@ export default function Contact() {
     const [submitted, setSubmitted] = useState(false);
     const { user } = useUser();
 
-    const handleSubmit = (event) => {
+    const [message, setMessage] = useState<MessageType>({
+        fromUserId: '', title: '', body: '', updateDate: (new Date()).getTime(), toUserId: '', state: 'unread', thread: ''
+    })
+
+    const handleSubmit = async (event) => {
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
             event.preventDefault();
             event.stopPropagation();
         }
 
+        const doc = await write({ path: `messages`, data: message });
         setValidated(true);
         setSubmitted(true);
     };
@@ -25,7 +32,7 @@ export default function Contact() {
                 <Form validated={validated} onSubmit={handleSubmit}>
                     <Form.Group className="mb-3" controlId="formName">
                         <Form.Label>Name</Form.Label>
-                        <Form.Control required type="text" placeholder="Enter your name" value={user?.name} />
+                        <Form.Control required type="text" placeholder="Enter your name" value={album.name} onChange={(e) => { setAlbum({ ...album, name: e.target.value }) }} />
                         <Form.Text className="text-muted">
                             Your Name.
                         </Form.Text>
