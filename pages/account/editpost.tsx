@@ -21,6 +21,7 @@ export type PostType = {
   images: string[];
   public: boolean;
   userId: string;
+  category: string;
 }
 
 const EditPost = () => {
@@ -38,7 +39,8 @@ const EditPost = () => {
     updateDate: (new Date()).getTime(),
     public: false,
     title: "",
-    userId: ""
+    userId: "",
+    category: "town"
   })
 
   if (id && typeof (id) == "string" && post.id === "") {
@@ -86,54 +88,61 @@ const EditPost = () => {
     console.log(`Updated document id=${post.id}`)
   }
 
-  if (user && typeof window !== 'undefined') {
-    return (
-      <>
-        {[...toasts].map((x, i) =>
-          <ToastMsg key={x.body} header={x.header} body={x.body} />
-        )}
-        <Container fluid>
-          <Row>
-            <div className="col col-lg-2 d-none d-md-block border">
-              Column 1
-            </div>
-            <div className="col col-xxl border">
-              <Form >
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>Title</Form.Label>
-                  <Form.Control type="Text" placeholder="Content Title" name='title' value={post.title} onChange={(e) => { setPost({ ...post, title: e.target.value }) }} />
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlTextarea1">
-                  <Form.Label>Intro</Form.Label>
-                  <Form.Control as="textarea" rows={3} name='intro' value={post.intro} onChange={(e) => { setPost({ ...post, intro: e.target.value }) }} />
-                </Form.Group>
-                Images <br />
-                {[...post.images].map((x, i) =>
-                  <ShowImage size="s" key={x} file={`users/${user.id}/images/${x}`} />
-                )}
-                <UploadFile toastCallback={toastCallback} disabled={post.id === ""} statusCallback={onFileUpload} />
-                Body
-                <Editor onEdStateChange={(edState) => { setPost({ ...post, edState }) }} initState={post.edState} />
-                <Button variant="primary" onClick={onSave}>
-                  Save
-                </Button>
-                <Form.Check type="checkbox" label="Publish to Everyone" checked={post.public} onChange={(e) => { setPost({ ...post, public: e.target.checked })  }} />
-              </Form>
-            </div>
-            <div className="col col-xxl-2 d-none d-xxl-block border">
-              Column 3
-            </div>
-          </Row>
-        </Container>
-      </>
-    )
-  }
-  else {
-    return (
-      <>
-      </>
-    )
-  }
+  return (
+    <>
+      {[...toasts].map((x, i) =>
+        <ToastMsg key={x.body} header={x.header} body={x.body} />
+      )}
+      <Container fluid>
+        <Row className={!user ? 'hidden' : undefined}>
+          <div className="col col-lg-2 d-none d-md-block border">
+            Column 1
+          </div>
+          <div className="col col-xxl border">
+            <Form >
+              <Form.Group controlId="editForm.title">
+                <Form.Label>Title</Form.Label>
+                <Form.Control type="Text" placeholder="Content Title" name='title' value={post.title} onChange={(e) => { setPost({ ...post, title: e.target.value }) }} />
+              </Form.Group>
+              <Form.Group controlId="editForm.intro">
+                <Form.Label>Intro</Form.Label>
+                <Form.Control as="textarea" rows={3} name='intro' value={post.intro} onChange={(e) => { setPost({ ...post, intro: e.target.value }) }} />
+              </Form.Group>
+              <Form.Group controlId="editForm.category">
+                <Form.Label>Category</Form.Label>
+                <Form.Select value={post.category} 
+                  onChange={(e) => { setPost({ ...post, category: e.target.value }) }}>
+                  <option value={"town"}>Town</option>
+                  <option value={"blog"}>Blog</option>
+                  <option value={"recipe"}>Recipe</option>
+                  <option value={"event"}>Event</option>
+                  <option value={"news"}>News</option>
+                  <option value={"business"}>Business</option>
+                </Form.Select>
+              </Form.Group>
+              Images <br />
+              {[...post.images].map((x, i) =>
+                <ShowImage size="s" key={x} file={`users/${user.id}/images/${x}`} />
+              )}
+              <UploadFile toastCallback={toastCallback} disabled={post.id === ""} statusCallback={onFileUpload} />
+              Body
+              <Editor onEdStateChange={(edState) => { setPost({ ...post, edState }) }} initState={post.edState} />
+              <Button variant="primary" onClick={onSave}>
+                Save
+              </Button>
+              <Form.Check type="checkbox" label="Publish to Everyone" checked={post.public} onChange={(e) => { setPost({ ...post, public: e.target.checked }) }} />
+            </Form>
+          </div>
+          <div className="col col-xxl-2 d-none d-xxl-block border">
+            Column 3
+          </div>
+        </Row>
+        <Row className={user ? 'hidden' : undefined}>
+          <p>Please login!</p>
+        </Row>
+      </Container>
+    </>
+  )
 }
 
 EditPost.noSSR = true;
