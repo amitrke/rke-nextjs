@@ -3,14 +3,15 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
 export type ShowModalParams = {
-    yesCallback: () => Promise<void>
-    noCallback?: () => Promise<void>
+    yesCallback: (params?: any) => Promise<void>
+    noCallback?: (params?: any) => Promise<void>
     yesLabel?: string
     noLabel?: string
     heading?: string
     body?: string
     show: boolean
     changeTrigger?: Date
+    callbackParams?: any
 }
 
 const ShowModal = (props: ShowModalParams) => {
@@ -19,7 +20,7 @@ const ShowModal = (props: ShowModalParams) => {
   const handleClose = () => setShow(false);
 
   const onYes = () => {
-    props.yesCallback();
+    props.yesCallback(props.callbackParams);
     handleClose();
   }
 
