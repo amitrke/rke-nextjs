@@ -1,7 +1,7 @@
 import { where } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { Button, Col, Container, Row } from "react-bootstrap"
-import { subscribeToCollectionUpdates } from "../../firebase/firestore"
+import { deleteDocument, subscribeToCollectionUpdates } from "../../firebase/firestore"
 import { useUser } from "../../firebase/useUser"
 import { AlbumType } from "../../pages/account/editAlbum"
 import { ShowModalParams } from "./showModal"
@@ -23,6 +23,14 @@ const AlbumList = (params: AlbumListParams) => {
         }
     }, [user])
 
+    const onDelete = async (params: any) => {
+        await deleteDocument({ path: `albums/${params.itemToDelete}` });
+    }
+
+    const onDeleteClick = (itemToDelete: string) => {
+        params.confirmModalCB({ show: true, yesCallback: () => onDelete({ itemToDelete }) });
+    }
+
     return (
         <Container>
             {[...albums].map((x, i) =>
@@ -32,7 +40,7 @@ const AlbumList = (params: AlbumListParams) => {
                     </Col>
                     <Col>
                         <Button variant="primary" href={'/account/editAlbum?id='+x.id}>Edit</Button>{' '}
-                        <Button variant="secondary">Delete</Button>
+                        <Button variant="secondary" onClick={() => onDeleteClick(x.id)}>Delete</Button>
                     </Col>
                 </Row>
             )}
