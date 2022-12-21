@@ -36,7 +36,7 @@ const PostItem = (params: DisplayPostParams) => {
             </Row>
             <Row className="border-top">
                 <Col>
-                    State: Draft
+                    Public: {params.post.public.toString()}
                 </Col>
                 <Col>
                     <Button variant="primary" href={'/account/editpost?id='+params.post.id}>Edit</Button>{' '}
