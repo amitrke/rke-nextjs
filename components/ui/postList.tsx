@@ -1,5 +1,6 @@
 import { where } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { CardGroup, Container } from "react-bootstrap";
 import { subscribeToCollectionUpdates } from "../../firebase/firestore";
 import { useUser } from "../../firebase/useUser";
 import { PostType } from "../../pages/account/editpost";
@@ -24,11 +25,11 @@ const PostList = (params: PostListParams) => {
     }, [user])
 
     return (
-        <div>
+        <CardGroup>
             {[...posts].map((x, i) =>
                 <PostItem key={x.id} post={x} confirmModalCB={params.confirmModalCB} />
             )}
-        </div>
+        </CardGroup>
     )
 }
 
