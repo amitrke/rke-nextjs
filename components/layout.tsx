@@ -17,7 +17,7 @@ export default function Layout({ children }) {
 function Footer() {
   return (
     <footer className={styles.footer}>
-      Version 1.0.0 | &copy; 2022 &nbsp; | &nbsp; <Link href="/disclaimer">Disclaimer</Link>&nbsp;|&nbsp;  <Link href="/privacy">Privacy Policy</Link> &nbsp; |&nbsp;  <Link href="/contact">Contact</Link>
+      &copy; 2023 &nbsp;|&nbsp; <Link href="/disclaimer">Disclaimer</Link>&nbsp;|&nbsp;  <Link href="/privacy">Privacy Policy</Link> &nbsp; |&nbsp;  <Link href="/contact">Contact</Link>
     </footer>
   )
 }
