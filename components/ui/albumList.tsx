@@ -1,9 +1,10 @@
 import { where } from "firebase/firestore"
 import { useEffect, useState } from "react"
-import { Button, Col, Container, Row } from "react-bootstrap"
-import { deleteDocument, subscribeToCollectionUpdates } from "../../firebase/firestore"
+import { CardGroup } from "react-bootstrap"
+import { subscribeToCollectionUpdates } from "../../firebase/firestore"
 import { useUser } from "../../firebase/useUser"
 import { AlbumType } from "../../pages/account/editAlbum"
+import AlbumListItem from "./albumListItem"
 import { ShowModalParams } from "./showModal"
 
 export type AlbumListParams = {
@@ -23,28 +24,12 @@ const AlbumList = (params: AlbumListParams) => {
         }
     }, [user])
 
-    const onDelete = async (params: any) => {
-        await deleteDocument({ path: `albums/${params.itemToDelete}` });
-    }
-
-    const onDeleteClick = (itemToDelete: string) => {
-        params.confirmModalCB({ show: true, yesCallback: () => onDelete({ itemToDelete }) });
-    }
-
     return (
-        <Container>
+        <CardGroup>
             {[...albums].map((x, i) =>
-                <Row key={x.id}>
-                    <Col>
-                        {x.name}
-                    </Col>
-                    <Col>
-                        <Button variant="primary" href={'/account/editAlbum?id='+x.id}>Edit</Button>{' '}
-                        <Button variant="secondary" onClick={() => onDeleteClick(x.id)}>Delete</Button>
-                    </Col>
-                </Row>
+                <AlbumListItem album={x} confirmModalCB={params.confirmModalCB} key={x.id} />
             )}
-        </Container>
+        </CardGroup>
     )
 }
 

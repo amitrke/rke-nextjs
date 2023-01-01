@@ -20,7 +20,6 @@ export default function Albums(props: AlbumPropType) {
                     {[...props.dbList].map((x, i) =>
                         <div className="col" key={x.id}>
                             <Card key={x.id} style={{ width: '18rem' }}>
-                                {/* <Card.Img variant="top" src="holder.js/100px180" /> */}
                                 <ShowImage size="s" file={`users/${x.userId}/images/${x.images[0]}`} />
                                 <Card.Body>
                                     <Card.Title>{x.name}</Card.Title>
