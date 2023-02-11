@@ -22,7 +22,31 @@ const imageSizeMap = {
     },
     l: {
         w: 1920,
-        h: 1280
+        h: 1080
+    }
+}
+
+export type ImageDownloadURLResponse = {
+    key: string;
+    url: string;
+    size: string;
+    error?: string;
+}
+
+export async function getImageDownloadURLV2(params: ImageDownloadParams): Promise<ImageDownloadURLResponse> {
+    const storage = getStorage();
+    const filenameParts = params.file.split(".");
+    const fileExtention = filenameParts.pop();
+    const size = params.size ? params.size : "m";
+    const fileName = `${filenameParts[0]}_${imageSizeMap[size]['w']}x${imageSizeMap[size]['h']}.${fileExtention}`;
+    try {
+        const downloadUrl = await getDownloadURL(ref(storage, fileName));
+        if (downloadUrl) {
+            return {url: downloadUrl, key: params.file, size: size };
+        }
+    } catch (err) {
+        console.error(err)
+        return {url: '/no-image.png', key: params.file, size: size, error: err.message };
     }
 }
 
@@ -80,7 +104,7 @@ export const ShowImageRaw = (props: ShowImageParams) => {
     }
 
     return (
-        <Image src={props.imageUrl} width={imageSizeMap[props.size]['w']} alt="" className={props.classes}/>
+        <Image src={props.imageUrl} alt="" className={props.classes}/>
     )
 }
 
