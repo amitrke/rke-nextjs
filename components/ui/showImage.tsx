@@ -104,7 +104,7 @@ export const ShowImageRaw = (props: ShowImageParams) => {
     }
 
     return (
-        <Image src={props.imageUrl} alt="" className={props.classes}/>
+        <Image src={props.imageUrl} alt="" className={props.classes} width="100%"/>
     )
 }
 
