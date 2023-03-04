@@ -62,6 +62,7 @@ const EditAlbum = () => {
             const doc = await write({ path: `albums`, existingDocId: albumId, data: album });
             console.log(`Updated document id=${doc.id}`)
         }
+        toastCallback({body: 'Album Updated!', header: "Album"});
     }
 
     const toastCallback = async (props: ToastMsgProps) => {
@@ -74,6 +75,12 @@ const EditAlbum = () => {
         await arrayAppend({ path: `albums`, existingDocId: albumId, arrayAttribute: "images", newArrayItem: props.filename });
         setAlbum({ ...album, images: [...album.images, props.filename] })
         console.log(`Updated document id=${albumId}`)
+    }
+
+    const onFileDelete = async (image: string) => {
+        //Delete image from album
+        const newImages = album.images.filter(x => x !== image);
+        setAlbum({ ...album, images: newImages })
     }
 
     return (
@@ -111,9 +118,16 @@ const EditAlbum = () => {
             </Row>
             <Row>
                 <Col>
-                    Images
+                    <h3>Images</h3>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
                     {[...album.images].map((x, i) =>
-                        <ShowImage size="s" key={x} file={`users/${user.id}/images/${x}`} />
+                        <div style={{ maxWidth: "200px", float: "left" }} key={x}>
+                            <ShowImage size="s" file={`users/${user.id}/images/${x}`} />
+                            <Button variant="danger" onClick={() => onFileDelete(x)} >Delete</Button>
+                        </div>
                     )}
                 </Col>
             </Row>
