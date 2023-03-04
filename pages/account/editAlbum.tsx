@@ -124,8 +124,8 @@ const EditAlbum = () => {
             <Row>
                 <Col>
                     {[...album.images].map((x, i) =>
-                        <div style={{ maxWidth: "200px", float: "left" }}>
-                            <ShowImage size="s" key={x} file={`users/${user.id}/images/${x}`} />
+                        <div style={{ maxWidth: "200px", float: "left" }} key={x}>
+                            <ShowImage size="s" file={`users/${user.id}/images/${x}`} />
                             <Button variant="danger" onClick={() => onFileDelete(x)} >Delete</Button>
                         </div>
                     )}
