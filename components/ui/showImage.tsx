@@ -1,6 +1,6 @@
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { useState } from "react";
-import { Figure, Image } from "react-bootstrap";
+import { Image } from "react-bootstrap";
 
 export type ImageDownloadParams = {
     file?: string;
@@ -104,7 +104,7 @@ export const ShowImageRaw = (props: ShowImageParams) => {
     }
 
     return (
-        <Image src={props.imageUrl} alt="" className={props.classes} width="100%"/>
+        <Image src={props.imageUrl} alt="" className={props.classes} fluid/>
     )
 }
 
