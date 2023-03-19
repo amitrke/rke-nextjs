@@ -17,7 +17,7 @@ export default function Home({ data, posts }) {
           <div className="jumbotron col-md-10 px-0">
             <h1 className="display-4 fst-italic">{data.heroTextMain}</h1>
             <p className="lead my-3">{data.heroTextDesc}</p>
-            <p className="lead mb-0"><a href="#" className="text-white fw-bold">Continue reading...</a></p>
+            <p className="lead mb-0"><Link href="/weather/roorkee-in" className="text-white fw-bold">Weather forcast...</Link></p>
           </div>
         </div>
 
