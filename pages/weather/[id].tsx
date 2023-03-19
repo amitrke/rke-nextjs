@@ -146,7 +146,7 @@ export async function getServerSideProps({ req, res, query }) {
     const weatherDoc = await getDocument<Weather>({ path: `weather`, pathSegments: [id] })
     res.setHeader(
         'Cache-Control',
-        'public, s-maxage=10, stale-while-revalidate=59'
+        'public, s-maxage=3600, stale-while-revalidate=59'
     )
 
     return {
