@@ -4,17 +4,17 @@ import { getDocument } from '../../firebase/firestore';
 import { uiRound } from '../../components/ui/uiUtils';
 
 function dateTimeFormat(date: number, timezone_offset: number, timeZone: string): string {
-    const d = new Date((date + timezone_offset) * 1000);
-    return d.toLocaleString('en-IN', { timeZone });
+    const d = new Date(date * 1000);
+    return d.toLocaleString('en-IN', { timeZone, weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' });
 }
 
 function timeFormat(date: number, timezone_offset: number, timeZone: string): string {
-    const d = new Date((date + timezone_offset) * 1000);
+    const d = new Date(date * 1000);
     return d.toLocaleString('en-IN', {hour: '2-digit', minute:'2-digit', timeZone });
 }
 
 function dayOfWeekFormat(date: number, timezone_offset: number, timeZone: string): string {
-    const d = new Date((date + timezone_offset) * 1000);
+    const d = new Date(date * 1000);
     return d.toLocaleString('en-IN', { timeZone, weekday: 'short' });
 }
 
