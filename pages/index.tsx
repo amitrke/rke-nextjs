@@ -1,23 +1,42 @@
 
 import { where } from 'firebase/firestore';
 import Link from 'next/link';
-import { Col, Container, Row } from 'react-bootstrap'
+import { useEffect, useState } from 'react';
+import { Col, Container, Image, Row } from 'react-bootstrap'
 import { getImageDownloadURL, ShowImageRaw } from '../components/ui/showImage';
-import { uiDateFormat } from '../components/ui/uiUtils';
+import { uiDateFormat, uiRound } from '../components/ui/uiUtils';
 import { getDocument, queryOnce } from '../firebase/firestore';
 import { PostType } from './account/editpost';
 import { PostDisplayType } from './posts/[id]';
+import { Weather } from './weather/[id]';
 
 export default function Home({ data, posts }) {
+
+  const [weather, setWeather] = useState({} as Weather)
+  const [weatherText, setWeatherText] = useState('' as string)
+  const [weatherImg, setWeatherImg] = useState('' as string)
+
+  useEffect(() => {
+    getDocument<Weather>({ path: `weather`, pathSegments: ['roorkee-in'] }).then((w: Weather) => {
+      setWeather(w);
+    })
+  }, []);
+
+  useEffect(() => {
+    if (weather.current) {
+      setWeatherText(`${uiRound(weather.current.temp,1)}°C, ${weather.current.weather[0].description}`);
+      setWeatherImg('https://openweathermap.org/img/wn/' + weather.current.weather[0].icon + '@2x.png');
+    }
+  }, [weather]);
 
   return (
     <>
       <Container>
         <div className="p-4 p-md-5 mb-4 rounded text-bg-dark">
           <div className="jumbotron col-md-10 px-0">
-            <h1 className="display-4 fst-italic">{data.heroTextMain}</h1>
+            <h1 className="display-4 fst-italic">{weatherText}<Image className='d-none d-md-inline' src={weatherImg} /></h1>
             <p className="lead my-3">{data.heroTextDesc}</p>
-            <p className="lead mb-0"><Link href="/weather/roorkee-in" className="text-white fw-bold">Weather forcast...</Link></p>
+            <p className="lead mb-0"><Link href="/weather/roorkee-in" className="text-white fw-bold">Detailed weather forcast...</Link></p>
           </div>
         </div>
 
