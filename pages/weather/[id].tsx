@@ -67,7 +67,7 @@ type CurrentWeather = CommonWeather & {
     temp: number;
 }
 
-type Weather = {
+export type Weather = {
     lat: number;
     lon: number;
     timezone: string;
