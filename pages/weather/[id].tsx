@@ -98,15 +98,32 @@ function CurrentWeatherWidget(props: CurrentWeather) {
     )
 }
 
+function divClass(i: number) {
+    let divClass = "flex-column ";
+    if (i > 2) {
+        divClass += "d-none ";
+    }
+    if (i >= 3 && i <= 5) {
+        divClass += "d-md-block";
+    }
+    if (i >= 6 && i <= 8) {
+        divClass += "d-lg-block";
+    }
+    if (i >= 9 && i <= 11) {
+        divClass += "d-xl-block";
+    }
+    return divClass;
+}
+
 //Hourly Weather Widget
 function HourlyWeatherWidget(props: Weather) {
     return (
         <Card className="mb-4 gradient-custom" style={{ borderRadius: "25px" }}>
             <Card.Body className="p-4">
                 <div className="d-flex justify-content-around text-center mb-4 pb-3 pt-2">
-                    {[...props.hourly].slice(1, 7).map((hrWthr, i) =>
+                    {[...props.hourly].map((hrWthr, i) =>
                         // Hide div for small screens when i > 2
-                        <div className={"flex-column " + (i > 2 ? "d-none d-md-block" : "")} key={i}>
+                        <div className={divClass(i)} key={i}>
                             <p className="small"><strong>{uiRound(hrWthr.temp, 1)}°C</strong></p>
                             <Image src={'https://openweathermap.org/img/wn/' + hrWthr.weather[0].icon + '@2x.png'} />
                             <p className="mb-0"><strong>{timeFormat(hrWthr.dt, props.timezone_offset, props.timezone)}</strong></p>
@@ -124,8 +141,8 @@ function DailyWeatherWidget(props: Weather) {
         <Card className="mb-4 gradient-custom" style={{ borderRadius: "25px" }}>
             <Card.Body className="p-4">
                 <div className="d-flex justify-content-around text-center mb-4 pb-3 pt-2">
-                    {[...props.daily].slice(1, 6).map((dlWthr, i) =>
-                        <div className={"flex-column " + (i > 2 ? "d-none d-md-block" : "")} key={i}>
+                    {[...props.daily].map((dlWthr, i) =>
+                        <div className={divClass(i)} key={i}>
                             <p className="small"><strong>{uiRound(dlWthr.temp.day, 1)}°C</strong></p>
                             <Image src={'https://openweathermap.org/img/wn/' + dlWthr.weather[0].icon + '@2x.png'} />
                             <p className="mb-0"><strong>{dayOfWeekFormat(dlWthr.dt, props.timezone_offset, props.timezone)}</strong></p>
@@ -141,7 +158,7 @@ export default function Weather(props: Weather) {
     return (
         <Container fluid className="vh-100" style={{ backgroundColor: '#C1CFEA' }}>
             <Row className="h-100 d-flex justify-content-center align-items-center" style={{ color: '#282828' }}>
-                <Col md={9} lg={7} xl={5}>
+                <Col>
                     <CurrentWeatherWidget {...props.current} />
                     <HourlyWeatherWidget {...props} />
                     <DailyWeatherWidget {...props} />
