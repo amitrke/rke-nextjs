@@ -28,7 +28,6 @@ Use icons along with commit messages https://gist.github.com/parmentf/035de27d6e
 See https://nextjs.org/docs/upgrading
 
 ```
-yarn add react@latest react-dom@latest
-yarn add next@12
+yarn add next@latest react@latest react-dom@latest eslint-config-next@latest
 npx npm-check-updates -u
 ```
