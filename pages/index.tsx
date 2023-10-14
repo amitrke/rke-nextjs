@@ -1,5 +1,5 @@
 
-import { where } from 'firebase/firestore';
+import { limit, or, orderBy, where } from 'firebase/firestore';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Col, Container, Image, Row } from 'react-bootstrap'
@@ -83,7 +83,7 @@ export default function Home({ data, posts }) {
                 <Row key={x.id} className="blog-post">
                   <Col md={8}>
                     <h2 className="blog-post-title mb-1">{x.title}</h2>
-                    <p className="blog-post-meta">{x.formattedUpdateDate} by <a href={`users/${x.userId}`}>{x.authorName}</a></p>
+                    <p className="blog-post-meta">{x.formattedUpdateDate} by <a href={`/user/${x.userId}`}>{x.authorName}</a></p>
                     <p>
                       {x.intro}
                     </p>
@@ -140,7 +140,13 @@ export default function Home({ data, posts }) {
  */
 export async function getStaticProps() {
   const resp = await getDocument({path: 'appconfig', pathSegments:['homepage']});
-  const posts = await queryOnce<PostType>({ path: `posts`, queryConstraints: [where("public", "==", true)] })
+  const posts = await queryOnce<PostType>(
+    { path: `posts`, queryConstraints: [
+      where("public", "==", true),
+      orderBy("updateDate", "desc"),
+      limit(10)
+    ] }
+  )
   const postDisplay = new Array<PostDisplayType>();
   const userLookup = {};
   for (const post of posts) {
