@@ -28,7 +28,7 @@ const PostDetailSSR = (props: PostDisplayType) => {
             <Row>
                 <Col className="md-8">
                     <h1>{props.title}</h1>
-                    <p className="blog-post-meta">{props.formattedUpdateDate} by <a href={`users/${props.userId}`}>{props.authorName}</a></p>
+                    <p className="blog-post-meta">{props.formattedUpdateDate} by <a href={`/user/${props.userId}`}>{props.authorName}</a></p>
                     <p>{props.intro}</p>
                     {[...props.images].map((x, i) =>
                         <ShowImage key={x} file={`users/${props.userId}/images/${x}`} />

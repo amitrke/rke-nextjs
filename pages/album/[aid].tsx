@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, ButtonGroup, Card, CardImg, Col, Container, Image, Modal, Row } from 'react-bootstrap'
+import { Button, ButtonGroup, Card, Col, Container, Image, Modal, Row } from 'react-bootstrap'
 import { getImageDownloadURLV2, ImageDownloadURLResponse } from '../../components/ui/showImage'
 import { getDocument } from '../../firebase/firestore'
 import { AlbumType } from '../account/editAlbum'
@@ -47,7 +47,7 @@ const AlbumSSR = (props: AlbumPropType) => {
                         <div className="d-flex align-items-center">
                             <Image src={props.user.profilePic} alt="" roundedCircle className="me-2" width="32" height="32" />
                             <div style={{ paddingTop: '15px' }}>
-                                <p className="blog-post-meta">Created by <a href={`users/${props.user.id}`}>{props.user.name}</a> on {uiDateFormat(props.album.updateDate)}</p>
+                                <p className="blog-post-meta">Created by <a href={`/user/${props.user.id}`}>{props.user.name}</a> on {uiDateFormat(props.album.updateDate)}</p>
                             </div>
                         </div>
                         <p>{props.album.description}</p>
