@@ -1,12 +1,14 @@
-import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { Button, ButtonGroup, Card, CardImg, Col, Container, Image, Modal, Row } from 'react-bootstrap'
-import ShowImage, { getImageDownloadURLV2, ImageDownloadURLResponse } from '../../components/ui/showImage'
+import { getImageDownloadURLV2, ImageDownloadURLResponse } from '../../components/ui/showImage'
 import { getDocument } from '../../firebase/firestore'
 import { AlbumType } from '../account/editAlbum'
+import { User } from '../../firebase/types'
+import { uiDateFormat } from '../../components/ui/uiUtils'
 
 type AlbumPropType = {
     album: AlbumType,
+    user: User,
     images: {m: ImageDownloadURLResponse, l: ImageDownloadURLResponse}[]
 }
 
@@ -39,6 +41,18 @@ const AlbumSSR = (props: AlbumPropType) => {
                 </Modal.Footer>
             </Modal>
             <Container>
+                <Row>
+                    <Col>
+                        <h1>{props.album.name}</h1>
+                        <div className="d-flex align-items-center">
+                            <Image src={props.user.profilePic} alt="" roundedCircle className="me-2" width="32" height="32" />
+                            <div style={{ paddingTop: '15px' }}>
+                                <p className="blog-post-meta">Created by <a href={`users/${props.user.id}`}>{props.user.name}</a> on {uiDateFormat(props.album.updateDate)}</p>
+                            </div>
+                        </div>
+                        <p>{props.album.description}</p>
+                    </Col>
+                </Row>
                 <Row>
                     {props.images.map((item, key) => {
                         return (
@@ -81,6 +95,8 @@ export async function getServerSideProps({ req, res, query }) {
     const { aid } = query
     if (typeof (aid) !== 'string') return;
     const albumDoc = await getDocument<AlbumType>({ path: `albums`, pathSegments: [aid] })
+    const userDoc = await getDocument<User>({ path: `users`, pathSegments: [albumDoc.userId] })
+
     const imageRequestPromises: Promise<ImageDownloadURLResponse> [] = [];
     albumDoc.images.forEach((image) => {
         imageRequestPromises.push(
@@ -109,7 +125,6 @@ export async function getServerSideProps({ req, res, query }) {
             l: value['l']
         })
     })
-    
 
     res.setHeader(
         'Cache-Control',
@@ -119,6 +134,7 @@ export async function getServerSideProps({ req, res, query }) {
     return {
         props: {
             album: albumDoc,
+            user: userDoc,
             images: imageResponseArray
         },
     }

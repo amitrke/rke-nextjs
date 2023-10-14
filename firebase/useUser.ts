@@ -32,7 +32,13 @@ const useUser = () => {
     }
 
     const updateUserPublicInfo = async (user: User) => {
-        const userInfo ={ name: user.name, profilePic: user.profilePic || "", updateDate: (new Date()).getTime(), email: user.email };
+        const userInfo ={ 
+            name: user.name, 
+            profilePic: user.profilePic || "", 
+            updateDate: (new Date()).getTime(), 
+            email: user.email,
+            id: user.id
+        };
         const dbUser = await getDocument({ path: `users`, pathSegments: [user.id] });
         if (dbUser) {
             await write({ path: `users`, existingDocId: user.id, data: userInfo });
