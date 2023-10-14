@@ -31,17 +31,24 @@ const useUser = () => {
             })
     }
 
-    const updateUserPublicInfo = async(user: User) => {
+    const updateUserPublicInfo = async (user: User) => {
+        const userInfo ={ 
+            name: user.name, 
+            profilePic: user.profilePic || "", 
+            updateDate: (new Date()).getTime(), 
+            email: user.email,
+            id: user.id
+        };
         const dbUser = await getDocument({ path: `users`, pathSegments: [user.id] });
-        if (dbUser) return;
-        await write({ path: `users`, newDocId: user.id, data: {name: user.name, profilePic: user.profilePic || "", updateDate: (new Date()).getTime()} });
+        if (dbUser) {
+            await write({ path: `users`, existingDocId: user.id, data: userInfo });
+        } else {
+            await write({ path: `users`, newDocId: user.id, data: userInfo});
+        }
     }
 
     useEffect(() => {
-        // Firebase updates the id token every hour, this
-        // makes sure the react state and the cookie are
-        // both kept up to date
-        const cancelAuthListener = firebase.auth().onIdTokenChanged((user) => {
+        const cancelAuthListener = firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 const userData = mapUserData(user)
                 updateUserPublicInfo(userData);
@@ -49,19 +56,15 @@ const useUser = () => {
                 setUser(userData)
             } else {
                 removeUserCookie()
-                //setUser({})
             }
         })
 
         const userFromCookie = getUserFromCookie()
-        // if (!userFromCookie) {
-        //     router.push('/')
-        //     return
-        // }
-        if (userFromCookie){
+
+        if (userFromCookie) {
             setUser(userFromCookie)
         }
-        
+
         return () => {
             cancelAuthListener()
         }
