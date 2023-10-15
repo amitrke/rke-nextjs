@@ -9,6 +9,7 @@ import { getDocument, queryOnce } from '../firebase/firestore';
 import { PostType } from './account/editpost';
 import { PostDisplayType } from './posts/[id]';
 import { Weather } from './weather/[id]';
+import Head from 'next/head';
 
 export default function Home({ data, posts }) {
 
@@ -31,6 +32,10 @@ export default function Home({ data, posts }) {
 
   return (
     <>
+      <Head>
+        <title>Roorkee.org: Town Information.</title>
+        <meta property="og:title" content="Roorkee.org: Town Information." key="title" />
+      </Head>
       <Container>
         <div className="p-4 p-md-5 mb-4 rounded text-bg-dark">
           <div className="jumbotron col-md-10 px-0">

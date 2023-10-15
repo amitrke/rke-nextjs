@@ -6,6 +6,7 @@ import DOMPurify from 'isomorphic-dompurify';
 import { Col, Container, Row } from "react-bootstrap";
 import { uiDateFormat } from "../../components/ui/uiUtils";
 import Link from "next/link";
+import Head from "next/head";
 
 export type PostDisplayType = PostType & {
     formattedUpdateDate: string;
@@ -25,6 +26,10 @@ const createMarkup = (html: string) => {
 const PostDetailSSR = (props: PostDisplayType) => {
     return (
         <Container>
+            <Head>
+                <title>Post - {props.title}.</title>
+                <meta property="og:title" content={`Post - ${props.title}.`} key="title" />
+            </Head>
             <Row>
                 <Col className="md-8">
                     <h1>{props.title}</h1>

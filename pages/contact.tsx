@@ -3,6 +3,7 @@ import { Button, Container, Form, FormSelect } from "react-bootstrap";
 import { write } from "../firebase/firestore";
 import { MessageType } from "../firebase/types";
 import { useUser } from "../firebase/useUser";
+import Head from "next/head";
 
 export default function Contact() {
     const [validated, setValidated] = useState(false);
@@ -37,6 +38,10 @@ export default function Contact() {
 
     return (
         <Container>
+            <Head>
+                <title>Contact Us.</title>
+                <meta property="og:title" content="Contact Us" key="title" />
+            </Head>
             <h1>Contact</h1>
             <Form validated={validated} onSubmit={handleSubmit} className={(submitted || !user) ? 'hidden' : undefined}>
                 <Form.Group className="mb-3" controlId="formReason">

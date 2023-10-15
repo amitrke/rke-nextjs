@@ -1,8 +1,13 @@
+import Head from "next/head";
 import { Container } from "react-bootstrap";
 
 export default function Disclaimer() {
     return (
         <Container>
+            <Head>
+                <title>Disclaimer.</title>
+                <meta property="og:title" content="Disclaimer" key="title" />
+            </Head>
             <h1>Disclaimer</h1>
             <p>Last updated: October 02, 2022</p>
             <h1>Interpretation and Definitions</h1>

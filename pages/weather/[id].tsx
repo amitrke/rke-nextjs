@@ -2,6 +2,7 @@ import { Container, Row, Col, Carousel, Image } from 'react-bootstrap';
 import { Card } from 'react-bootstrap';
 import { getDocument } from '../../firebase/firestore';
 import { uiRound } from '../../components/ui/uiUtils';
+import Head from 'next/head';
 
 function dateTimeFormat(date: number, timezone_offset: number, timeZone: string): string {
     const d = new Date(date * 1000);
@@ -157,6 +158,10 @@ function DailyWeatherWidget(props: Weather) {
 export default function Weather(props: Weather) {
     return (
         <Container fluid className="vh-100" style={{ backgroundColor: '#C1CFEA' }}>
+            <Head>
+                <title>Weather.</title>
+                <meta property="og:title" content="Weather" key="title" />
+            </Head>
             <Row className="h-100 d-flex justify-content-center align-items-center" style={{ color: '#282828' }}>
                 <Col>
                     <CurrentWeatherWidget {...props.current} />

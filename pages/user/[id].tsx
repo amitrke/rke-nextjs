@@ -6,6 +6,7 @@ import { getDocument, queryOnce } from "../../firebase/firestore";
 import { User } from "../../firebase/types";
 import { AlbumType } from "../account/editAlbum";
 import { PostType } from "../account/editpost";
+import Head from "next/head";
 
 type UserPropType = {
     user: User,
@@ -21,6 +22,10 @@ const createMarkup = (html: string) => {
 const UserDetailSSR = (props: UserPropType) => {
     return (
         <Container>
+            <Head>
+                <title>User - {props.user.name}.</title>
+                <meta property="og:title" content={`User - ${props.user.name}.`} key="title" />
+            </Head>
             <Row>
                 <Col className="md-8">
                     <div className="d-flex align-items-center">
