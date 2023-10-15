@@ -5,6 +5,7 @@ import { getDocument } from '../../firebase/firestore'
 import { AlbumType } from '../account/editAlbum'
 import { User } from '../../firebase/types'
 import { uiDateFormat } from '../../components/ui/uiUtils'
+import Head from 'next/head'
 
 type AlbumPropType = {
     album: AlbumType,
@@ -24,6 +25,10 @@ const AlbumSSR = (props: AlbumPropType) => {
 
     return (
         <div className="album py-5 bg-light">
+            <Head>
+                <title>Photo Album - {props.album.name}.</title>
+                <meta property="og:title" content={`Photo Album - ${props.album.name}.`} key="title" />
+            </Head>
             <Modal show={show} onHide={handleClose} fullscreen centered>
                 {/* <Modal.Header closeButton>
                     <Modal.Title>Modal heading</Modal.Title>

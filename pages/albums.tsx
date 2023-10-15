@@ -15,6 +15,10 @@ export default function Albums(props: AlbumPropType) {
 
     return (
         <>
+            <Head>
+                <title>Roorkee Photo Albums.</title>
+                <meta property="og:title" content="Roorkee Photo Albums." key="title" />
+            </Head>
             <Container>
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                     {[...props.dbList].map((x, i) =>
