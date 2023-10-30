@@ -803,10 +803,10 @@
   dependencies:
     "@types/trusted-types" "*"
 
-"@types/draft-js@*", "@types/draft-js@^0.11.13":
-  version "0.11.13"
-  resolved "https://registry.yarnpkg.com/@types/draft-js/-/draft-js-0.11.13.tgz#6b14115a2c3404248701c4d773feeb0b69ff81f7"
-  integrity sha512-4cMlNWoKwcRwkA+GtCD53u5Dj78n9Z8hScB5rZYKw4Q3UZxh0h1Fm4ezLgGjAHkhsdrviWQm3MPuUi/jLOuq8A==
+"@types/draft-js@*", "@types/draft-js@^0.11.14":
+  version "0.11.14"
+  resolved "https://registry.yarnpkg.com/@types/draft-js/-/draft-js-0.11.14.tgz#f13fd390a5a7152b422c52ebe4179284a57e6d46"
+  integrity sha512-N1xweePxsHlTze4M6OcQZXIpIfWxbqE/76Nwvw3LCrwEvMOtNUpYN7z3vGsw0d7ND7O/5c/FChPuYxRuuE2rSQ==
   dependencies:
     "@types/react" "*"
     immutable "~3.7.4"
