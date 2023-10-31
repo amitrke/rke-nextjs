@@ -10,6 +10,7 @@ import { PostType } from './account/editpost';
 import { PostDisplayType } from './posts/[id]';
 import { Weather } from './weather/[id]';
 import Head from 'next/head';
+import HeadTag from '../components/ui/headTag';
 
 export default function Home({ data, posts }) {
 
@@ -25,17 +26,14 @@ export default function Home({ data, posts }) {
 
   useEffect(() => {
     if (weather.current) {
-      setWeatherText(`${uiRound(weather.current.temp,1)}°C, ${weather.current.weather[0].description}`);
+      setWeatherText(`${uiRound(weather.current.temp, 1)}°C, ${weather.current.weather[0].description}`);
       setWeatherImg('https://openweathermap.org/img/wn/' + weather.current.weather[0].icon + '@2x.png');
     }
   }, [weather]);
 
   return (
     <>
-      <Head>
-        <title>Roorkee.org: Town Information.</title>
-        <meta property="og:title" content="Roorkee.org: Town Information." key="title" />
-      </Head>
+      <HeadTag title="Roorkee.org: Town Information." description="Roorkee.org: Town Information." />
       <Container>
         <div className="p-4 p-md-5 mb-4 rounded text-bg-dark">
           <div className="jumbotron col-md-10 px-0">
@@ -78,27 +76,28 @@ export default function Home({ data, posts }) {
           </div>
         </Row>
 
-        <Row className="g-5">
+        <Row className="g-5 text-black">
           <Col md={8}>
             <h3 className="pb-4 mb-4 fst-italic border-bottom">
               From the Firehose
             </h3>
 
             {[...posts].map((x: PostDisplayType, i) =>
-                <Row key={x.id} className="blog-post">
+              <Link key={x.id} href={`posts/${x.id}`} style={{ textDecoration: 'none' }}>
+                <Row className="blog-post">
                   <Col md={8}>
-                    <h2 className="blog-post-title mb-1">{x.title}</h2>
-                    <p className="blog-post-meta">{x.formattedUpdateDate} by <a href={`/user/${x.userId}`}>{x.authorName}</a></p>
-                    <p>
+                    <h2 className="blog-post-title mb-1 text-black">{x.title}</h2>
+                    <p className="blog-post-meta">Posted on {x.formattedUpdateDate} by {x.author.name}</p>
+                    <p className='text-black'>
                       {x.intro}
                     </p>
-                    <p><a href={`posts/${x.id}`}>Read more</a></p>
                   </Col>
                   <Col md={4}>
-                    <ShowImageRaw size="s" imageUrl={x.images[0]} classes="img-thumbnail imgshadow"/>
+                    <ShowImageRaw size="s" imageUrl={x.images[0]} classes="img-thumbnail imgshadow" />
                   </Col>
                   <hr />
                 </Row>
+              </Link>
             )}
             <nav className="blog-pagination" aria-label="Pagination">
               <a className="btn btn-outline-primary rounded-pill" href="#">Older</a>
@@ -132,9 +131,9 @@ export default function Home({ data, posts }) {
               </div>
             </div>
           </Col>
-        </Row>
+        </Row >
 
-      </Container>
+      </Container >
     </>
   )
 }
@@ -144,28 +143,30 @@ export default function Home({ data, posts }) {
  * It won't be called on client-side
  */
 export async function getStaticProps() {
-  const resp = await getDocument({path: 'appconfig', pathSegments:['homepage']});
+  const resp = await getDocument({ path: 'appconfig', pathSegments: ['homepage'] });
   const posts = await queryOnce<PostType>(
-    { path: `posts`, queryConstraints: [
-      where("public", "==", true),
-      orderBy("updateDate", "desc"),
-      limit(10)
-    ] }
+    {
+      path: `posts`, queryConstraints: [
+        where("public", "==", true),
+        orderBy("updateDate", "desc"),
+        limit(10)
+      ]
+    }
   )
   const postDisplay = new Array<PostDisplayType>();
   const userLookup = {};
   for (const post of posts) {
-    if (!userLookup[post.userId]){
-      const userInfo = await getDocument({path: 'users', pathSegments:[post.userId]});
+    if (!userLookup[post.userId]) {
+      const userInfo = await getDocument({ path: 'users', pathSegments: [post.userId] });
       userLookup[post.userId] = userInfo;
     }
     const postImages = [];
     if (post.images && post.images.length > 0) {
-      const imageUrl = await getImageDownloadURL({ file: `users/${post.userId}/images/${post.images[0]}`, size: 's'});
+      const imageUrl = await getImageDownloadURL({ file: `users/${post.userId}/images/${post.images[0]}`, size: 's' });
       postImages.push(imageUrl);
     }
     // console.log(postImages);
-    postDisplay.push({...post, images: postImages, formattedUpdateDate: uiDateFormat(post.updateDate), authorName: userLookup[post.userId]['name']})
+    postDisplay.push({ ...post, images: postImages, formattedUpdateDate: uiDateFormat(post.updateDate), author: userLookup[post.userId] })
   }
 
   return {

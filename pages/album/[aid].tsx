@@ -4,8 +4,8 @@ import { getImageDownloadURLV2, ImageDownloadURLResponse } from '../../component
 import { getDocument } from '../../firebase/firestore'
 import { AlbumType } from '../account/editAlbum'
 import { User } from '../../firebase/types'
-import { uiDateFormat } from '../../components/ui/uiUtils'
-import Head from 'next/head'
+import HeadTag from '../../components/ui/headTag'
+import PostUserInfo from '../../components/ui/postUserInfo'
 
 type AlbumPropType = {
     album: AlbumType,
@@ -25,10 +25,7 @@ const AlbumSSR = (props: AlbumPropType) => {
 
     return (
         <div className="album py-5 bg-light">
-            <Head>
-                <title>Photo Album - {props.album.name}.</title>
-                <meta property="og:title" content={`Photo Album - ${props.album.name}.`} key="title" />
-            </Head>
+            <HeadTag title={`Photo Album - ${props.album.name}.`} />
             <Modal show={show} onHide={handleClose} fullscreen centered>
                 {/* <Modal.Header closeButton>
                     <Modal.Title>Modal heading</Modal.Title>
@@ -49,12 +46,7 @@ const AlbumSSR = (props: AlbumPropType) => {
                 <Row>
                     <Col>
                         <h1>{props.album.name}</h1>
-                        <div className="d-flex align-items-center">
-                            <Image src={props.user.profilePic} alt="" roundedCircle className="me-2" width="32" height="32" />
-                            <div style={{ paddingTop: '15px' }}>
-                                <p className="blog-post-meta">Created by <a href={`/user/${props.user.id}`}>{props.user.name}</a> on {uiDateFormat(props.album.updateDate)}</p>
-                            </div>
-                        </div>
+                        <PostUserInfo user={props.user} postDate={props.album.updateDate} />
                         <p>{props.album.description}</p>
                     </Col>
                 </Row>

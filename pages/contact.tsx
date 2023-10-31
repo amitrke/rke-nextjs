@@ -41,6 +41,7 @@ export default function Contact() {
             <Head>
                 <title>Contact Us.</title>
                 <meta property="og:title" content="Contact Us" key="title" />
+                <meta name="robots" content="all" />
             </Head>
             <h1>Contact</h1>
             <Form validated={validated} onSubmit={handleSubmit} className={(submitted || !user) ? 'hidden' : undefined}>
