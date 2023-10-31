@@ -83,8 +83,8 @@ export default function Home({ data, posts }) {
             </h3>
 
             {[...posts].map((x: PostDisplayType, i) =>
-              <Link href={`posts/${x.id}`} style={{ textDecoration: 'none' }}>
-                <Row key={x.id} className="blog-post">
+              <Link key={x.id} href={`posts/${x.id}`} style={{ textDecoration: 'none' }}>
+                <Row className="blog-post">
                   <Col md={8}>
                     <h2 className="blog-post-title mb-1 text-black">{x.title}</h2>
                     <p className="blog-post-meta">Posted on {x.formattedUpdateDate} by {x.author.name}</p>
