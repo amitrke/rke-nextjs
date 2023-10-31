@@ -7,10 +7,13 @@ import { Col, Container, Row } from "react-bootstrap";
 import { uiDateFormat } from "../../components/ui/uiUtils";
 import Link from "next/link";
 import Head from "next/head";
+import HeadTag from "../../components/ui/headTag";
+import { User } from "../../firebase/types";
+import PostUserInfo from "../../components/ui/postUserInfo";
 
 export type PostDisplayType = PostType & {
     formattedUpdateDate: string;
-    authorName: string;
+    author: User;
 }
 
 type PostPropType = {
@@ -26,14 +29,11 @@ const createMarkup = (html: string) => {
 const PostDetailSSR = (props: PostDisplayType) => {
     return (
         <Container>
-            <Head>
-                <title>Post - {props.title}.</title>
-                <meta property="og:title" content={`Post - ${props.title}.`} key="title" />
-            </Head>
+            <HeadTag title={`Post - ${props.title}.`} />
             <Row>
                 <Col className="md-8">
                     <h1>{props.title}</h1>
-                    <p className="blog-post-meta">{props.formattedUpdateDate} by <a href={`/user/${props.userId}`}>{props.authorName}</a></p>
+                    <PostUserInfo user={props.author} postDate={props.updateDate} />
                     <p>{props.intro}</p>
                     {[...props.images].map((x, i) =>
                         <ShowImage key={x} file={`users/${props.userId}/images/${x}`} />
@@ -74,7 +74,7 @@ export async function getServerSideProps({ req, res, query }) {
     const postDoc = await getDocument<PostType>({ path: `posts`, pathSegments: [id] })
     const draftRaw = JSON.parse(postDoc.edState);
     const postBody = draftToHtml(draftRaw);
-    const userInfo = await getDocument({path: 'users', pathSegments:[postDoc.userId]});
+    const author = await getDocument<User>({path: 'users', pathSegments:[postDoc.userId]});
 
     res.setHeader(
         'Cache-Control',
@@ -85,7 +85,7 @@ export async function getServerSideProps({ req, res, query }) {
         ...postDoc,
         edState: postBody,
         formattedUpdateDate: uiDateFormat(postDoc.updateDate),
-        authorName: userInfo['name']
+        author
     }
 
     return {

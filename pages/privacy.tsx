@@ -7,6 +7,7 @@ export default function Privacy() {
             <Head>
                 <title>Privacy Policy.</title>
                 <meta property="og:title" content="Privacy Policy" key="title" />
+                <meta name="robots" content="all" />
             </Head>
             <h1>Privacy Policy</h1>
             <p>Last updated: October 02, 2022</p>
