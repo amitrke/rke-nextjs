@@ -7,7 +7,7 @@ export type PostUserInfoType = {
     postDate: number,
 }
 
-export default ({ user, postDate }: PostUserInfoType) => {
+export default function PostUserInfo({ user, postDate }: PostUserInfoType) {
     return (
         <div className="d-flex align-items-center">
             <Image src={user.profilePic} alt="" roundedCircle className="me-2" width="32" height="32" />

@@ -6,7 +6,7 @@ export type HeadTagType = {
     allowRobots?: boolean
 }
 
-export default ({ title, description, allowRobots = true }: HeadTagType) => {
+export default function HeadTag ({ title, description, allowRobots = true }: HeadTagType) {
     return (
         <Head>
             <title>{title}</title>
