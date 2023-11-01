@@ -13,9 +13,12 @@ const RichTextEditor = (props: RichTextEditorProps) => {
 
   const onEditorStateChange = (edState: EditorState) => {
     setEditorState(edState)
-    const rawState = convertToRaw(edState.getCurrentContent())
-    props.onEdStateChange(JSON.stringify(rawState))
   };
+
+  const onBlur = () => {
+    const rawState = convertToRaw(editorState.getCurrentContent())
+    props.onEdStateChange(JSON.stringify(rawState))
+  }
 
   useEffect(() => {
     if (props.initState.length > 1) {
@@ -30,10 +33,12 @@ const RichTextEditor = (props: RichTextEditorProps) => {
     <div className="border">
       <Editor
         editorState={editorState}
+        defaultEditorState={editorState}
         toolbarClassName="toolbarClassName"
         wrapperClassName="wrapperClassName"
         editorClassName="editorClassName"
         onEditorStateChange={onEditorStateChange}
+        onBlur={onBlur}
       />
     </div>
   )
