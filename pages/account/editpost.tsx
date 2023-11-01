@@ -61,6 +61,7 @@ const EditPost = () => {
   const loadPost = async (postId: string) => {
     const post = await getDocument<PostType>({ path: `posts`, pathSegments: [postId] })
     if (post) {
+      if (!post.id) post.id = postId;
       setPost(post);
     }
   }

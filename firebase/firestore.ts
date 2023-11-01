@@ -30,13 +30,16 @@ export type FirestoreAppendToArrayParams<T> = FirestoreParams & {
 }
 
 export const write = async <T>(params: FirestoreWriteParams<T>): Promise<DocumentReference> => {
-    let docRef = params.existingDocId ? doc(db, params.path, params.existingDocId) : await addDoc(collection(db, params.path), params.data);
+    let docRef = params.existingDocId ? doc(db, params.path, params.existingDocId) : undefined;
     if (params.existingDocId) {
         await updateDoc(docRef, params.data);
     }
     if (params.newDocId) {
         docRef = await doc(db, params.path, params.newDocId);
         await setDoc(docRef, params.data);
+    }
+    if (!params.existingDocId && !params.newDocId) {
+        docRef = await addDoc(collection(db, params.path), params.data);
     }
     console.debug("Document written with ID: ", docRef.id);
     return docRef;
