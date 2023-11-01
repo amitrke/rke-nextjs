@@ -3,7 +3,7 @@ import { useUser } from '../../firebase/useUser'
 import dynamic from 'next/dynamic'
 import UploadFile, { UploadStatusType } from '../../components/storage/UploadFile'
 import ToastMsg, { ToastMsgProps } from '../../components/ui/toastMsg'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { arrayAppend, getDocument, write } from '../../firebase/firestore'
 import { useRouter } from 'next/router'
 import ShowImage from '../../components/ui/showImage'
@@ -127,7 +127,11 @@ const EditPost = () => {
               )}
               <UploadFile toastCallback={toastCallback} disabled={post.id === ""} statusCallback={onFileUpload} />
               Body
-              <Editor onEdStateChange={(edState) => { setPost({ ...post, edState }) }} initState={post.edState} />
+              <Editor 
+                key={post.id}
+                onEdStateChange={(edState) => { setPost({ ...post, edState }) }} 
+                initState={post.edState} 
+              />
               <Button variant="primary" onClick={onSave}>
                 Save
               </Button>
