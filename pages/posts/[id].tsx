@@ -78,7 +78,7 @@ export async function getServerSideProps({ req, res, query }) {
 
     res.setHeader(
         'Cache-Control',
-        'public, s-maxage=31536000, stale-while-revalidate=59'
+        'public, s-maxage=31536000, stale-while-revalidate'
     )
     
     const response: PostDisplayType = {
