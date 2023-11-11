@@ -50,6 +50,9 @@ export async function getImageDownloadURLV2(params: ImageDownloadParams): Promis
     }
 }
 
+/**
+ * @deprecated use getImageDownloadURLV2
+ */
 export async function getImageDownloadURL(params: ImageDownloadParams): Promise<string> {
     const storage = getStorage();
     const filenameParts = params.file.split(".");
