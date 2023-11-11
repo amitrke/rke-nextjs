@@ -27,31 +27,6 @@ const createMarkup = (html: string) => {
     }
 }
 
-export async function getServerSideProps1({ req, res, query }) {
-    const { id } = query
-    if (typeof (id) !== 'string') return;
-    const postDoc = await getDocument<PostType>({ path: `posts`, pathSegments: [id] })
-    const draftRaw = JSON.parse(postDoc.edState);
-    const postBody = draftToHtml(draftRaw);
-    const author = await getDocument<User>({ path: 'users', pathSegments: [postDoc.userId] });
-
-    res.setHeader(
-        'Cache-Control',
-        'public, s-maxage=31536000, stale-while-revalidate'
-    )
-
-    const response: PostDisplayType = {
-        ...postDoc,
-        edState: postBody,
-        formattedUpdateDate: uiDateFormat(postDoc.updateDate),
-        author
-    }
-
-    return {
-        props: response
-    }
-}
-
 export async function getStaticPaths() {
     // The developer has full flexibility to control
     // what pages are generated during the build or on-demand
