@@ -11,6 +11,7 @@ import { PostDisplayType } from './posts/[id]';
 import { Weather } from './weather/[id]';
 import Head from 'next/head';
 import HeadTag from '../components/ui/headTag';
+import { getPostsWithDetails } from '../service/PostService';
 
 export default function Home({ data, posts }) {
 
@@ -144,31 +145,7 @@ export default function Home({ data, posts }) {
  */
 export async function getStaticProps() {
   const resp = await getDocument({ path: 'appconfig', pathSegments: ['homepage'] });
-  const posts = await queryOnce<PostType>(
-    {
-      path: `posts`, queryConstraints: [
-        where("public", "==", true),
-        orderBy("updateDate", "desc"),
-        limit(10)
-      ]
-    }
-  )
-  const postDisplay = new Array<PostDisplayType>();
-  const userLookup = {};
-  for (const post of posts) {
-    if (!userLookup[post.userId]) {
-      const userInfo = await getDocument({ path: 'users', pathSegments: [post.userId] });
-      userLookup[post.userId] = userInfo;
-    }
-    const postImages = [];
-    if (post.images && post.images.length > 0) {
-      const imageUrl = await getImageDownloadURL({ file: `users/${post.userId}/images/${post.images[0]}`, size: 's' });
-      postImages.push(imageUrl);
-    }
-    // console.log(postImages);
-    postDisplay.push({ ...post, images: postImages, formattedUpdateDate: uiDateFormat(post.updateDate), author: userLookup[post.userId] })
-  }
-
+  const postDisplay = await getPostsWithDetails();
   return {
     props: {
       data: resp,
