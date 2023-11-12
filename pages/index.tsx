@@ -13,7 +13,7 @@ import Head from 'next/head';
 import HeadTag from '../components/ui/headTag';
 import { getPostsWithDetails } from '../service/PostService';
 
-export default function Home({ data, posts }) {
+export default function Home({ data, posts, cacheCreatedAt }) {
 
   const [weather, setWeather] = useState({} as Weather)
   const [weatherText, setWeatherText] = useState('' as string)
@@ -133,7 +133,12 @@ export default function Home({ data, posts }) {
             </div>
           </Col>
         </Row >
-
+        <Row>
+          <Col>
+            <hr />
+            <p className="text-center">This page was generated at {cacheCreatedAt}</p>
+          </Col>
+        </Row>
       </Container >
     </>
   )
@@ -146,10 +151,13 @@ export default function Home({ data, posts }) {
 export async function getStaticProps() {
   const resp = await getDocument({ path: 'appconfig', pathSegments: ['homepage'] });
   const postDisplay = await getPostsWithDetails();
+  const cacheCreatedAt = uiDateFormat((new Date()).getTime());
   return {
     props: {
       data: resp,
-      posts: postDisplay
-    }
+      posts: postDisplay,
+      cacheCreatedAt
+    },
+    revalidate: 86400, // regenerate page every 24 hours
   }
 }
