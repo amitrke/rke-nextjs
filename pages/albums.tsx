@@ -3,25 +3,26 @@ import Head from 'next/head'
 import { Button, Card, Col, Container, Row } from 'react-bootstrap'
 import ShowImage from '../components/ui/showImage'
 import { queryOnce } from '../firebase/firestore'
-import styles from '../styles/Home.module.css'
 import { AlbumType } from './account/editAlbum'
+import { uiDateFormat } from '../components/ui/uiUtils'
+import { InferGetStaticPropsType } from 'next'
+import HeadTag from '../components/ui/headTag'
 
 type AlbumPropType = {
     time: string,
-    dbList: AlbumType[]
+    dbList: AlbumType[],
+    cacheCreatedAt?: string
 }
 
-export default function Albums(props: AlbumPropType) {
-
+export default function Page({
+    time, dbList, cacheCreatedAt
+}: InferGetStaticPropsType<typeof getStaticProps>) {
     return (
         <>
-            <Head>
-                <title>Roorkee Photo Albums.</title>
-                <meta property="og:title" content="Roorkee Photo Albums." key="title" />
-            </Head>
+            <HeadTag title="Roorkee Photo Albums." />
             <Container>
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                    {[...props.dbList].map((x, i) =>
+                    {[...dbList].map((x, i) =>
                         <div className="col" key={x.id}>
                             <Card key={x.id} style={{ width: '18rem' }}>
                                 <ShowImage size="s" file={`users/${x.userId}/images/${x.images[0]}`} />
@@ -36,23 +37,21 @@ export default function Albums(props: AlbumPropType) {
                         </div>
                     )}
                 </div>
+                <hr />
+                <p className="text-center">This page was generated at {cacheCreatedAt}</p>
             </Container>
         </>
     )
 }
 
-export async function getServerSideProps({ req, res }) {
+export async function getStaticProps() {
     const dbList = await queryOnce<AlbumType>({ path: `albums`, queryConstraints: [where("public", "==", true)] })
-
-    res.setHeader(
-        'Cache-Control',
-        'public, s-maxage=31536000, stale-while-revalidate'
-    )
-
     return {
         props: {
             time: new Date().toISOString(),
-            dbList
+            dbList,
+            cacheCreatedAt: uiDateFormat(new Date().getTime())
         },
+        revalidate: 86400, // regenerate page every 24 hours
     }
 }

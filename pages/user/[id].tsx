@@ -8,19 +8,69 @@ import { AlbumType } from "../account/editAlbum";
 import { PostType } from "../account/editpost";
 import Head from "next/head";
 import HeadTag from "../../components/ui/headTag";
+import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { uiDateFormat } from "../../components/ui/uiUtils";
 
 type UserPropType = {
     user: User,
     posts: PostType[],
     albums: AlbumType[],
+    cacheCreatedAt?: string;
 }
-const createMarkup = (html: string) => {
+
+export async function getStaticPaths() {
+    const users = await queryOnce<User>({ path: 'users' });
+    const paths = users.map(user => ({ params: { id: user.id } }))
     return {
-        __html: DOMPurify.sanitize(html)
+        paths,
+        fallback: 'blocking', // generate new pages on-demand
     }
 }
 
-const UserDetailSSR = (props: UserPropType) => {
+export const getStaticProps = (async (context) => {
+    const userId = context.params.id as string;
+    const userPromise = getDocument<User>({ path: `users`, pathSegments: [userId] })
+    //Get posts of this user
+    const postsPromise = queryOnce<PostType>(
+        {
+            path: `posts`, queryConstraints: [
+                where("public", "==", true),
+                where("userId", "==", userId),
+                orderBy("updateDate", "desc")
+            ]
+        });
+
+
+    //Get albums of this user
+    const albumsPromise = queryOnce<AlbumType>(
+        {
+            path: `albums`, queryConstraints: [
+                where("public", "==", true),
+                where("userId", "==", userId),
+                orderBy("updateDate", "desc")
+            ]
+        });
+
+    const [user, posts, albums] = await Promise.all([userPromise, postsPromise, albumsPromise])
+
+    const props: UserPropType = {
+        user,
+        posts,
+        albums,
+        cacheCreatedAt: uiDateFormat(new Date().getTime())
+    }
+
+    return {
+        props: { props },
+        revalidate: 86400, // regenerate page every 24 hours
+    }
+}) satisfies GetStaticProps<{
+    props: UserPropType
+}>
+
+export default function Page({
+    props,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
     return (
         <Container>
             <HeadTag title={`User - ${props.user.name}.`} />
@@ -32,7 +82,7 @@ const UserDetailSSR = (props: UserPropType) => {
                             <h1>{props.user.name}</h1>
                         </div>
                     </div>
-                    <hr/>
+                    <hr />
                     <h2>Posts</h2>
                     <ul>
                         {props.posts.map((post) => {
@@ -81,53 +131,12 @@ const UserDetailSSR = (props: UserPropType) => {
                     </div>
                 </Col>
             </Row>
+            <Row>
+                <Col>
+                    <hr />
+                    <p className="text-center">This page was generated at {props.cacheCreatedAt}</p>
+                </Col>
+            </Row>
         </Container>
     )
 }
-
-export async function getServerSideProps({ req, res, query }) {
-    const { id } = query
-    if (typeof (id) !== 'string') return;
-    const userDoc = await getDocument<User>({ path: `users`, pathSegments: [id] })
-    if (!userDoc) {
-        return {
-            notFound: true
-        }
-    }
-
-    //Get posts of this user
-    const postsPromise = queryOnce<PostType>(
-        { path: `posts`, queryConstraints: [
-            where("public", "==", true), 
-            where("userId", "==", id),
-            orderBy("updateDate", "desc")
-        ] });
-
-    
-    //Get albums of this user
-    const albumsPromise = queryOnce<AlbumType>(
-        { path: `albums`, queryConstraints: [
-            where("public", "==", true), 
-            where("userId", "==", id),
-            orderBy("updateDate", "desc")
-        ] });
-    
-    const [posts, albums] = await Promise.all([postsPromise, albumsPromise])
-
-    res.setHeader(
-        'Cache-Control',
-        'public, s-maxage=31536000, stale-while-revalidate'
-    )
-
-    const response: UserPropType = {
-        user: userDoc,
-        posts,
-        albums
-    }
-
-    return {
-        props: response
-    }
-}
-
-export default UserDetailSSR;

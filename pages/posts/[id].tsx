@@ -15,12 +15,9 @@ import { GetStaticProps, InferGetStaticPropsType } from "next";
 export type PostDisplayType = PostType & {
     formattedUpdateDate: string;
     author: User;
+    cacheCreatedAt?: string;
 }
 
-type PostPropType = {
-    post: PostType,
-    postBody: string,
-}
 const createMarkup = (html: string) => {
     return {
         __html: DOMPurify.sanitize(html)
@@ -50,10 +47,14 @@ export const getStaticProps = (async (context) => {
         ...postDoc,
         edState: postBody,
         formattedUpdateDate: uiDateFormat(postDoc.updateDate),
-        author
+        author,
+        cacheCreatedAt: uiDateFormat((new Date()).getTime())
     }
 
-    return { props: { post } }
+    return {
+        props: { post },
+        revalidate: 86400, // regenerate page every 24 hours 
+    }
 }) satisfies GetStaticProps<{
     post: PostDisplayType
 }>
@@ -96,6 +97,12 @@ export default function Page({
                             <li><a href="#">Facebook</a></li>
                         </ol>
                     </div>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <hr />
+                    <p className="text-center">This page was generated at {post.cacheCreatedAt}</p>
                 </Col>
             </Row>
         </Container>
