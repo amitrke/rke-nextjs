@@ -1,0 +1,17 @@
+{
+	"name": "rke-dev",
+	"dockerComposeFile": [
+		"docker-compose.yml"
+	],
+	"service": "rke-dev",
+	"workspaceFolder": "/root/workspace",
+	"customizations": {
+        "vscode": {
+            "extensions": [
+                "eamodio.gitlens",
+                "GitHub.copilot"
+            ]
+        }
+    },
+	"forwardPorts": [ 8080 ]
+}
