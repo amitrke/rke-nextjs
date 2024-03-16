@@ -34,7 +34,7 @@
     "react-firebaseui": "^6.0.0"
   },
   "devDependencies": {
-    "eslint": "8.52.0",
+    "eslint": "8.57.0",
     "eslint-config-next": "^13.5.4",
     "sass": "^1.69.5",
     "typescript": "^5.2.2"
