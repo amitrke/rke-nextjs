@@ -1,0 +1,11 @@
+version: '3.6'
+services:
+  rke-dev:
+    build: .
+    volumes:
+      - .:/root/workspace
+      - vs-server:/root/.vscode-server/extensions
+    ports:
+      - "3000:3000"
+volumes:
+  vs-server: {}
