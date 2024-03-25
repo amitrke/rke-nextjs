@@ -12,7 +12,7 @@ export default function RecentPostsBox(props: RecentPostsBoxProps) {
             <ol className="list-unstyled mb-0">
                 {[...props.posts].map((post: PostType, i) =>
 
-                    <li><Link href={`/post/${post.category}/${post.slug}`}>{post.title}</Link></li>
+                    <li key={i.toString()}><Link href={`/post/${post.category}/${post.slug}`}>{post.title}</Link></li>
 
                 )}
             </ol>
