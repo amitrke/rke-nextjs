@@ -22,10 +22,10 @@ function generateSiteMap(posts: PostType[], albums: AlbumType[], users: User[]) 
        <loc>https://www.roorkee.org/weather/roorkee-in</loc>
      </url>
      ${posts
-            .map(({ id }) => {
+            .map(({ category, slug }) => {
                 return `
             <url>
-                <loc>${`${hostname}/posts/${id}`}</loc>
+                <loc>${hostname}/post/${category}/${slug}</loc>
             </url>
             `;
             })

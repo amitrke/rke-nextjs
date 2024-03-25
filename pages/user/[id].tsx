@@ -88,7 +88,7 @@ export default function Page({
                         {props.posts.map((post) => {
                             return (
                                 <li key={post.id}>
-                                    <Link href={`/posts/${post.id}`}>
+                                    <Link href={`/post/${post.category}/${post.slug}`}>
                                         {post.title}
                                     </Link>
                                 </li>
