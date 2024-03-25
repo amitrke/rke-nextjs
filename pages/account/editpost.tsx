@@ -3,10 +3,13 @@ import { useUser } from '../../firebase/useUser'
 import dynamic from 'next/dynamic'
 import UploadFile, { UploadStatusType } from '../../components/storage/UploadFile'
 import ToastMsg, { ToastMsgProps } from '../../components/ui/toastMsg'
-import { useEffect, useState } from 'react'
+import { BaseSyntheticEvent, useEffect, useState } from 'react'
 import { arrayAppend, getDocument, write } from '../../firebase/firestore'
 import { useRouter } from 'next/router'
 import ShowImage from '../../components/ui/showImage'
+import Spinner from 'react-bootstrap/Spinner';
+import * as Slugify from 'slugify'
+import { getPostBySlug } from '../../service/PostService'
 
 const Editor = dynamic(() => import("../../components/ui/richTextEditor"), {
   ssr: false
@@ -22,6 +25,7 @@ export type PostType = {
   public: boolean;
   userId: string;
   category: string;
+  slug: string;
 }
 
 const EditPost = () => {
@@ -40,7 +44,8 @@ const EditPost = () => {
     public: false,
     title: "",
     userId: "",
-    category: "town"
+    category: "town",
+    slug: ""
   })
 
   if (id && typeof (id) == "string" && post.id === "") {
@@ -70,15 +75,31 @@ const EditPost = () => {
     setToasts([...toasts, props]);
   }
 
-  const onSave = async () => {
+  const onSave = async (element: BaseSyntheticEvent) => {
+    const button: HTMLElement = element.currentTarget;
+    const spinner = button.querySelector('.spinner-border');
+    if (spinner) spinner.classList.remove('visually-hidden');
+    const slug = Slugify.default(post.title, { lower: true, strict: true });
+    setPost({ ...post, slug });
+    
+    if (post.public) {
+      const postSearch = await getPostBySlug(post.category, slug);
+      if (postSearch && postSearch.id !== post.id) {
+        toastCallback({ header: "Error", body: "Post with same title already exists" });
+        if (spinner) spinner.classList.add('visually-hidden');
+        return;
+      }
+    }
+
     if (post.id) {
       await write({ path: `posts`, existingDocId: post.id, data: post });
       console.log(`Updated document id=${post.id}`)
     } else {
       const doc = await write({ path: `posts`, data: post });
       setPost({ ...post, id: doc.id });
-      console.log(`doc id=${doc.id}, path=${doc.path}`)
+      console.log(`doc id=${doc.id}`)
     }
+    if (spinner) spinner.classList.add('visually-hidden');
   }
 
   const onFileUpload = async (props: UploadStatusType) => {
@@ -111,7 +132,7 @@ const EditPost = () => {
               </Form.Group>
               <Form.Group controlId="editForm.category">
                 <Form.Label>Category</Form.Label>
-                <Form.Select value={post.category} 
+                <Form.Select value={post.category}
                   onChange={(e) => { setPost({ ...post, category: e.target.value }) }}>
                   <option value={"town"}>Town</option>
                   <option value={"blog"}>Blog</option>
@@ -127,13 +148,21 @@ const EditPost = () => {
               )}
               <UploadFile toastCallback={toastCallback} disabled={post.id === ""} statusCallback={onFileUpload} />
               Body
-              <Editor 
+              <Editor
                 key={post.id}
-                onEdStateChange={(edState) => { setPost({ ...post, edState }) }} 
-                initState={post.edState} 
+                onEdStateChange={(edState) => { setPost({ ...post, edState }) }}
+                initState={post.edState}
               />
-              <Button variant="primary" onClick={onSave}>
-                Save
+              <Button variant="primary" onClick={(element) => onSave(element)}>
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                  className="visually-hidden"
+                />
+                <span>Save</span>
               </Button>
               <Form.Check type="checkbox" label="Publish to Everyone" checked={post.public} onChange={(e) => { setPost({ ...post, public: e.target.checked }) }} />
             </Form>

@@ -54,3 +54,17 @@ export async function getPostsWithDetails(
     }
     return postDisplay;
 }
+
+export async function getPostBySlug(category: string, slug: string): Promise<PostType> {
+    const posts = await queryOnce<PostType>(
+        {
+            path: `posts`, queryConstraints: [
+                where("category", "==", category),
+                where("slug", "==", slug),
+                where("public", "==", true),
+                limit(1)
+            ]
+        }
+    )
+    return posts[0]
+}

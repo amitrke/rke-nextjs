@@ -84,7 +84,7 @@ export default function Home({ data, posts, cacheCreatedAt }) {
             </h3>
 
             {[...posts].map((x: PostDisplayType, i) =>
-              <Link key={x.id} href={`posts/${x.id}`} style={{ textDecoration: 'none' }}>
+              <Link key={x.id} href={`post/${x.category}/${x.slug}`} style={{ textDecoration: 'none' }}>
                 <Row className="blog-post">
                   <Col md={8}>
                     <h2 className="blog-post-title mb-1 text-black">{x.title}</h2>
