@@ -5,17 +5,18 @@ import draftToHtml from 'draftjs-to-html';
 import DOMPurify from 'isomorphic-dompurify';
 import { Col, Container, Row } from "react-bootstrap";
 import { uiDateFormat } from "../../../components/ui/uiUtils";
-import Link from "next/link";
 import HeadTag from "../../../components/ui/headTag";
 import { User } from "../../../firebase/types";
 import PostUserInfo from "../../../components/ui/postUserInfo";
 import { getPostBySlug, getPosts } from "../../../service/PostService";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
+import RecentPostsBox from "../../../components/ui/recentPostsBox";
 
 export type PostDisplayType = PostType & {
     formattedUpdateDate: string;
     author: User;
     cacheCreatedAt?: string;
+    recentPosts: PostType[];
 }
 
 const createMarkup = (html: string) => {
@@ -41,13 +42,16 @@ export const getStaticProps = (async (context) => {
     const postDoc = await getPostBySlug(context.params.category as string, context.params.slug as string);
     const draftRaw = JSON.parse(postDoc.edState);
     const postBody = draftToHtml(draftRaw);
-    const author = await getDocument<User>({ path: 'users', pathSegments: [postDoc.userId] });
+    const authorPromise = getDocument<User>({ path: 'users', pathSegments: [postDoc.userId] });
+    const recentPostsPromise = getPosts({ limit: 5, public: true });
+    const [author, recentPosts] = await Promise.all([authorPromise, recentPostsPromise]);
     const post: PostDisplayType = {
         ...postDoc,
         edState: postBody,
         formattedUpdateDate: uiDateFormat(postDoc.updateDate),
         author,
-        cacheCreatedAt: uiDateFormat((new Date()).getTime())
+        cacheCreatedAt: uiDateFormat((new Date()).getTime()),
+        recentPosts
     }
 
     return {
@@ -80,14 +84,7 @@ export default function Page({
                         <h4 className="fst-italic">About the website</h4>
                         <p className="mb-0">Born in 2001, this website is a personal project to bring people of this town together, not affiliated to government / corporation.</p>
                     </div>
-                    <div className="p-4">
-                        <h4 className="fst-italic">Recent Posts</h4>
-                        <ol className="list-unstyled mb-0">
-                            <li><Link href="/posts/m3BbY0r1SfDprLkyUJc6">IIT Roorkee</Link></li>
-                            <li><a href="#">February 2021</a></li>
-                        </ol>
-                    </div>
-
+                    <RecentPostsBox posts={post.recentPosts} />
                     <div className="p-4">
                         <h4 className="fst-italic">Elsewhere</h4>
                         <ol className="list-unstyled">
