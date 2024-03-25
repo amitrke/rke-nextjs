@@ -84,7 +84,7 @@ export default function Home({ data, posts, cacheCreatedAt }) {
             </h3>
 
             {[...posts].map((x: PostDisplayType, i) =>
-              <Link key={x.id} href={`posts/${x.id}`} style={{ textDecoration: 'none' }}>
+              <Link key={x.id} href={`post/${x.category}/${x.slug}`} style={{ textDecoration: 'none' }}>
                 <Row className="blog-post">
                   <Col md={8}>
                     <h2 className="blog-post-title mb-1 text-black">{x.title}</h2>
@@ -113,15 +113,6 @@ export default function Home({ data, posts, cacheCreatedAt }) {
                 <h4 className="fst-italic">About</h4>
                 <p className="mb-0">Born in 2001, this website is a personal project to bring people of this town together, not affiliated to government / corporation.</p>
               </div>
-
-              <div className="p-4">
-                <h4 className="fst-italic">Recent Posts</h4>
-                <ol className="list-unstyled mb-0">
-                  <li><Link href="/posts/m3BbY0r1SfDprLkyUJc6">IIT Roorkee</Link></li>
-                  <li><a href="#">February 2021</a></li>
-                </ol>
-              </div>
-
               <div className="p-4">
                 <h4 className="fst-italic">Elsewhere</h4>
                 <ol className="list-unstyled">

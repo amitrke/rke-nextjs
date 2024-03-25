@@ -10,11 +10,14 @@ import Head from "next/head";
 import HeadTag from "../../components/ui/headTag";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import { uiDateFormat } from "../../components/ui/uiUtils";
+import { getPosts } from "../../service/PostService";
+import RecentPostsBox from "../../components/ui/recentPostsBox";
 
 type UserPropType = {
     user: User,
     posts: PostType[],
     albums: AlbumType[],
+    recentPosts: PostType[],
     cacheCreatedAt?: string;
 }
 
@@ -51,12 +54,15 @@ export const getStaticProps = (async (context) => {
             ]
         });
 
-    const [user, posts, albums] = await Promise.all([userPromise, postsPromise, albumsPromise])
+    const recentPostsPromise = getPosts({ limit: 5, public: true });
+
+    const [user, posts, albums, recentPosts] = await Promise.all([userPromise, postsPromise, albumsPromise, recentPostsPromise])
 
     const props: UserPropType = {
         user,
         posts,
         albums,
+        recentPosts,
         cacheCreatedAt: uiDateFormat(new Date().getTime())
     }
 
@@ -88,7 +94,7 @@ export default function Page({
                         {props.posts.map((post) => {
                             return (
                                 <li key={post.id}>
-                                    <Link href={`/posts/${post.id}`}>
+                                    <Link href={`/post/${post.category}/${post.slug}`}>
                                         {post.title}
                                     </Link>
                                 </li>
@@ -113,13 +119,7 @@ export default function Page({
                         <h4 className="fst-italic">About the website</h4>
                         <p className="mb-0">Born in 2001, this website is a personal project to bring people of this town together, not affiliated to government / corporation.</p>
                     </div>
-                    <div className="p-4">
-                        <h4 className="fst-italic">Recent Posts</h4>
-                        <ol className="list-unstyled mb-0">
-                            <li><Link href="/posts/m3BbY0r1SfDprLkyUJc6">IIT Roorkee</Link></li>
-                            <li><a href="#">February 2021</a></li>
-                        </ol>
-                    </div>
+                    <RecentPostsBox posts={props.recentPosts} />
 
                     <div className="p-4">
                         <h4 className="fst-italic">Elsewhere</h4>
