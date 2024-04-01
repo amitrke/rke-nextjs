@@ -9,6 +9,7 @@ export type HeadTagType = {
 export default function HeadTag ({ title, description, allowRobots = true }: HeadTagType) {
     return (
         <Head>
+            <html lang="en"/>
             <title>{title}</title>
             <meta property="og:title" content={title} key="title" />
             <meta name="robots" content={allowRobots ? "all" : "noindex"} />
