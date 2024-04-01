@@ -64,7 +64,7 @@ export default function Page({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
     return (
         <Container>
-            <HeadTag title={post.title} />
+            <HeadTag title={post.title} description={post.intro} />
             <Row>
                 <Col className="md-8">
                     <h1>{post.title}</h1>
