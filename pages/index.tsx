@@ -1,15 +1,12 @@
 
-import { limit, or, orderBy, where } from 'firebase/firestore';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Col, Container, Image, Row } from 'react-bootstrap'
-import { getImageDownloadURL, ShowImageRaw } from '../components/ui/showImage';
+import { ShowImageRaw } from '../components/ui/showImage';
 import { uiDateFormat, uiRound } from '../components/ui/uiUtils';
-import { getDocument, queryOnce } from '../firebase/firestore';
-import { PostType } from './account/editpost';
+import { getDocument } from '../firebase/firestore';
 import { PostDisplayType } from './posts/[id]';
 import { Weather } from './weather/[id]';
-import Head from 'next/head';
 import HeadTag from '../components/ui/headTag';
 import { getPostsWithDetails } from '../service/PostService';
 
@@ -38,7 +35,7 @@ export default function Home({ data, posts, cacheCreatedAt }) {
       <Container>
         <div className="p-4 p-md-5 mb-4 rounded text-bg-dark">
           <div className="jumbotron col-md-10 px-0">
-            <h1 className="display-4 fst-italic">{weatherText}<Image className='d-none d-md-inline' src={weatherImg} /></h1>
+            <h1 className="display-4 fst-italic">{weatherText}<Image className='d-none d-md-inline' src={weatherImg} alt='Weather Image' /></h1>
             <p className="lead my-3">{data.heroTextDesc}</p>
             <p className="lead mb-0"><Link href="/weather/roorkee-in" className="text-white fw-bold">Detailed weather forcast...</Link></p>
           </div>
@@ -100,10 +97,10 @@ export default function Home({ data, posts, cacheCreatedAt }) {
                 </Row>
               </Link>
             )}
-            <nav className="blog-pagination" aria-label="Pagination">
+            {/* <nav className="blog-pagination" aria-label="Pagination">
               <a className="btn btn-outline-primary rounded-pill" href="#">Older</a>
               <a className="btn btn-outline-secondary rounded-pill disabled">Newer</a>
-            </nav>
+            </nav> */}
 
           </Col>
 
