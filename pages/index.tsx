@@ -1,17 +1,15 @@
 
-import { limit, or, orderBy, where } from 'firebase/firestore';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Col, Container, Image, Row } from 'react-bootstrap'
-import { getImageDownloadURL, ShowImageRaw } from '../components/ui/showImage';
+import { Breadcrumb, Col, Container, Image, Row } from 'react-bootstrap';
+import HeadTag from '../components/ui/headTag';
+import { ShowImageRaw } from '../components/ui/showImage';
 import { uiDateFormat, uiRound } from '../components/ui/uiUtils';
-import { getDocument, queryOnce } from '../firebase/firestore';
-import { PostType } from './account/editpost';
+import { getDocument } from '../firebase/firestore';
+import { getPostsWithDetails } from '../service/PostService';
 import { PostDisplayType } from './posts/[id]';
 import { Weather } from './weather/[id]';
-import Head from 'next/head';
-import HeadTag from '../components/ui/headTag';
-import { getPostsWithDetails } from '../service/PostService';
+
 
 export default function Home({ data, posts, cacheCreatedAt }) {
 
@@ -35,6 +33,13 @@ export default function Home({ data, posts, cacheCreatedAt }) {
   return (
     <>
       <HeadTag title="Roorkee.org: Town Information." description="Roorkee.org: Town Information." />
+      <Breadcrumb>
+        <Breadcrumb.Item href="#">Home</Breadcrumb.Item>
+        <Breadcrumb.Item href="https://getbootstrap.com/docs/4.0/components/breadcrumb/">
+          Library
+        </Breadcrumb.Item>
+        <Breadcrumb.Item active>Data</Breadcrumb.Item>
+      </Breadcrumb>
       <Container>
         <div className="p-4 p-md-5 mb-4 rounded text-bg-dark">
           <div className="jumbotron col-md-10 px-0">
