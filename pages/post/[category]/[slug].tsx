@@ -4,7 +4,7 @@ import { PostType } from "../../account/editpost";
 import draftToHtml from 'draftjs-to-html';
 import DOMPurify from 'isomorphic-dompurify';
 import { Col, Container, Row } from "react-bootstrap";
-import { uiDateFormat } from "../../../components/ui/uiUtils";
+import { jsonLdDateFormat, uiDateFormat } from "../../../components/ui/uiUtils";
 import HeadTag from "../../../components/ui/headTag";
 import { User } from "../../../firebase/types";
 import PostUserInfo from "../../../components/ui/postUserInfo";
@@ -65,8 +65,30 @@ export const getStaticProps = (async (context) => {
 export default function Page({
     post,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        'headline': post.title,
+        'datePublished': jsonLdDateFormat(post.updateDate),
+        "author": [{
+            "@type": "Person",
+            "name": post.author.name,
+            "url": `/user/${post.author.id}`
+        }],
+        "speakable": {
+            "@type": "SpeakableSpecification",
+            "xPath": [
+                "/html/head/title",
+                '//*[@id="articleBody"]'
+            ]
+        }
+    }
     return (
         <Container>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <HeadTag title={post.title} description={post.intro} />
             <Row>
                 <Col className="md-8">
@@ -77,7 +99,7 @@ export default function Page({
                         <ShowImage key={x} file={`users/${post.userId}/images/${x}`} />
                     )}
                     <hr />
-                    <div dangerouslySetInnerHTML={createMarkup(post.edState)}></div>
+                    <div id="articleBody" dangerouslySetInnerHTML={createMarkup(post.edState)}></div>
                 </Col>
                 <Col className="g-5" md={4}>
                     <div className="p-4 mb-3 bg-light rounded">
