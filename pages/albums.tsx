@@ -25,7 +25,7 @@ export default function Page({
                     {[...dbList].map((x, i) =>
                         <div className="col" key={x.id}>
                             <Card key={x.id} style={{ width: '18rem' }}>
-                                <ShowImage size="s" file={`users/${x.userId}/images/${x.images[0]}`} />
+                                <ShowImage size="s" userId={x.userId} file={x.images[0]} />
                                 <Card.Body>
                                     <Card.Title>{x.name}</Card.Title>
                                     <Card.Text>

@@ -5,6 +5,7 @@ import { Image } from "react-bootstrap";
 export type ImageDownloadParams = {
     file?: string;
     size?: "s" | "m" | "l";
+    userId?: string;
 }
 export type ShowImageParams = ImageDownloadParams & {
     imageUrl?: string;
@@ -33,6 +34,17 @@ export type ImageDownloadURLResponse = {
     error?: string;
 }
 
+const fileNameToNameWithDimensions = (fileName: string, size: string = 'm') => {
+    const filenameParts = fileName.split(".");
+    const fileExtention = filenameParts.pop();
+    return `${filenameParts[0]}_${imageSizeMap[size]['w']}x${imageSizeMap[size]['h']}.${fileExtention}`;
+}
+
+export const getImageBucketUrl = (fileName: string, size: string, userId: string) => {
+    const fileNameWithDimensions = fileNameToNameWithDimensions(fileName, size);
+    return `https://storage.googleapis.com/rkeorg.appspot.com/users/${userId}/images/${fileNameWithDimensions}`
+}
+
 export async function getImageDownloadURLV2(params: ImageDownloadParams): Promise<ImageDownloadURLResponse> {
     const storage = getStorage();
     const filenameParts = params.file.split(".");
@@ -42,11 +54,15 @@ export async function getImageDownloadURLV2(params: ImageDownloadParams): Promis
     try {
         const downloadUrl = await getDownloadURL(ref(storage, fileName));
         if (downloadUrl) {
-            return {url: downloadUrl, key: params.file, size: size };
+            return {
+                url: downloadUrl, key: params.file, size: size
+            };
         }
     } catch (err) {
         console.error(err)
-        return {url: '/no-image.png', key: params.file, size: size, error: err.message };
+        return {
+            url: '/no-image.png', key: params.file, size: size, error: err.message
+        };
     }
 }
 
@@ -72,28 +88,35 @@ export async function getImageDownloadURL(params: ImageDownloadParams): Promise<
 const ShowImage = (props: ShowImageParams) => {
     const size = props.size ? props.size : "m";
     let classes = props.classes ? props.classes : "";
-    const [imageUrl, setImageUrl] = useState<string>();
+    
+    if (size === "s" && classes.indexOf("img-thumbnail") === -1) {
+        classes += " img-thumbnail";
+    }
 
+    if (props.userId && props.file) {
+        const url = getImageBucketUrl(props.file, size, props.userId);
+        return (
+            <ShowImageRaw imageUrl={url} size={size} classes={classes} />
+        )
+    }
+    
+    const [imageUrl, setImageUrl] = useState<string>();
     const getUrl = async () => {
         if (props.imageUrl) {
             setImageUrl(props.imageUrl)
             return;
         }
         if (props.file) {
-            const url = await getImageDownloadURL({...props})
+            const url = await getImageDownloadURL({ ...props })
             setImageUrl(url)
         }
     }
-
     getUrl();
-
-    if (size === "s" && classes.indexOf("img-thumbnail") === -1) {
-        classes += " img-thumbnail";
-    }
 
     return (
         <ShowImageRaw imageUrl={imageUrl} size={size} classes={classes} />
     )
+    
 }
 
 export const ShowImageRaw = (props: ShowImageParams) => {
@@ -107,7 +130,7 @@ export const ShowImageRaw = (props: ShowImageParams) => {
     }
 
     return (
-        <Image src={props.imageUrl} alt="" className={props.classes} fluid/>
+        <Image src={props.imageUrl} alt="" className={props.classes} fluid />
     )
 }
 

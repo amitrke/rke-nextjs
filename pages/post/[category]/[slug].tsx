@@ -96,7 +96,7 @@ export default function Page({
                     <PostUserInfo user={post.author} postDate={post.updateDate} />
                     <p>{post.intro}</p>
                     {[...post.images].map((x, i) =>
-                        <ShowImage key={x} file={`users/${post.userId}/images/${x}`} />
+                        <ShowImage key={x} file={x} userId={post.userId} />
                     )}
                     <hr />
                     <div id="articleBody" dangerouslySetInnerHTML={createMarkup(post.edState)}></div>

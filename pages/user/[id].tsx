@@ -1,17 +1,15 @@
 import { orderBy, where } from "firebase/firestore";
-import DOMPurify from 'isomorphic-dompurify';
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 import Link from "next/link";
 import { Col, Container, Image, Row } from "react-bootstrap";
+import HeadTag from "../../components/ui/headTag";
+import RecentPostsBox from "../../components/ui/recentPostsBox";
+import { uiDateFormat } from "../../components/ui/uiUtils";
 import { getDocument, queryOnce } from "../../firebase/firestore";
 import { User } from "../../firebase/types";
+import { getPosts } from "../../service/PostService";
 import { AlbumType } from "../account/editAlbum";
 import { PostType } from "../account/editpost";
-import Head from "next/head";
-import HeadTag from "../../components/ui/headTag";
-import { GetStaticProps, InferGetStaticPropsType } from "next";
-import { uiDateFormat } from "../../components/ui/uiUtils";
-import { getPosts } from "../../service/PostService";
-import RecentPostsBox from "../../components/ui/recentPostsBox";
 
 type UserPropType = {
     user: User,
