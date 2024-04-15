@@ -2,14 +2,14 @@ import { orderBy, where } from "firebase/firestore";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import Link from "next/link";
 import { Col, Container, Image, Row } from "react-bootstrap";
-import HeadTag from "../../components/ui/headTag";
-import RecentPostsBox from "../../components/ui/recentPostsBox";
-import { uiDateFormat } from "../../components/ui/uiUtils";
-import { getDocument, queryOnce } from "../../firebase/firestore";
-import { User } from "../../firebase/types";
-import { getPosts } from "../../service/PostService";
-import { AlbumType } from "../account/editAlbum";
-import { PostType } from "../account/editpost";
+import HeadTag from "../../../../components/ui/headTag";
+import RecentPostsBox from "../../../../components/ui/recentPostsBox";
+import { uiDateFormat } from "../../../../components/ui/uiUtils";
+import { getDocument, queryOnce } from "../../../../firebase/firestore";
+import { User } from "../../../../firebase/types";
+import { getPosts } from "../../../../service/PostService";
+import { AlbumType } from "../../../account/editAlbum";
+import { PostType } from "../../../account/editpost";
 
 type UserPropType = {
     user: User,
@@ -21,7 +21,7 @@ type UserPropType = {
 
 export async function getStaticPaths() {
     const users = await queryOnce<User>({ path: 'users' });
-    const paths = users.map(user => ({ params: { id: user.id } }))
+    const paths = users.map(user => ({ params: { userid: user.id } }))
     return {
         paths,
         fallback: 'blocking', // generate new pages on-demand
@@ -29,7 +29,7 @@ export async function getStaticPaths() {
 }
 
 export const getStaticProps = (async (context) => {
-    const userId = context.params.id as string;
+    const userId = context.params.userid as string;
     const userPromise = getDocument<User>({ path: `users`, pathSegments: [userId] })
     //Get posts of this user
     const postsPromise = queryOnce<PostType>(

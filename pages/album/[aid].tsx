@@ -1,19 +1,19 @@
+import { where } from 'firebase/firestore'
+import { GetStaticProps, InferGetStaticPropsType } from 'next'
 import { useState } from 'react'
 import { Button, ButtonGroup, Card, Col, Container, Image, Modal, Row } from 'react-bootstrap'
-import { getImageDownloadURLV2, ImageDownloadURLResponse } from '../../components/ui/showImage'
-import { getDocument, queryOnce } from '../../firebase/firestore'
-import { AlbumType } from '../account/editAlbum'
-import { User } from '../../firebase/types'
 import HeadTag from '../../components/ui/headTag'
 import PostUserInfo from '../../components/ui/postUserInfo'
-import { where } from 'firebase/firestore'
+import { getImageBucketUrl } from '../../components/ui/showImage'
 import { uiDateFormat } from '../../components/ui/uiUtils'
-import { GetStaticProps, InferGetStaticPropsType } from 'next'
+import { getDocument, queryOnce } from '../../firebase/firestore'
+import { User } from '../../firebase/types'
+import { AlbumType } from '../account/editAlbum'
 
 type AlbumPropType = {
     album: AlbumType,
     user: User,
-    images: { m: ImageDownloadURLResponse, l: ImageDownloadURLResponse }[],
+    images: { m: string, l: string }[],
     cacheCreatedAt?: string
 }
 
@@ -27,40 +27,20 @@ export async function getStaticPaths() {
 }
 
 export const getStaticProps = (async (context) => {
-    console.log(`context: ${JSON.stringify(context)}`)
     const aid = context.params.aid as string;
-    console.log(`aid: ${aid}`)
     const albumDoc = await getDocument<AlbumType>({ path: `albums`, pathSegments: [aid] })
     const userDoc = await getDocument<User>({ path: `users`, pathSegments: [albumDoc.userId] })
 
-    const imageRequestPromises: Promise<ImageDownloadURLResponse>[] = [];
-    albumDoc.images.forEach((image) => {
-        imageRequestPromises.push(
-            getImageDownloadURLV2({ file: `users/${albumDoc.userId}/images/${image}`, size: 'm' })
-        )
-        imageRequestPromises.push(
-            getImageDownloadURLV2({ file: `users/${albumDoc.userId}/images/${image}`, size: 'l' })
-        )
-    })
-    const imageResponses = await Promise.all(imageRequestPromises)
-
-    //Group imageResponses by key
-    const imageResponseMap = new Map<string, ImageDownloadURLResponse[]>()
-    imageResponses.forEach((imageResponse) => {
-        if (!imageResponseMap.has(imageResponse.key)) {
-            imageResponseMap.set(imageResponse.key, [])
-        }
-        imageResponseMap.get(imageResponse.key)[imageResponse.size] = imageResponse
-    })
-
     // imageResponseMap to Array
-    const imageResponseArray: { m: ImageDownloadURLResponse, l: ImageDownloadURLResponse }[] = []
-    imageResponseMap.forEach((value, key) => {
+    const imageResponseArray: { m: string, l: string }[] = []
+    albumDoc.images.forEach(async (imageId) => {
+        const mUrl = getImageBucketUrl(imageId, 'm', albumDoc.userId);
+        const lUrl = getImageBucketUrl(imageId, 'l', albumDoc.userId);
         imageResponseArray.push({
-            m: value['m'],
-            l: value['l']
-        })
-    })
+            m: mUrl,
+            l: lUrl
+        });
+    });
 
     const albumProp: AlbumPropType = {
         album: albumDoc,
@@ -122,14 +102,14 @@ export default function Page({
                         return (
                             <Col md="4" key={key}>
                                 <Card className="mb-4 box-shadow">
-                                    <Image src={item.m.url} alt="" onClick={() => handleShow(item.l.url)} />
+                                    <Image src={item.m} alt="" onClick={() => handleShow(item.l)} />
                                     <Card.Body>
                                         {/* <Card.Text>{item.l.url}</Card.Text> */}
                                         <div className="d-flex justify-content-between align-items-center">
                                             <ButtonGroup>
                                                 <Button
                                                     color="secondary"
-                                                    size="sm" onClick={() => handleShow(item.l.url)}
+                                                    size="sm" onClick={() => handleShow(item.l)}
                                                 >
                                                     View
                                                 </Button>

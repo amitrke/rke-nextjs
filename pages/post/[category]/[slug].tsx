@@ -1,22 +1,23 @@
-import ShowImage from "../../../components/ui/showImage";
-import { getDocument } from "../../../firebase/firestore";
-import { PostType } from "../../account/editpost";
 import draftToHtml from 'draftjs-to-html';
 import DOMPurify from 'isomorphic-dompurify';
-import { Col, Container, Row } from "react-bootstrap";
-import { uiDateFormat } from "../../../components/ui/uiUtils";
-import HeadTag from "../../../components/ui/headTag";
-import { User } from "../../../firebase/types";
-import PostUserInfo from "../../../components/ui/postUserInfo";
-import { getPostBySlug, getPosts } from "../../../service/PostService";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { Col, Container, Row } from "react-bootstrap";
+import HeadTag from "../../../components/ui/headTag";
+import PostUserInfo from "../../../components/ui/postUserInfo";
 import RecentPostsBox from "../../../components/ui/recentPostsBox";
+import ShowImage2, { ImageDisplayType, getImageSizes } from "../../../components/ui/showImage2";
+import { jsonLdDateFormat, uiDateFormat } from "../../../components/ui/uiUtils";
+import { getDocument } from "../../../firebase/firestore";
+import { User } from "../../../firebase/types";
+import { getPostBySlug, getPosts } from "../../../service/PostService";
+import { PostType } from "../../account/editpost";
 
 export type PostDisplayType = PostType & {
     formattedUpdateDate: string;
     author: User;
     cacheCreatedAt?: string;
     recentPosts: PostType[];
+    displayImages: ImageDisplayType[];
 }
 
 const createMarkup = (html: string) => {
@@ -44,14 +45,17 @@ export const getStaticProps = (async (context) => {
     const postBody = draftToHtml(draftRaw);
     const authorPromise = getDocument<User>({ path: 'users', pathSegments: [postDoc.userId] });
     const recentPostsPromise = getPosts({ limit: 5, public: true });
-    const [author, recentPosts] = await Promise.all([authorPromise, recentPostsPromise]);
+    const imagesPromise = getImageSizes([...postDoc.images], postDoc.userId);
+    const [author, recentPosts, images] = await Promise.all([authorPromise, recentPostsPromise, imagesPromise]);
+
     const post: PostDisplayType = {
         ...postDoc,
         edState: postBody,
         formattedUpdateDate: uiDateFormat(postDoc.updateDate),
         author,
         cacheCreatedAt: uiDateFormat((new Date()).getTime()),
-        recentPosts
+        recentPosts,
+        displayImages: images
     }
 
     return {
@@ -65,19 +69,41 @@ export const getStaticProps = (async (context) => {
 export default function Page({
     post,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        'headline': post.title,
+        'datePublished': jsonLdDateFormat(post.updateDate),
+        "author": [{
+            "@type": "Person",
+            "name": post.author.name,
+            "url": `/user/${post.author.id}`
+        }],
+        "speakable": {
+            "@type": "SpeakableSpecification",
+            "xPath": [
+                "/html/head/title",
+                '//*[@id="articleBody"]'
+            ]
+        }
+    }
     return (
         <Container>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <HeadTag title={post.title} description={post.intro} />
             <Row>
                 <Col className="md-8">
                     <h1>{post.title}</h1>
                     <PostUserInfo user={post.author} postDate={post.updateDate} />
                     <p>{post.intro}</p>
-                    {[...post.images].map((x, i) =>
-                        <ShowImage key={x} file={`users/${post.userId}/images/${x}`} />
+                    {[...post.displayImages].map((x, i) =>
+                        <ShowImage2 key={x.url} file={x.url} userId={post.userId} width={x.width} height={x.height} />
                     )}
                     <hr />
-                    <div dangerouslySetInnerHTML={createMarkup(post.edState)}></div>
+                    <div id="articleBody" dangerouslySetInnerHTML={createMarkup(post.edState)}></div>
                 </Col>
                 <Col className="g-5" md={4}>
                     <div className="p-4 mb-3 bg-light rounded">
