@@ -45,9 +45,6 @@ export type ImageDownloadURLResponse = {
 const fileNameToNameWithDimensions = (fileName: string, size: string = 'm') => {
     const filenameParts = fileName.split(".");
     const fileExtention = filenameParts.pop();
-    console.log('filenameParts: ', filenameParts);
-    console.log('fileExtention: ', fileExtention);
-    console.log('size: ', size);
     return `${filenameParts[0]}_${imageSizeMap[size]['w']}x${imageSizeMap[size]['h']}.${fileExtention}`;
 }
 
