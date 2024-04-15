@@ -1,22 +1,23 @@
-import ShowImage from "../../../components/ui/showImage";
-import { getDocument } from "../../../firebase/firestore";
-import { PostType } from "../../account/editpost";
 import draftToHtml from 'draftjs-to-html';
 import DOMPurify from 'isomorphic-dompurify';
-import { Col, Container, Row } from "react-bootstrap";
-import { jsonLdDateFormat, uiDateFormat } from "../../../components/ui/uiUtils";
-import HeadTag from "../../../components/ui/headTag";
-import { User } from "../../../firebase/types";
-import PostUserInfo from "../../../components/ui/postUserInfo";
-import { getPostBySlug, getPosts } from "../../../service/PostService";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { Col, Container, Row } from "react-bootstrap";
+import HeadTag from "../../../components/ui/headTag";
+import PostUserInfo from "../../../components/ui/postUserInfo";
 import RecentPostsBox from "../../../components/ui/recentPostsBox";
+import ShowImage2, { ImageDisplayType, getImageSizes } from "../../../components/ui/showImage2";
+import { jsonLdDateFormat, uiDateFormat } from "../../../components/ui/uiUtils";
+import { getDocument } from "../../../firebase/firestore";
+import { User } from "../../../firebase/types";
+import { getPostBySlug, getPosts } from "../../../service/PostService";
+import { PostType } from "../../account/editpost";
 
 export type PostDisplayType = PostType & {
     formattedUpdateDate: string;
     author: User;
     cacheCreatedAt?: string;
     recentPosts: PostType[];
+    displayImages: ImageDisplayType[];
 }
 
 const createMarkup = (html: string) => {
@@ -44,14 +45,17 @@ export const getStaticProps = (async (context) => {
     const postBody = draftToHtml(draftRaw);
     const authorPromise = getDocument<User>({ path: 'users', pathSegments: [postDoc.userId] });
     const recentPostsPromise = getPosts({ limit: 5, public: true });
-    const [author, recentPosts] = await Promise.all([authorPromise, recentPostsPromise]);
+    const imagesPromise = getImageSizes([...postDoc.images], postDoc.userId);
+    const [author, recentPosts, images] = await Promise.all([authorPromise, recentPostsPromise, imagesPromise]);
+
     const post: PostDisplayType = {
         ...postDoc,
         edState: postBody,
         formattedUpdateDate: uiDateFormat(postDoc.updateDate),
         author,
         cacheCreatedAt: uiDateFormat((new Date()).getTime()),
-        recentPosts
+        recentPosts,
+        displayImages: images
     }
 
     return {
@@ -95,8 +99,8 @@ export default function Page({
                     <h1>{post.title}</h1>
                     <PostUserInfo user={post.author} postDate={post.updateDate} />
                     <p>{post.intro}</p>
-                    {[...post.images].map((x, i) =>
-                        <ShowImage key={x} file={x} userId={post.userId} />
+                    {[...post.displayImages].map((x, i) =>
+                        <ShowImage2 key={x.url} file={x.url} userId={post.userId} width={x.width} height={x.height} />
                     )}
                     <hr />
                     <div id="articleBody" dangerouslySetInnerHTML={createMarkup(post.edState)}></div>

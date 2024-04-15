@@ -85,19 +85,15 @@ export async function getImageDownloadURL(params: ImageDownloadParams): Promise<
     }
 }
 
+/*
+* @deprecated use ShowImage2
+*/
 const ShowImage = (props: ShowImageParams) => {
     const size = props.size ? props.size : "m";
     let classes = props.classes ? props.classes : "";
     
     if (size === "s" && classes.indexOf("img-thumbnail") === -1) {
         classes += " img-thumbnail";
-    }
-
-    if (props.userId && props.file) {
-        const url = getImageBucketUrl(props.file, size, props.userId);
-        return (
-            <ShowImageRaw imageUrl={url} size={size} classes={classes} />
-        )
     }
     
     const [imageUrl, setImageUrl] = useState<string>();
