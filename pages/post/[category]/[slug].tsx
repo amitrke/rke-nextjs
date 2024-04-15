@@ -45,7 +45,7 @@ export const getStaticProps = (async (context) => {
     const postBody = draftToHtml(draftRaw);
     const authorPromise = getDocument<User>({ path: 'users', pathSegments: [postDoc.userId] });
     const recentPostsPromise = getPosts({ limit: 5, public: true });
-    const imagesPromise = getImageSizes([...postDoc.images], postDoc.userId);
+    const imagesPromise = getImageSizes([...postDoc.images], 'm', postDoc.userId);
     const [author, recentPosts, images] = await Promise.all([authorPromise, recentPostsPromise, imagesPromise]);
 
     const post: PostDisplayType = {
@@ -79,6 +79,7 @@ export default function Page({
             "name": post.author.name,
             "url": `/user/${post.author.id}`
         }],
+        'image': post.displayImages.map(x => x.url),
         "speakable": {
             "@type": "SpeakableSpecification",
             "xPath": [
@@ -100,7 +101,7 @@ export default function Page({
                     <PostUserInfo user={post.author} postDate={post.updateDate} />
                     <p>{post.intro}</p>
                     {[...post.displayImages].map((x, i) =>
-                        <ShowImage2 key={x.url} file={x.url} userId={post.userId} width={x.width} height={x.height} />
+                        <ShowImage2 key={x.key} file={x.key} userId={post.userId} width={x.width} height={x.height} />
                     )}
                     <hr />
                     <div id="articleBody" dangerouslySetInnerHTML={createMarkup(post.edState)}></div>

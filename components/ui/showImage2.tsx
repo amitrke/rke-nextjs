@@ -14,6 +14,7 @@ export type ShowImageParams = ImageDownloadParams & {
 }
 
 export type ImageDisplayType = {
+    key?: string;
     url: string;
     width?: number;
     height?: number;
@@ -44,6 +45,9 @@ export type ImageDownloadURLResponse = {
 const fileNameToNameWithDimensions = (fileName: string, size: string = 'm') => {
     const filenameParts = fileName.split(".");
     const fileExtention = filenameParts.pop();
+    console.log('filenameParts: ', filenameParts);
+    console.log('fileExtention: ', fileExtention);
+    console.log('size: ', size);
     return `${filenameParts[0]}_${imageSizeMap[size]['w']}x${imageSizeMap[size]['h']}.${fileExtention}`;
 }
 
@@ -52,10 +56,11 @@ export const getImageBucketUrl = (fileName: string, size: string, userId: string
     return `https://storage.googleapis.com/rkeorg.appspot.com/users/${userId}/images/${fileNameWithDimensions}`
 }
 
-export const getImageSizes = async (imageUrl: string[], userId: string): Promise<ImageDisplayType[]> => {
-    const sizes = imageUrl.map(async (url) => {
-        const { width , height } = await probe(getImageBucketUrl(url, "m", userId));
-        return { url, width, height };
+export const getImageSizes = async (imageUrl: string[], size: string, userId: string): Promise<ImageDisplayType[]> => {
+    const sizes = imageUrl.map(async (key) => {
+        const bucketUrl = getImageBucketUrl(key, size, userId);
+        const { width , height } = await probe(bucketUrl);
+        return { key, width, height, url: bucketUrl};
     });
     return await Promise.all(sizes);
 }
