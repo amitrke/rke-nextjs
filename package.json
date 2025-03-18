@@ -20,7 +20,7 @@
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
     "firebase": "^10.14.1",
-    "firebase-admin": "^13.1.0",
+    "firebase-admin": "^13.2.0",
     "fs": "^0.0.1-security",
     "immutable": "4.x.x",
     "isomorphic-dompurify": "^2.22.0",
