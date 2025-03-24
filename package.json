@@ -40,7 +40,7 @@
     "@types/react-draft-wysiwyg": "^1.13.8",
     "eslint": "9.22.0",
     "eslint-config-next": "^15.2.2",
-    "sass": "^1.85.1",
+    "sass": "^1.86.0",
     "typescript": "^5.8.2"
   }
 }
