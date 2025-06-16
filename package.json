@@ -38,7 +38,7 @@
     "@types/dompurify": "^3.2.0",
     "@types/draft-js": "^0.11.18",
     "@types/react-draft-wysiwyg": "^1.13.8",
-    "eslint": "9.27.0",
+    "eslint": "9.29.0",
     "eslint-config-next": "^15.3.2",
     "sass": "^1.88.0",
     "typescript": "^5.8.3"
