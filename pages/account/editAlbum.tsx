@@ -55,7 +55,7 @@ const EditAlbum = () => {
     const onSave = async () => {
         if (albumId === '' && album.id === '') {
             console.log(`Create new album`);
-            const doc = await write<AlbumType>({ path: `albums`, data: album });
+            const doc = await write({ path: `albums`, data: album });
             setAlbumId(doc.id);
             console.log(`doc id=${doc.id}, path=${doc.path}`)
         } else {
@@ -88,7 +88,7 @@ const EditAlbum = () => {
             <Row>
                 <Col>
                     Edit Album
-                    {[...toasts].map((x, i) =>
+                    {[...toasts].map((x) =>
                         <ToastMsg key={x.body} header={x.header} body={x.body} />
                     )}
                 </Col>
@@ -123,7 +123,7 @@ const EditAlbum = () => {
             </Row>
             <Row>
                 <Col>
-                    {[...album.images].map((x, i) =>
+                    {[...album.images].map((x) =>
                         <div style={{ maxWidth: "200px", float: "left" }} key={x}>
                             <ShowImage size="s" file={`users/${user.id}/images/${x}`} />
                             <Button variant="danger" onClick={() => onFileDelete(x)} >Delete</Button>

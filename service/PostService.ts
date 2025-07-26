@@ -7,20 +7,28 @@ import { getImageDownloadURLV2 } from "../components/ui/showImage"
 import { uiDateFormat } from "../components/ui/uiUtils"
 
 export type GetPostArgs = {
-    public: boolean,
-    limit: number,
+    public?: boolean,
+    limit?: number,
+    userId?: string,
 }
 
 export async function getPosts(
-    args: GetPostArgs = { public: true, limit: 10 }
+    args: GetPostArgs = {}
 ): Promise<PostType[]> {
+    const queryConstraints = []
+    if (args.public !== undefined) {
+        queryConstraints.push(where("public", "==", args.public))
+    }
+    if (args.userId) {
+        queryConstraints.push(where("userId", "==", args.userId))
+    }
+    queryConstraints.push(orderBy("updateDate", "desc"))
+    if (args.limit) {
+        queryConstraints.push(limit(args.limit))
+    }
     return await queryOnce<PostType>(
         {
-            path: `posts`, queryConstraints: [
-                where("public", "==", args.public),
-                orderBy("updateDate", "desc"),
-                limit(args.limit)
-            ]
+            path: `posts`, queryConstraints: queryConstraints
         }
     )
 }
@@ -67,4 +75,19 @@ export async function getPostBySlug(category: string, slug: string): Promise<Pos
         }
     )
     return posts[0]
+}
+
+export async function getPostWithAuthor(post: PostType): Promise<PostDisplayType> {
+    const author = await queryOnce<User>({ path: `users`, queryConstraints: [where("id", "==", post.userId)] });
+    const postImages = [];
+    if (post.images && post.images.length > 0) {
+        const image = await getImageDownloadURLV2({ file: `users/${post.userId}/images/${post.images[0]}`, size: 'l' });
+        postImages.push(image.url);
+    }
+    return {
+        ...post,
+        images: postImages,
+        formattedUpdateDate: uiDateFormat(post.updateDate),
+        author: author[0],
+    };
 }

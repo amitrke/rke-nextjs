@@ -3,15 +3,15 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
 export type ShowModalParams = {
-    yesCallback: (params?: any) => Promise<void>
-    noCallback?: (params?: any) => Promise<void>
+    yesCallback: (params?: Record<string, unknown>) => Promise<void>
+    noCallback?: (params?: Record<string, unknown>) => Promise<void>
     yesLabel?: string
     noLabel?: string
     heading?: string
     body?: string
     show: boolean
     changeTrigger?: Date
-    callbackParams?: any
+    callbackParams?: Record<string, unknown>
 }
 
 const ShowModal = (props: ShowModalParams) => {

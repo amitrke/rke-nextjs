@@ -112,7 +112,7 @@ const EditPost = () => {
 
   return (
     <>
-      {[...toasts].map((x, i) =>
+      {[...toasts].map((x) =>
         <ToastMsg key={x.body} header={x.header} body={x.body} />
       )}
       <Container fluid>
@@ -143,7 +143,7 @@ const EditPost = () => {
                 </Form.Select>
               </Form.Group>
               Images <br />
-              {[...post.images].map((x, i) =>
+              {[...post.images].map((x) =>
                 <ShowImage size="s" key={x} file={`users/${user.id}/images/${x}`} />
               )}
               <UploadFile toastCallback={toastCallback} disabled={post.id === ""} statusCallback={onFileUpload} />

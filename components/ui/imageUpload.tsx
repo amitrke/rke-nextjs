@@ -1,16 +1,10 @@
 import { useState } from "react";
 
 const ImageUpload = () => {
-    const [file, setFile] = useState("");
+    const [, setFile] = useState("");
 
-    function handleChange(event) {
-        setFile(event.target.files[0]);
-    }
-
-    function handleUpload() {
-        if (!file) {
-            alert("Please choose a file first!")
-        }
+    function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setFile(event.target.files[0].name);
     }
     
     return (

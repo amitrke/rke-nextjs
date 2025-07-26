@@ -1,4 +1,5 @@
-const path = require('path')
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const path = require('path');
 
 module.exports = {
   sassOptions: {
@@ -24,5 +25,4 @@ module.exports = {
 
     return config;
   },
-  swcMinify: true
 }

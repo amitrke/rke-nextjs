@@ -1,7 +1,7 @@
-import { Container, Row, Col, Carousel, Image } from 'react-bootstrap';
-import { Card } from 'react-bootstrap';
+import { GetServerSideProps } from "next";
+import { Card, Col, Container, Image, Row } from "react-bootstrap";
 import { getDocument } from '../../firebase/firestore';
-import { uiRound } from '../../components/ui/uiUtils';
+import { uiRound, uiDateFormat } from '../../components/ui/uiUtils';
 import Head from 'next/head';
 
 function dateTimeFormat(date: number, timezone_offset: number, timeZone: string): string {
@@ -155,7 +155,7 @@ function DailyWeatherWidget(props: Weather) {
     )
 }
 
-export default function Weather(props: Weather) {
+export default function Weather({ weather, cacheCreatedAt }: { weather: Weather, cacheCreatedAt: string }) {
     return (
         <Container fluid className="vh-100" style={{ backgroundColor: '#C1CFEA' }}>
             <Head>
@@ -164,25 +164,27 @@ export default function Weather(props: Weather) {
             </Head>
             <Row className="h-100 d-flex justify-content-center align-items-center" style={{ color: '#282828' }}>
                 <Col>
-                    <CurrentWeatherWidget {...props.current} />
-                    <HourlyWeatherWidget {...props} />
-                    <DailyWeatherWidget {...props} />
+                    <CurrentWeatherWidget {...weather.current} />
+                    <HourlyWeatherWidget {...weather} />
+                    <DailyWeatherWidget {...weather} />
+                    <p className="text-muted mb-0">Last updated at {cacheCreatedAt}</p>
                 </Col>
             </Row>
         </Container>
     )
 }
 
-export async function getServerSideProps({ req, res, query }) {
-    const { id } = query
-    if (typeof (id) !== 'string') return;
-    const weatherDoc = await getDocument<Weather>({ path: `weather`, pathSegments: [id] })
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const { res, query } = context;
     res.setHeader(
         'Cache-Control',
-        'public, s-maxage=3600, stale-while-revalidate'
+        'public, s-maxage=10, stale-while-revalidate=59'
     )
-
+    const weather = await getDocument<Weather>({ path: `weather`, pathSegments: [query.id as string] });
     return {
-        props: weatherDoc
+        props: {
+            weather,
+            cacheCreatedAt: uiDateFormat((new Date()).getTime())
+        }
     }
 }

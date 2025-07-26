@@ -58,10 +58,9 @@ export async function getImageDownloadURLV2(params: ImageDownloadParams): Promis
                 url: downloadUrl, key: params.file, size: size
             };
         }
-    } catch (err) {
-        console.error(err)
+    } catch {
         return {
-            url: '/no-image.png', key: params.file, size: size, error: err.message
+            url: '/no-image.png', key: params.file, size: size
         };
     }
 }
@@ -80,7 +79,7 @@ export async function getImageDownloadURL(params: ImageDownloadParams): Promise<
         if (downloadUrl) {
             return downloadUrl;
         }
-    } catch (err) {
+    } catch {
         return '/no-image.png';
     }
 }

@@ -100,7 +100,7 @@ export default function Page({
                     <h1>{post.title}</h1>
                     <PostUserInfo user={post.author} postDate={post.updateDate} />
                     <p>{post.intro}</p>
-                    {[...post.displayImages].map((x, i) =>
+                    {[...post.displayImages].map((x) =>
                         <ShowImage2 key={x.key} file={x.key} userId={post.userId} width={x.width} height={x.height} />
                     )}
                     <hr />

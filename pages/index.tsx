@@ -2,13 +2,12 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Col, Container, Image, Row } from 'react-bootstrap'
-import { ShowImageRaw } from '../components/ui/showImage';
 import { uiDateFormat, uiRound } from '../components/ui/uiUtils';
 import { getDocument } from '../firebase/firestore';
-import { PostDisplayType } from './posts/[id]';
 import { Weather } from './weather/[id]';
 import HeadTag from '../components/ui/headTag';
 import { getPostsWithDetails } from '../service/PostService';
+import PostList from '../components/ui/postList';
 
 export default function Home({ data, posts, cacheCreatedAt }) {
 
@@ -79,28 +78,7 @@ export default function Home({ data, posts, cacheCreatedAt }) {
             <h3 className="pb-4 mb-4 fst-italic border-bottom">
               From the Firehose
             </h3>
-
-            {[...posts].map((x: PostDisplayType, i) =>
-              <Link key={x.id} href={`post/${x.category}/${x.slug}`} style={{ textDecoration: 'none' }}>
-                <Row className="blog-post">
-                  <Col md={8}>
-                    <h2 className="blog-post-title mb-1 text-black">{x.title}</h2>
-                    <p className="blog-post-meta">Posted on {x.formattedUpdateDate} by {x.author.name}</p>
-                    <p className='text-black'>
-                      {x.intro}
-                    </p>
-                  </Col>
-                  <Col md={4}>
-                    <ShowImageRaw size="s" imageUrl={x.images[0]} classes="img-thumbnail imgshadow" />
-                  </Col>
-                  <hr />
-                </Row>
-              </Link>
-            )}
-            {/* <nav className="blog-pagination" aria-label="Pagination">
-              <a className="btn btn-outline-primary rounded-pill" href="#">Older</a>
-              <a className="btn btn-outline-secondary rounded-pill disabled">Newer</a>
-            </nav> */}
+            <PostList posts={posts} />
 
           </Col>
 

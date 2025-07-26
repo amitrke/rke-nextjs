@@ -1,7 +1,6 @@
 import ShowImage from "../../components/ui/showImage";
 import { getDocument } from "../../firebase/firestore";
 import { PostType } from "../account/editpost";
-import draftToHtml from 'draftjs-to-html';
 import DOMPurify from 'isomorphic-dompurify';
 import { Col, Container, Row } from "react-bootstrap";
 import { uiDateFormat } from "../../components/ui/uiUtils";
@@ -11,6 +10,11 @@ import { User } from "../../firebase/types";
 import PostUserInfo from "../../components/ui/postUserInfo";
 import { getPosts } from "../../service/PostService";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { ParsedUrlQuery } from "querystring";
+
+interface IParams extends ParsedUrlQuery {
+    id: string;
+}
 
 export type PostDisplayType = PostType & {
     formattedUpdateDate: string;
@@ -37,27 +41,20 @@ export async function getStaticPaths() {
     }
 }
 
-export const getStaticProps = (async (context) => {
-    const postId = context.params.id as string;
-    const postDoc = await getDocument<PostType>({ path: `posts`, pathSegments: [postId] })
-    const draftRaw = JSON.parse(postDoc.edState);
-    const postBody = draftToHtml(draftRaw);
-    const author = await getDocument<User>({ path: 'users', pathSegments: [postDoc.userId] });
-    const post: PostDisplayType = {
-        ...postDoc,
-        edState: postBody,
-        formattedUpdateDate: uiDateFormat(postDoc.updateDate),
-        author,
-        cacheCreatedAt: uiDateFormat((new Date()).getTime())
-    }
+import { getPostWithAuthor } from '../../service/PostService';
 
+export const getStaticProps: GetStaticProps = async (context) => {
+    const { id } = context.params as IParams;
+    const post = await getDocument<PostType>({ path: 'posts', pathSegments: [id] });
+    const postDisplay = await getPostWithAuthor(post);
     return {
-        props: { post },
-        revalidate: 86400, // regenerate page every 24 hours 
-    }
-}) satisfies GetStaticProps<{
-    post: PostDisplayType
-}>
+        props: {
+            post: postDisplay,
+            cacheCreatedAt: uiDateFormat(new Date().getTime()),
+        },
+        revalidate: 86400, // regenerate page every 24 hours
+    };
+};
 
 export default function Page({
     post,
@@ -70,7 +67,7 @@ export default function Page({
                     <h1>{post.title}</h1>
                     <PostUserInfo user={post.author} postDate={post.updateDate} />
                     <p>{post.intro}</p>
-                    {[...post.images].map((x, i) =>
+                    {[...post.images].map((x) =>
                         <ShowImage key={x} file={`users/${post.userId}/images/${x}`} />
                     )}
                     <hr />
