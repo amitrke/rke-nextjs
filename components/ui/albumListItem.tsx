@@ -1,4 +1,6 @@
 import { Button, Card } from "react-bootstrap";
+import Link from 'next/link';
+import { useUser } from "../../firebase/useUser";
 import { deleteDocument } from "../../firebase/firestore";
 import { AlbumType } from "../../pages/account/editAlbum";
 import { ShowModalParams } from "./showModal";
@@ -10,6 +12,7 @@ export type DisplayAlbumParams = {
 }
 
 const AlbumListItem = (params: DisplayAlbumParams) => {
+    const { user } = useUser();
 
     const onDelete = async () => {
         await deleteDocument({ path: `albums/${params.album.id}` });
@@ -21,14 +24,20 @@ const AlbumListItem = (params: DisplayAlbumParams) => {
 
     return (
         <Card style={{ width: '18rem' }}>
-            <Card.Img variant="top" src={params.mainImageUrl} />
+            <Link href={`/album/${params.album.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Card.Img variant="top" src={params.mainImageUrl} />
+                <Card.Body>
+                    <Card.Title>{params.album.name}</Card.Title>
+                    <Card.Text>
+                        {params.album.description}
+                    </Card.Text>
+                </Card.Body>
+            </Link>
             <Card.Body>
-                <Card.Title>{params.album.name}</Card.Title>
-                <Card.Text>
-                    {params.album.description}
-                </Card.Text>
-                <Button variant="primary" href={'/account/editAlbum?id=' + params.album.id}>Edit</Button>{' '}
-                <Button variant="secondary" onClick={onDeleteClick}>Delete</Button>
+                <div className={user && user.id === params.album.userId ? '' : 'd-none'}>
+                    <Button variant="primary" href={'/account/editAlbum?id=' + params.album.id}>Edit</Button>{' '}
+                    <Button variant="secondary" onClick={onDeleteClick}>Delete</Button>
+                </div>
             </Card.Body>
             <Card.Footer>
                 <small className="text-muted">Public: {params.album.public.toString()}</small>
