@@ -16,9 +16,9 @@ export default function Home({ data, posts, cacheCreatedAt }) {
   const [weatherImg, setWeatherImg] = useState('' as string)
 
   useEffect(() => {
-    getDocument<Weather>({ path: `weather`, pathSegments: ['roorkee-in'] }).then((w: Weather) => {
-      setWeather(w);
-    })
+    fetch('/api/weather')
+      .then(res => res.json())
+      .then(w => setWeather(w));
   }, []);
 
   useEffect(() => {
