@@ -6,10 +6,11 @@ import { uiDateFormat, uiRound } from '../components/ui/uiUtils';
 import { getDocument } from '../firebase/firestore';
 import { Weather } from './weather/[id]';
 import HeadTag from '../components/ui/headTag';
-import { getPostsWithDetails } from '../service/PostService';
+import { getNews, getPostsWithDetails } from '../service/PostService';
 import PostList from '../components/ui/postList';
+import NewsList from '../components/ui/newsList';
 
-export default function Home({ data, posts, cacheCreatedAt }) {
+export default function Home({ data, posts, news, cacheCreatedAt }) {
 
   const [weather, setWeather] = useState({} as Weather)
   const [weatherText, setWeatherText] = useState('' as string)
@@ -41,36 +42,12 @@ export default function Home({ data, posts, cacheCreatedAt }) {
         </div>
 
         <Row className="mb-2">
-          <div className="col-md-6">
-            <div className="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-              <div className="col p-4 d-flex flex-column position-static">
-                <strong className="d-inline-block mb-2 text-primary">World</strong>
-                <h3 className="mb-0">Photo Albums</h3>
-                <div className="mb-1 text-muted">Nov 12</div>
-                <p className="card-text mb-auto">Discover and upload awesome pictures of this beautiful town</p>
-                <Link href="/albums/" className="stretched-link">Continue to albums</Link>
-              </div>
-              <div className="col-auto d-none d-lg-block">
-                <svg className="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <div className="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-              <div className="col p-4 d-flex flex-column position-static">
-                <strong className="d-inline-block mb-2 text-success">Design</strong>
-                <h3 className="mb-0">Post title</h3>
-                <div className="mb-1 text-muted">Nov 11</div>
-                <p className="mb-auto">This is a wider card with supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" className="stretched-link">Continue reading</a>
-              </div>
-              <div className="col-auto d-none d-lg-block">
-                <svg className="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-
-              </div>
-            </div>
-          </div>
+          <Col>
+            <h2 className="pb-4 mb-4 fst-italic border-bottom">
+              News about Roorkee
+            </h2>
+            <NewsList news={news} />
+          </Col>
         </Row>
 
         <Row className="g-5 text-black">
@@ -117,13 +94,17 @@ export default function Home({ data, posts, cacheCreatedAt }) {
 export async function getStaticProps() {
   const resp = await getDocument({ path: 'appconfig', pathSegments: ['homepage'] });
   const postDisplay = await getPostsWithDetails();
+  console.log('Posts fetched:', postDisplay.length);
+  const news = await getNews({ limit: 8 });
+  console.log('News fetched:', news.length);
   const cacheCreatedAt = uiDateFormat((new Date()).getTime());
   return {
     props: {
       data: resp,
       posts: postDisplay,
+      news: news,
       cacheCreatedAt
     },
-    revalidate: 86400, // regenerate page every 24 hours
+    revalidate: 86400, // regenerate page every day
   }
 }

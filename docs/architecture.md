@@ -60,6 +60,33 @@ The backend is powered by [Firebase](https://firebase.google.com/).
     -   [Realtime Database](https://firebase.google.com/docs/database) is used for features that require real-time data synchronization, such as the counter.
 -   **Storage**: [Firebase Storage](https://firebase.google.com/docs/storage) is used to store user-uploaded files like images.
 
+## Backend Functions
+
+The project utilizes Firebase Functions for automated backend tasks. These functions are defined in a separate repository but interact with the same Firebase project.
+
+-   **`updateNewsFromNewsDataIO`**:
+    -   **Trigger**: Runs on a schedule (every 12 hours).
+    -   **Action**: Fetches news articles related to "Roorkee" from the [NewsData.io](https://newsdata.io/) API.
+    -   **Database Interaction**: Stores the fetched articles in the `news` collection in Firestore. It checks for existing articles by title to avoid duplicates.
+    -   **Data Schema**: The documents in the `news` collection have the following structure:
+        ```json
+        {
+          "title": "string",
+          "description": "string",
+          "link": "string",
+          "image_url": "string",
+          "pubDate": "string",
+          "source_id": "string",
+          "keywords": "array",
+          "creator": "array",
+          "content": "string",
+          "country": "array",
+          "category": "array",
+          "language": "string",
+          "createdAt": "Timestamp"
+        }
+        ```
+
 ## Deployment
 
 The application is deployed on [Vercel](https://vercel.com/). The `master` branch is deployed to production, and the `develop` branch is deployed to a preview environment.

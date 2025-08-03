@@ -12,6 +12,47 @@ export type GetPostArgs = {
     userId?: string,
 }
 
+export type NewsArticle = {
+    title: string,
+    description: string,
+    link: string,
+    image_url: string,
+    pubDate: string,
+    source_id: string,
+    keywords: string[],
+    creator: string[],
+    content: string,
+    country: string[],
+    category: string[],
+    language: string,
+    createdAt: any,
+    formattedPubDate?: string,
+    expireAt?: any,
+}
+
+export async function getNews(
+    args: { limit: number } = { limit: 8 }
+): Promise<NewsArticle[]> {
+    const queryConstraints = [
+        where("apiSource", "==", "newsdata.io"),
+        orderBy("expireAt", "desc"),
+        limit(args.limit)
+    ];
+    const news = await queryOnce<NewsArticle>(
+        {
+            path: `news`, queryConstraints: queryConstraints
+        }
+    );
+    console.log('getNews', news);
+    return news.map(article => {
+        const { expireAt, ...rest } = article;
+        return {
+            ...rest,
+            formattedPubDate: uiDateFormat(new Date(article.pubDate).getTime()),
+        };
+    });
+}
+
 export async function getPosts(
     args: GetPostArgs = {}
 ): Promise<PostType[]> {
