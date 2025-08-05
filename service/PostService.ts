@@ -13,11 +13,15 @@ export type GetPostArgs = {
 }
 
 export type NewsArticle = {
+    id: string,
     title: string,
     description: string,
     link: string,
+    url: string,
     image_url: string,
+    urlToImage: string,
     pubDate: string,
+    publishedAt: string,
     source_id: string,
     keywords: string[],
     creator: string[],
@@ -48,7 +52,7 @@ export async function getNews(
         const { expireAt, ...rest } = article;
         return {
             ...rest,
-            formattedPubDate: uiDateFormat(new Date(article.pubDate).getTime()),
+            formattedPubDate: uiDateFormat(new Date(article.publishedAt).getTime()),
         };
     });
 }

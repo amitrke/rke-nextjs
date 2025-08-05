@@ -9,9 +9,9 @@ export default function NewsListItem({ article }: NewsListItemProps) {
     return (
         <div className="col-md-6 col-lg-4 mb-4">
             <div className="card h-100">
-                {article.image_url && (
-                    <Image
-                        src={article.image_url}
+                {article.urlToImage && (
+                    <img
+                        src={article.urlToImage}
                         alt={article.title}
                         width={300}
                         height={200}
@@ -21,12 +21,12 @@ export default function NewsListItem({ article }: NewsListItemProps) {
                 )}
                 <div className="card-body">
                     <h5 className="card-title">
-                        <a href={article.link} target="_blank" rel="noopener noreferrer">
+                        <a href={article.url} target="_blank" rel="noopener noreferrer">
                             {article.title}
                         </a>
                     </h5>
                     <p className="card-text">{article.description}</p>
-                    <a href={article.link} target="_blank" rel="noopener noreferrer" className="stretched-link">
+                    <a href={article.url} target="_blank" rel="noopener noreferrer" className="stretched-link">
                         Read More
                     </a>
                 </div>
