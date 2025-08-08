@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { Weather } from './weather/[id]';
 import { uiRound } from '../components/ui/uiUtils';
 
-import { PostDisplayType } from './posts/[id]';
+import { PostDisplayType } from '../firebase/types';
 import { Event, NewsArticle } from '../service/PostService';
 import { AlbumType } from '../pages/account/editAlbum';
 
@@ -58,17 +58,7 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <header className={styles.header}>
-        <div className={styles.logo}>Roorkee.org</div>
-        <nav>
-          <Link href="/">Home</Link>
-          <Link href="/posts">Posts</Link>
-          <Link href="/news/1">News</Link>
-          <Link href="/events">Events</Link>
-          <Link href="/albums">Albums</Link>
-          <Link href="/contact">Contact</Link>
-        </nav>
-      </header>
+      
 
       <main className={styles.container}>
         <section className={styles.hero}>
@@ -177,33 +167,20 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
 
       </main>
 
-      <section className={styles.ctaSection}>
+      {/* <section className={styles.ctaSection}>
         <div className={styles.container}>
             <h2>Get Involved!</h2>
             <p>Want to contribute to our community? Find out how you can get involved.</p>
             <Link href="#" className={styles.ctaButton}>Learn More</Link>
         </div>
-      </section>
+      </section> */}
 
-      <footer className={styles.footer}>
-        <div className={styles.footerLinks}>
-            <Link href="#">About Us</Link>
-            <Link href="#">Privacy Policy</Link>
-            <Link href="#">Terms of Service</Link>
-            <Link href="#">Contact Us</Link>
-        </div>
-        <div className={styles.socialLinks}>
-            <Link href="#"><Image src="https://simpleicons.org/icons/facebook.svg" alt="Facebook" width={24} height={24} /></Link>
-            <Link href="#"><Image src="https://simpleicons.org/icons/twitter.svg" alt="Twitter" width={24} height={24} /></Link>
-            <Link href="#"><Image src="https://simpleicons.org/icons/instagram.svg" alt="Instagram" width={24} height={24} /></Link>
-        </div>
-        <p>&copy; 2025 TownName. All Rights Reserved.</p>
-      </footer>
+      
     </>
   );
 };
 
-IndexDev.noLayout = true;
+
 
 export default IndexDev;
 

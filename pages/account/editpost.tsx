@@ -15,18 +15,7 @@ const Editor = dynamic(() => import("../../components/ui/richTextEditor"), {
   ssr: false
 })
 
-export type PostType = {
-  id: string;
-  title: string;
-  intro: string;
-  edState: string;
-  updateDate: number;
-  images: string[];
-  public: boolean;
-  userId: string;
-  category: string;
-  slug: string;
-}
+import { PostType } from '../../firebase/types';
 
 const EditPost = () => {
   const router = useRouter()

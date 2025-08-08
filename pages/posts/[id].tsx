@@ -1,12 +1,12 @@
 import ShowImage from "../../components/ui/showImage";
 import { getDocument } from "../../firebase/firestore";
-import { PostType } from "../account/editpost";
+import { PostType } from "../../firebase/types";
 import DOMPurify from 'isomorphic-dompurify';
 import { Col, Container, Row } from "react-bootstrap";
 import { uiDateFormat } from "../../components/ui/uiUtils";
 import Link from "next/link";
 import HeadTag from "../../components/ui/headTag";
-import { User } from "../../firebase/types";
+
 import PostUserInfo from "../../components/ui/postUserInfo";
 import { getPosts } from "../../service/PostService";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
@@ -16,11 +16,7 @@ interface IParams extends ParsedUrlQuery {
     id: string;
 }
 
-export type PostDisplayType = PostType & {
-    formattedUpdateDate: string;
-    author: User;
-    cacheCreatedAt?: string;
-}
+
 
 const createMarkup = (html: string) => {
     return {

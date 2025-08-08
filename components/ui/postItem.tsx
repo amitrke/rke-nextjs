@@ -1,6 +1,6 @@
 import { Button, Card } from "react-bootstrap";
 import { deleteDocument } from "../../firebase/firestore";
-import { PostType } from "../../pages/account/editpost";
+import { PostType } from "../../firebase/types";
 import { ShowModalParams } from "./showModal";
 
 export type DisplayPostParams = {

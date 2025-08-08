@@ -5,19 +5,17 @@ import { Col, Container, Row } from "react-bootstrap";
 import HeadTag from "../../../components/ui/headTag";
 import PostUserInfo from "../../../components/ui/postUserInfo";
 import RecentPostsBox from "../../../components/ui/recentPostsBox";
-import ShowImage2, { ImageDisplayType, getImageSizes } from "../../../components/ui/showImage2";
+
 import { jsonLdDateFormat, uiDateFormat } from "../../../components/ui/uiUtils";
 import { getDocument } from "../../../firebase/firestore";
-import { User } from "../../../firebase/types";
+import { PostDisplayType, PostType, User } from "../../../firebase/types";
 import { getPostBySlug, getPosts } from "../../../service/PostService";
-import { PostType } from "../../account/editpost";
+import ShowImage2, { getImageSizes, ImageDisplayType } from '../../../components/ui/showImage2';
 
-export type PostDisplayType = PostType & {
-    formattedUpdateDate: string;
-    author: User;
-    cacheCreatedAt?: string;
-    recentPosts: PostType[];
-    displayImages: ImageDisplayType[];
+type PageType = PostDisplayType & {
+    cacheCreatedAt: string,
+    recentPosts: PostType[],
+    displayImages: ImageDisplayType[],
 }
 
 const createMarkup = (html: string) => {
@@ -48,7 +46,7 @@ export const getStaticProps = (async (context) => {
     const imagesPromise = getImageSizes([...postDoc.images], 'm', postDoc.userId);
     const [author, recentPosts, images] = await Promise.all([authorPromise, recentPostsPromise, imagesPromise]);
 
-    const post: PostDisplayType = {
+    const post: PageType = {
         ...postDoc,
         edState: postBody,
         formattedUpdateDate: uiDateFormat(postDoc.updateDate),
@@ -63,7 +61,7 @@ export const getStaticProps = (async (context) => {
         revalidate: 86400, // regenerate page every 24 hours 
     }
 }) satisfies GetStaticProps<{
-    post: PostDisplayType
+    post: PageType
 }>
 
 export default function Page({

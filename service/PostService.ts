@@ -1,8 +1,8 @@
 import { limit, orderBy, where } from "firebase/firestore"
 import { queryOnce } from "../firebase/firestore"
 import { AlbumType } from "../pages/account/editAlbum"
-import { PostType } from "../pages/account/editpost"
-import { PostDisplayType } from "../pages/posts/[id]"
+import { PostType } from "../firebase/types";
+import { PostDisplayType } from "../firebase/types";
 import { User } from "../firebase/types"
 import { getImageDownloadURLV2 } from "../components/ui/showImage"
 import { uiDateFormat } from "../components/ui/uiUtils"
@@ -129,6 +129,44 @@ export async function getPaginatedNews(
     });
 
     return { news: formattedNews, totalCount };
+}
+
+export async function getPaginatedPosts(
+    args: { limit: number, page: number }
+): Promise<{ posts: PostDisplayType[], totalCount: number }> {
+    const queryConstraints = [
+        where("public", "==", true),
+        orderBy("updateDate", "desc"),
+    ];
+
+    const allPosts = await queryOnce<PostType>({
+        path: `posts`,
+        queryConstraints: queryConstraints
+    });
+    const totalCount = allPosts.length;
+
+    const startIndex = (args.page - 1) * args.limit;
+    const endIndex = startIndex + args.limit;
+    const paginatedPosts = allPosts.slice(startIndex, endIndex);
+
+    const postDisplay = new Array<PostDisplayType>();
+    const userIds = [...new Set(paginatedPosts.map(post => post.userId))];
+    const users = await queryOnce<User>({ path: `users`, queryConstraints: [where("id", "in", userIds)] });
+    const userDict = users.reduce((dict, user) => {
+        dict[user.id] = user;
+        return dict;
+    }, {} as { [key: string]: User });
+
+    for (const post of paginatedPosts) {
+        const postImages = [];
+        if (post.images && post.images.length > 0) {
+            const image = await getImageDownloadURLV2({ file: `users/${post.userId}/images/${post.images[0]}`, size: 's' });
+            postImages.push(image.url);
+        }
+        postDisplay.push({ ...post, images: postImages, formattedUpdateDate: uiDateFormat(post.updateDate), author: userDict[post.userId] });
+    }
+
+    return { posts: postDisplay, totalCount };
 }
 
 export async function getNews(

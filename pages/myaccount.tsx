@@ -5,7 +5,7 @@ import PostList from '../components/ui/postList'
 import { useEffect, useState } from 'react'
 import AlbumList from '../components/ui/albumList'
 import { getPostsWithDetails } from '../service/PostService'
-import { PostDisplayType } from '../pages/posts/[id]'
+import { PostDisplayType } from '../firebase/types';
 import { AlbumType } from '../pages/account/editAlbum'
 import { subscribeToCollectionUpdates } from '../firebase/firestore'
 import { where } from 'firebase/firestore'

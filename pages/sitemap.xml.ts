@@ -1,6 +1,6 @@
 import { where } from "firebase/firestore";
 import { queryOnce } from "../firebase/firestore";
-import { PostType } from "./account/editpost";
+import { PostType } from "../firebase/types";
 import { AlbumType } from "./account/editAlbum";
 import { User } from "../firebase/types";
 
