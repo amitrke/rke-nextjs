@@ -3,23 +3,24 @@ import Image from 'next/image';
 import Link from 'next/link';
 import styles from '../styles/IndexDev.module.css';
 import { getDocument } from '../firebase/firestore';
-import { getNews, getPostsWithDetails } from '../service/PostService';
+import { getEvents, getNews, getPostsWithDetails } from '../service/PostService';
 import { useEffect, useState } from 'react';
 import { Weather } from './weather/[id]';
 import { uiRound } from '../components/ui/uiUtils';
 
 import { PostDisplayType } from './posts/[id]';
-import { NewsArticle } from '../service/PostService';
+import { Event, NewsArticle } from '../service/PostService';
 
 type IndexDevProps = {
   posts: PostDisplayType[];
   news: NewsArticle[];
+  events: Event[];
   data: {
     heroTextDesc: string;
   };
 };
 
-function IndexDev({ posts = [], news = [], data = { heroTextDesc: "Welcome to our town. Find all the information you need about our vibrant community."} }: IndexDevProps) {
+function IndexDev({ posts = [], news = [], events = [], data = { heroTextDesc: "Welcome to our town. Find all the information you need about our vibrant community."} }: IndexDevProps) {
   const [weather, setWeather] = useState({} as Weather);
   const [todayWeather, setTodayWeather] = useState({ temp: '', condition: '', icon: '' });
   const [tomorrowWeather, setTomorrowWeather] = useState({ temp: '', condition: '', icon: '' });
@@ -109,7 +110,7 @@ function IndexDev({ posts = [], news = [], data = { heroTextDesc: "Welcome to ou
                         <div className={styles.cardContent}>
                             <h3>{post.title}</h3>
                             <p>By {post.author.name}</p>
-                            <p>{post.intro}</p>
+                            <p>{post.intro && post.intro.length > 120 ? `${post.intro.substring(0, 120)}...` : post.intro}</p>
                             <Link href={`/post/${post.category}/${post.slug}`}>Read More</Link>
                         </div>
                     </div>
@@ -128,7 +129,7 @@ function IndexDev({ posts = [], news = [], data = { heroTextDesc: "Welcome to ou
                         <div className={styles.cardImage} style={{backgroundImage: `url(${item.urlToImage ? item.urlToImage : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                         <div className={styles.cardContent}>
                             <h3>{item.title}</h3>
-                            <p>{item.description}</p>
+                            <p>{item.description && item.description.length > 120 ? `${item.description.substring(0, 120)}...` : item.description}</p>
                             <Link href={item.url}>Read More</Link>
                         </div>
                     </div>
@@ -142,46 +143,18 @@ function IndexDev({ posts = [], news = [], data = { heroTextDesc: "Welcome to ou
                 <h2 className={styles.sectionTitle}>Upcoming Events</h2>
             </div>
             <div>
-                <div className={styles.eventCard}>
-                    <div className={styles.eventDate}>
-                        <div className={styles.month}>AUG</div>
-                        <div className={styles.day}>15</div>
+                {events.map((event) => (
+                    <div className={styles.eventCard} key={event.id}>
+                        <div className={styles.eventDate}>
+                            <div className={styles.month}>{event.formattedMonth}</div>
+                            <div className={styles.day}>{event.formattedDay}</div>
+                        </div>
+                        <div className={styles.eventDetails}>
+                            <h3>{event.name}</h3>
+                            <p>{event.description}</p>
+                        </div>
                     </div>
-                    <div className={styles.eventDetails}>
-                        <h3>Farmer's Market</h3>
-                        <p>Town Square, 9:00 AM - 1:00 PM</p>
-                    </div>
-                </div>
-                <div className={styles.eventCard}>
-                    <div className={styles.eventDate}>
-                        <div className={styles.month}>AUG</div>
-                        <div className={styles.day}>22</div>
-                    </div>
-                    <div className={styles.eventDetails}>
-                        <h3>Outdoor Movie Night</h3>
-                        <p>Central Park, 8:00 PM</p>
-                    </div>
-                </div>
-                <div className={styles.eventCard}>
-                    <div className={styles.eventDate}>
-                        <div className={styles.month}>SEP</div>
-                        <div className={styles.day}>05</div>
-                    </div>
-                    <div className={styles.eventDetails}>
-                        <h3>Labor Day Parade</h3>
-                        <p>Main Street, 11:00 AM</p>
-                    </div>
-                </div>
-                 <div className={styles.eventCard}>
-                    <div className={styles.eventDate}>
-                        <div className={styles.month}>SEP</div>
-                        <div className={styles.day}>10</div>
-                    </div>
-                    <div className={styles.eventDetails}>
-                        <h3>Charity Run 5K</h3>
-                        <p>Riverside Path, 9:00 AM</p>
-                    </div>
-                </div>
+                ))}
             </div>
         </section>
 
@@ -234,17 +207,16 @@ export default IndexDev;
 
 export async function getStaticProps() {
   const resp = await getDocument({ path: 'appconfig', pathSegments: ['homepage'] });
-  console.log('Fetched homepage config:', resp);
   const postDisplay = await getPostsWithDetails();
-  console.log('Posts fetched:', postDisplay.length);
   const news = await getNews({ limit: 8 });
-  console.log('News fetched:', news.length);
+  const events = await getEvents({ limit: 4 });
   
   return {
     props: {
       data: resp,
       posts: postDisplay,
       news: news,
+      events: events,
     },
     revalidate: 86400, // regenerate page every day
   }

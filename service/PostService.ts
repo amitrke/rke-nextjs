@@ -12,6 +12,17 @@ export type GetPostArgs = {
     userId?: string,
 }
 
+export type Event = {
+    id: string,
+    name: string,
+    description: string,
+    date: string, // ISO date string
+    formattedDate?: string,
+    formattedMonth?: string,
+    formattedDay?: string,
+    expireAt?: number,
+}
+
 export type NewsArticle = {
     id: string,
     title: string,
@@ -32,6 +43,33 @@ export type NewsArticle = {
     createdAt: number,
     formattedPubDate?: string,
     expireAt?: number,
+}
+
+export async function getEvents(
+    args: { limit: number } = { limit: 8 }
+): Promise<Event[]> {
+    const today = new Date().toISOString().split('T')[0]; // Get date in YYYY-MM-DD format
+    const queryConstraints = [
+        where("date", ">=", today),
+        orderBy("date", "asc"),
+        limit(args.limit)
+    ];
+    const events = await queryOnce<Event>(
+        {
+            path: `events`, queryConstraints: queryConstraints
+        }
+    );
+    return events.map(event => {
+        const eventDate = new Date(event.date);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { expireAt, ...rest } = event;
+        return {
+            ...rest,
+            formattedDate: uiDateFormat(eventDate.getTime()),
+            formattedMonth: eventDate.toLocaleString('default', { month: 'short' }).toUpperCase(),
+            formattedDay: eventDate.getDate().toString(),
+        };
+    });
 }
 
 export async function getNews(
