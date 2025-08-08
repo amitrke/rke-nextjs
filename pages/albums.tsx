@@ -32,7 +32,6 @@ export async function getStaticProps() {
         const url = getImageBucketUrl(x.images[0], 's', x.userId);
         bucketUrlMap[x.id] = url;
     })
-    console.log('bucketUrlMap: ', bucketUrlMap);
     return {
         props: {
             time: new Date().toISOString(),

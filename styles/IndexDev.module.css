@@ -200,6 +200,10 @@
     font-weight: bold;
 }
 
+.eventDate .year {
+    font-size: 14px;
+}
+
 .eventDetails h3 {
     margin: 0 0 5px;
 }

@@ -1,5 +1,6 @@
 import { limit, orderBy, where } from "firebase/firestore"
 import { queryOnce } from "../firebase/firestore"
+import { AlbumType } from "../pages/account/editAlbum"
 import { PostType } from "../pages/account/editpost"
 import { PostDisplayType } from "../pages/posts/[id]"
 import { User } from "../firebase/types"
@@ -20,6 +21,7 @@ export type Event = {
     formattedDate?: string,
     formattedMonth?: string,
     formattedDay?: string,
+    formattedYear?: string,
     expireAt?: number,
 }
 
@@ -45,6 +47,30 @@ export type NewsArticle = {
     expireAt?: number,
 }
 
+export async function getAlbums(
+    args: { limit: number } = { limit: 6 }
+): Promise<AlbumType[]> {
+    const queryConstraints = [
+        where("public", "==", true),
+        orderBy("updateDate", "desc"),
+        limit(args.limit)
+    ];
+    const albums = await queryOnce<AlbumType>(
+        {
+            path: `albums`, queryConstraints: queryConstraints
+        }
+    );
+    const albumsWithImageUrls = await Promise.all(albums.map(async (album) => {
+        const images = [];
+        if (album.images && album.images.length > 0) {
+            const image = await getImageDownloadURLV2({ file: `users/${album.userId}/images/${album.images[0]}`, size: 's' });
+            images.push(image.url);
+        }
+        return { ...album, images: images };
+    }));
+    return albumsWithImageUrls;
+}
+
 export async function getEvents(
     args: { limit: number } = { limit: 8 }
 ): Promise<Event[]> {
@@ -68,8 +94,41 @@ export async function getEvents(
             formattedDate: uiDateFormat(eventDate.getTime()),
             formattedMonth: eventDate.toLocaleString('default', { month: 'short' }).toUpperCase(),
             formattedDay: eventDate.getDate().toString(),
+            formattedYear: eventDate.getFullYear().toString(),
         };
     });
+}
+
+export async function getPaginatedNews(
+    args: { limit: number, page: number }
+): Promise<{ news: NewsArticle[], totalCount: number }> {
+    const queryConstraints = [
+        where("apiSource", "==", "newsdata.io"),
+        orderBy("expireAt", "desc"),
+    ];
+
+    // Get all documents to determine total count and for pagination snapshots
+    const allNews = await queryOnce<NewsArticle>({
+        path: `news`,
+        queryConstraints: queryConstraints
+    });
+    const totalCount = allNews.length;
+
+    // Get the subset of documents for the current page
+    const startIndex = (args.page - 1) * args.limit;
+    const endIndex = startIndex + args.limit;
+    const paginatedNews = allNews.slice(startIndex, endIndex);
+
+    const formattedNews = paginatedNews.map(article => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { expireAt, ...rest } = article;
+        return {
+            ...rest,
+            formattedPubDate: uiDateFormat(new Date(article.publishedAt).getTime()),
+        };
+    });
+
+    return { news: formattedNews, totalCount };
 }
 
 export async function getNews(
@@ -85,7 +144,6 @@ export async function getNews(
             path: `news`, queryConstraints: queryConstraints
         }
     );
-    console.log('getNews', news);
     return news.map(article => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { expireAt, ...rest } = article;
