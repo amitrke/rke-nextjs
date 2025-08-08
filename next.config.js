@@ -17,6 +17,16 @@ module.exports = {
         hostname: 'storage.googleapis.com',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'openweathermap.org',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        pathname: '**',
+      },
     ],
     minimumCacheTTL: 1500000
   },

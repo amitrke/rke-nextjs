@@ -1,5 +1,4 @@
 import { NewsArticle } from "../../service/PostService";
-import Image from 'next/image';
 
 type NewsListItemProps = {
     article: NewsArticle;

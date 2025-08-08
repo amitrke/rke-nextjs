@@ -29,9 +29,9 @@ export type NewsArticle = {
     country: string[],
     category: string[],
     language: string,
-    createdAt: any,
+    createdAt: number,
     formattedPubDate?: string,
-    expireAt?: any,
+    expireAt?: number,
 }
 
 export async function getNews(
@@ -49,6 +49,7 @@ export async function getNews(
     );
     console.log('getNews', news);
     return news.map(article => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { expireAt, ...rest } = article;
         return {
             ...rest,
