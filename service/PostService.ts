@@ -47,6 +47,76 @@ export type NewsArticle = {
     expireAt?: number,
 }
 
+// --- helper utilities: dedupe news by very similar titles ---
+const STOP_WORDS = new Set([
+    "the","a","an","to","of","in","on","for","with","and","or","at","from","by","about","after","before","over","under","into","as","is","are","was","were","be","been","being","this","that","these","those","it","its","their","his","her","new","breaking"
+]);
+
+function normalizeTitle(raw: string): string {
+    if (!raw) return "";
+    return raw
+        .toLowerCase()
+        .replace(/https?:\/\/\S+/g, " ") // remove urls
+        .replace(/[^a-z0-9\s]/g, " ")      // remove punctuation
+        .replace(/\s+/g, " ")               // collapse whitespace
+        .trim();
+}
+
+function tokenizeTitle(raw: string): string[] {
+    const norm = normalizeTitle(raw);
+    if (!norm) return [];
+    return norm
+        .split(" ")
+        .filter(t => t && !STOP_WORDS.has(t));
+}
+
+function jaccardSimilarity(aTokens: string[], bTokens: string[]): number {
+    if (aTokens.length === 0 && bTokens.length === 0) return 1;
+    const aSet = new Set(aTokens);
+    const bSet = new Set(bTokens);
+    let intersection = 0;
+    for (const t of aSet) {
+        if (bSet.has(t)) intersection++;
+    }
+    const union = aSet.size + bSet.size - intersection;
+    return union === 0 ? 0 : intersection / union;
+}
+
+function tokenCoverage(aTokens: string[], bTokens: string[]): number {
+    if (aTokens.length === 0 || bTokens.length === 0) return 0;
+    const aSet = new Set(aTokens);
+    const bSet = new Set(bTokens);
+    let intersection = 0;
+    for (const t of aSet) {
+        if (bSet.has(t)) intersection++;
+    }
+    const minLen = Math.min(aSet.size, bSet.size);
+    return minLen === 0 ? 0 : intersection / minLen;
+}
+
+function areTitlesSimilar(a: string, b: string): boolean {
+    const an = normalizeTitle(a);
+    const bn = normalizeTitle(b);
+    if (!an || !bn) return false;
+    if (an === bn) return true;
+    const at = tokenizeTitle(a);
+    const bt = tokenizeTitle(b);
+    if (at.length === 0 || bt.length === 0) return an === bn;
+    const j = jaccardSimilarity(at, bt);
+    const cov = tokenCoverage(at, bt);
+    // Tunable thresholds; conservative to avoid false positives
+    return j >= 0.75 || cov >= 0.85;
+}
+
+function dedupeBySimilarTitle<T extends { title: string }>(items: T[]): T[] {
+    const result: T[] = [];
+    for (const item of items) {
+        const duplicate = result.some(r => areTitlesSimilar(r.title, item.title));
+        if (!duplicate) result.push(item);
+    }
+    return result;
+}
+
 export async function getAlbums(
     args: { limit: number } = { limit: 6 }
 ): Promise<AlbumType[]> {
@@ -112,12 +182,15 @@ export async function getPaginatedNews(
         path: `news`,
         queryConstraints: queryConstraints
     });
-    const totalCount = allNews.length;
+
+    // Dedupe by very similar titles while preserving sort order (newest first)
+    const deduped = dedupeBySimilarTitle(allNews);
+    const totalCount = deduped.length;
 
     // Get the subset of documents for the current page
     const startIndex = (args.page - 1) * args.limit;
     const endIndex = startIndex + args.limit;
-    const paginatedNews = allNews.slice(startIndex, endIndex);
+    const paginatedNews = deduped.slice(startIndex, endIndex);
 
     const formattedNews = paginatedNews.map(article => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -182,7 +255,11 @@ export async function getNews(
             path: `news`, queryConstraints: queryConstraints
         }
     );
-    return news.map(article => {
+    
+    // Remove near-duplicate titles while keeping the newest
+    const deduped = dedupeBySimilarTitle(news);
+    
+    return deduped.map(article => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { expireAt, ...rest } = article;
         return {

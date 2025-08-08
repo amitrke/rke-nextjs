@@ -84,51 +84,47 @@ const EditAlbum = () => {
     }
 
     return (
-        <Container fluid>
-            <Row>
-                <Col>
-                    Edit Album
+        <Container>
+            <Row className="justify-content-center">
+                <Col md={8}>
+                    <h2 className="mb-4">Create or Edit an Album</h2>
                     {[...toasts].map((x) =>
                         <ToastMsg key={x.body} header={x.header} body={x.body} />
                     )}
-                </Col>
-            </Row>
-            <Row>
-                <Col>
                     <Form>
-                        <Form.Group controlId="editAlbumName">
+                        <Form.Group controlId="editAlbumName" className="mb-3">
                             <Form.Label>Name</Form.Label>
-                            <Form.Control type="Text" name='name' value={album.name} onChange={(e) => { setAlbum({ ...album, name: e.target.value }) }} />
+                            <Form.Control type="text" name='name' value={album.name} onChange={(e) => { setAlbum({ ...album, name: e.target.value }) }} />
                         </Form.Group>
-                        <Form.Group controlId="editAlbumDesc">
+                        <Form.Group controlId="editAlbumDesc" className="mb-3">
                             <Form.Label>Description</Form.Label>
                             <Form.Control as="textarea" name='description' value={album.description} onChange={(e) => { setAlbum({ ...album, description: e.target.value }) }} />
                         </Form.Group>
-                        <Form.Group controlId="editAlbumUploadPic">
+                        <Form.Group controlId="editAlbumUploadPic" className="mb-3">
+                            <Form.Label>Upload Pictures</Form.Label>
                             <UploadFile toastCallback={toastCallback} disabled={albumId === ''} statusCallback={onFileUpload} />
                         </Form.Group>
-                        <Form.Group controlId="editAlbumSave">
+                        <div className="d-flex justify-content-between align-items-center mb-4">
                             <Button variant="primary" onClick={onSave}>
                                 Save
                             </Button>
                             <Form.Check type="checkbox" label="Publish to Everyone" checked={album.public} onChange={(e) => { setAlbum({ ...album, public: e.target.checked }) }} />
-                        </Form.Group>
-                    </Form>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <h3>Images</h3>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    {[...album.images].map((x) =>
-                        <div style={{ maxWidth: "200px", float: "left" }} key={x}>
-                            <ShowImage size="s" file={`users/${user.id}/images/${x}`} />
-                            <Button variant="danger" onClick={() => onFileDelete(x)} >Delete</Button>
                         </div>
-                    )}
+                    </Form>
+                    
+                    <hr />
+
+                    <h3 className="mt-4">Images</h3>
+                    <Row>
+                        {[...album.images].map((x) =>
+                            <Col md={4} key={x} className="mb-3">
+                                <div className="text-center">
+                                    <ShowImage size="s" file={`users/${user.id}/images/${x}`} />
+                                    <Button variant="outline-danger" size="sm" className="mt-2" onClick={() => onFileDelete(x)}>Delete</Button>
+                                </div>
+                            </Col>
+                        )}
+                    </Row>
                 </Col>
             </Row>
         </Container>

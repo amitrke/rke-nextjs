@@ -118,7 +118,7 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
             <div className={styles.cardGrid4}>
                 {news.map((item) => (
                     <div className={styles.card} key={item.id}>
-                        <div className={styles.cardImage} style={{backgroundImage: `url(${item.urlToImage ? item.urlToImage : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                        <div className={styles.cardImage} style={{backgroundImage: `url(${item.image_url ? item.image_url : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                         <div className={styles.cardContent}>
                             <h3>{item.title}</h3>
                             <p>{item.formattedPubDate}</p>

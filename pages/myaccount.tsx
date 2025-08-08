@@ -58,13 +58,21 @@ const MyAccount = () => {
         fill justify
       >
         <Tab eventKey="profile" title="Profile" className='w-100'>
-          Profile Tab
+          <div className="card">
+            <div className="card-body">
+              <h5 className="card-title">{user?.name}</h5>
+              <p className="card-text">{user?.email}</p>
+              <Button href="/account/editpost">Create a new post</Button>
+            </div>
+          </div>
         </Tab>
         <Tab eventKey="posts" title="Posts" className='w-100'>
+          <p>Here are the posts you have created. You can edit or delete them.</p>
           <Button href="/account/editpost">Create a new post</Button>
           <PostList posts={posts} confirmModalCB={confirmModalCB} layout="cards" />
         </Tab>
         <Tab eventKey="albums" title="Albums" className='w-100'>
+          <p>Here are your photo albums. You can add new albums, or edit existing ones.</p>
           <Button href="/account/editAlbum">Add Photoalbum</Button>
           <AlbumList albums={albums} bucketUrlMap={bucketUrlMap} confirmModalCB={confirmModalCB} />
         </Tab>

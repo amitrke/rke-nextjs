@@ -1,4 +1,4 @@
-import { CardGroup } from 'react-bootstrap';
+import { CardGroup, Col, Row } from 'react-bootstrap';
 import { AlbumType } from '../../pages/account/editAlbum';
 import AlbumListItem from './albumListItem';
 import { ShowModalParams } from './showModal';
@@ -11,10 +11,16 @@ type AlbumListProps = {
 
 export default function AlbumList({ albums, bucketUrlMap, confirmModalCB }: AlbumListProps) {
     return (
-        <CardGroup>
-            {albums.map((album) => (
-                <AlbumListItem key={album.id} album={album} mainImageUrl={bucketUrlMap[album.id]} confirmModalCB={confirmModalCB} />
-            ))}
-        </CardGroup>
+        <Row>
+            <Col>
+                <h3 className="mt-4">Your Albums</h3>
+                <hr />
+                <CardGroup>
+                    {albums.map((album) => (
+                        <AlbumListItem key={album.id} album={album} mainImageUrl={bucketUrlMap[album.id]} confirmModalCB={confirmModalCB} />
+                    ))}
+                </CardGroup>
+            </Col>
+        </Row>
     );
 }

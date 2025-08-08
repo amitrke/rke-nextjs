@@ -39,6 +39,13 @@ const RichTextEditor = (props: RichTextEditorProps) => {
         editorClassName="editorClassName"
         onEditorStateChange={onEditorStateChange}
         onBlur={onBlur}
+        toolbar={{
+          options: ['inline', 'blockType', 'list', 'textAlign', 'link', 'embedded', 'emoji', 'image', 'remove', 'history'],
+          inline: {
+            inDropdown: false,
+            options: ['bold', 'italic', 'underline', 'strikethrough', 'monospace'],
+          },
+        }}
       />
     </div>
   )

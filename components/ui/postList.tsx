@@ -1,7 +1,6 @@
 import { PostDisplayType } from '../../firebase/types';
-import styles from '../../styles/IndexDev.module.css';
 import Link from 'next/link';
-import { Button } from 'react-bootstrap';
+import { Button, Card, Row, Col } from 'react-bootstrap';
 import { ShowModalParams } from './showModal';
 
 type PostListProps = {
@@ -18,25 +17,31 @@ export default function PostList({ posts, confirmModalCB, layout }: PostListProp
 
     if (layout === 'cards') {
         return (
-            <div className={styles.cardGrid4}>
+            <Row>
                 {posts.map((post) => (
-                    <div className={styles.card} key={post.id}>
-                        <div className={styles.cardImage} style={{ backgroundImage: `url(${post.images && post.images.length > 0 ? post.images[0] : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                        <div className={styles.cardContent}>
-                            <h3>{post.title}</h3>
-                            <p>By {post.author.name}</p>
-                            <p>{post.intro && post.intro.length > 120 ? `${post.intro.substring(0, 120)}...` : post.intro}</p>
-                            <Link href={`/post/${post.category}/${post.slug}`}>Read More</Link>
-                            <div className='pt-2'>
+                    <Col md={4} key={post.id} className="mb-4">
+                        <Card>
+                            <Card.Img variant="top" src={post.images && post.images.length > 0 ? post.images[0] : '/no-image.png'} />
+                            <Card.Body>
+                                <Card.Title>{post.title}</Card.Title>
+                                <Card.Subtitle className="mb-2 text-muted">By {post.author.name}</Card.Subtitle>
+                                <Card.Text>
+                                    {post.intro && post.intro.length > 120 ? `${post.intro.substring(0, 120)}...` : post.intro}
+                                </Card.Text>
+                                <Link href={`/post/${post.category}/${post.slug}`} passHref>
+                                    <Button variant="link">Read More</Button>
+                                </Link>
+                            </Card.Body>
+                            <Card.Footer>
                                 <Button variant="outline-danger" size="sm" onClick={() => confirmModalCB({ show: true, yesCallback: () => deletePost(post.id) })}>Delete</Button>
                                 <Link href={`/account/editpost?id=${post.id}`} passHref className='ps-2'>
                                     <Button variant="outline-primary" size="sm">Edit</Button>
                                 </Link>
-                            </div>
-                        </div>
-                    </div>
+                            </Card.Footer>
+                        </Card>
+                    </Col>
                 ))}
-            </div>
+            </Row>
         );
     } else {
         return (
@@ -44,7 +49,7 @@ export default function PostList({ posts, confirmModalCB, layout }: PostListProp
                 {posts.map((post) => (
                     <div key={post.id}>
                         <Link href={`/post/${post.category}/${post.slug}`}>
-                            <a>{post.title}</a>
+                            {post.title}
                         </Link>
                     </div>
                 ))}
