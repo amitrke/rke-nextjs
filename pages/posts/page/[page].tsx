@@ -22,7 +22,16 @@ const PostsPage = ({ posts, totalCount, page }: PostPageProps) => {
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
-    const page = Number(context.params.page);
+    const pageParam = context.params?.page;
+    // Validate that pageParam is a string representing a positive integer
+    if (
+        typeof pageParam !== 'string' ||
+        !/^\d+$/.test(pageParam) ||
+        Number(pageParam) < 1
+    ) {
+        return { notFound: true };
+    }
+    const page = Number(pageParam);
     const { posts, totalCount } = await getPaginatedPosts({ limit: 12, page });
 
     return {
