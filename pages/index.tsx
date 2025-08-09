@@ -158,7 +158,7 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
             </div>
             <div className={styles.cardGrid6}>
                 {albums.map((album, i) => (
-                    <Link href={`/album/${album.id}`} className={styles.galleryCard} key={i}>
+                    <Link href={`/album/${album.id}`} className={styles.galleryCard} key={album.id}>
                         <Image src={album.images[0]} alt={`Gallery image ${i+1}`} width={300} height={300} />
                     </Link>
                 ))}
