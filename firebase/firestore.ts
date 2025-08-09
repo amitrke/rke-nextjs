@@ -56,7 +56,7 @@ export const arrayAppend = async <T>(params: FirestoreAppendToArrayParams<T>): P
 }
 
 export const deleteDocument = async (params: FirestoreParams) => {
-    await deleteDoc(doc(db, params.path));
+    await deleteDoc(doc(db, params.path, ...params.pathSegments));
 }
 
 export const queryOnce = async<T>(params: FirestoreParams): Promise<Array<T>> => {

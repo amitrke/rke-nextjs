@@ -2,6 +2,7 @@ import { PostDisplayType } from '../../firebase/types';
 import Link from 'next/link';
 import { Button, Card, Row, Col } from 'react-bootstrap';
 import { ShowModalParams } from './showModal';
+import { deleteDocument } from '../../firebase/firestore';
 
 type PostListProps = {
     posts: PostDisplayType[];
@@ -12,7 +13,12 @@ type PostListProps = {
 export default function PostList({ posts, confirmModalCB, layout }: PostListProps) {
 
     const deletePost = async (id: string) => {
-        console.log('delete post', id);
+        try {
+            await deleteDocument({ path: 'posts', pathSegments: [id] });
+            // TODO: Refresh the post list after deletion
+        } catch (error) {
+            console.error("Error deleting document: ", error);
+        }
     }
 
     if (layout === 'cards') {

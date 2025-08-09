@@ -63,7 +63,7 @@ export default function Page({
                     <h1>{post.title}</h1>
                     <PostUserInfo user={post.author} postDate={post.updateDate} />
                     <p>{post.intro}</p>
-                    {[...post.images].map((x) =>
+                    {post.images.map((x) =>
                         <ShowImage key={x} file={`users/${post.userId}/images/${x}`} />
                     )}
                     <hr />

@@ -13,7 +13,7 @@ export default function Pagination({ currentPage, totalPages, basePath }: Pagina
     return (
         <div className="d-flex justify-content-center my-4">
             <ButtonGroup>
-                <Link href={`${basePath}/${currentPage - 1}`} passHref>
+                <Link href={currentPage > 1 ? `${basePath}/${currentPage - 1}`: `${basePath}/${currentPage}`} passHref>
                     <Button variant="secondary" disabled={currentPage <= 1}>
                         Previous
                     </Button>
@@ -25,7 +25,7 @@ export default function Pagination({ currentPage, totalPages, basePath }: Pagina
                         </Button>
                     </Link>
                 ))}
-                <Link href={`${basePath}/${currentPage + 1}`} passHref>
+                <Link href={currentPage < totalPages ? `${basePath}/${currentPage + 1}` : `${basePath}/${currentPage}`} passHref>
                     <Button variant="secondary" disabled={currentPage >= totalPages}>
                         Next
                     </Button>

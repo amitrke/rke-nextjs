@@ -157,7 +157,7 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
                 <h2 className={styles.sectionTitle}>From the Gallery</h2>
             </div>
             <div className={styles.cardGrid6}>
-                {albums.filter(a => a.images && a.images.length > 0).slice(0, 6).map((album, i) => (
+                {albums.map((album, i) => (
                     <Link href={`/album/${album.id}`} className={styles.galleryCard} key={i}>
                         <Image src={album.images[0]} alt={`Gallery image ${i+1}`} width={300} height={300} />
                     </Link>
@@ -189,7 +189,8 @@ export async function getStaticProps() {
   const postDisplay = await getPostsWithDetails();
   const news = await getNews({ limit: 8 });
   const events = await getEvents({ limit: 4 });
-  const albums = await getAlbums({ limit: 6 });
+  const allAlbums = await getAlbums({ limit: 12 });
+  const albums = allAlbums.filter(a => a.images && a.images.length > 0).slice(0, 6);
   
   return {
     props: {
