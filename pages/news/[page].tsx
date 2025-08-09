@@ -40,6 +40,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async (context) => {
     const page = parseInt(context.params.page as string, 10);
+    // Validate that page is a positive integer
+    if (isNaN(page) || page < 1) {
+        return { notFound: true };
+    }
     const { news, totalCount } = await getPaginatedNews({ limit: NEWS_PER_PAGE, page });
 
     const totalPages = Math.ceil(Math.min(totalCount, MAX_NEWS_ITEMS) / NEWS_PER_PAGE);
