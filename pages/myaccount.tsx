@@ -1,24 +1,52 @@
 import { useUser } from '../firebase/useUser'
 import Button from 'react-bootstrap/Button'
-import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap'
+import { Tab, Tabs } from 'react-bootstrap'
 import PostList from '../components/ui/postList'
-import { useState } from 'react'
-import ShowModal, { ShowModalParams } from '../components/ui/showModal'
+import { useEffect, useState } from 'react'
 import AlbumList from '../components/ui/albumList'
+import { getPostsWithDetails } from '../service/PostService'
+import { PostDisplayType } from '../firebase/types';
+import { AlbumType } from '../pages/account/editAlbum'
+import { subscribeToCollectionUpdates } from '../firebase/firestore'
+import { where } from 'firebase/firestore'
+import { getImageBucketUrl } from '../components/ui/showImage2'
+import ShowModal, { ShowModalParams } from '../components/ui/showModal'
 
 const MyAccount = () => {
-  const modalYesCB = async () => {
-    console.log(`Fake CB`)
-  }
-
   const { user, logout } = useUser()
-  const [modalParams, setModalParams] = useState<ShowModalParams>({ show: false, yesCallback: modalYesCB });
+  const [posts, setPosts] = useState<PostDisplayType[]>([]);
+  const [albums, setAlbums] = useState<AlbumType[]>([]);
+  const [bucketUrlMap, setBucketUrlMap] = useState<{ [key: string]: string }>({});
+  const [modalParams, setModalParams] = useState<ShowModalParams>({ show: false, yesCallback: async () => {} });
   const [showModal, setShowModal] = useState(new Date());
 
   const confirmModalCB = (params: ShowModalParams) => {
     setShowModal(new Date());
     setModalParams(params);
   }
+
+  useEffect(() => {
+    if (user) {
+      getPostsWithDetails({ userId: user.id, photoSize: 's' }).then((posts) => {
+        setPosts(posts);
+      });
+      subscribeToCollectionUpdates<AlbumType>({ 
+        path: `albums`, 
+        updateCB: (newAlbums) => {
+          setAlbums(newAlbums);
+          const newBucketUrlMap = {};
+          newAlbums.forEach(x => {
+            if (x.images && x.images.length > 0) {
+              const url = getImageBucketUrl(x.images[0], 's', x.userId);
+              newBucketUrlMap[x.id] = url;
+            }
+          });
+          setBucketUrlMap(newBucketUrlMap);
+        }, 
+        queryConstraints: [where("userId", "==", user.id)] 
+      })
+    }
+  }, [user]);
 
   return (
     <>
@@ -30,15 +58,23 @@ const MyAccount = () => {
         fill justify
       >
         <Tab eventKey="profile" title="Profile" className='w-100'>
-          Profile Tab
+          <div className="card">
+            <div className="card-body">
+              <h5 className="card-title">{user?.name}</h5>
+              <p className="card-text">{user?.email}</p>
+              <Button href="/account/editpost">Create a new post</Button>
+            </div>
+          </div>
         </Tab>
         <Tab eventKey="posts" title="Posts" className='w-100'>
+          <p>Here are the posts you have created. You can edit or delete them.</p>
           <Button href="/account/editpost">Create a new post</Button>
-          <PostList visibility='private' count={5} confirmModalCB={confirmModalCB} />
+          <PostList posts={posts} confirmModalCB={confirmModalCB} layout="cards" />
         </Tab>
         <Tab eventKey="albums" title="Albums" className='w-100'>
+          <p>Here are your photo albums. You can add new albums, or edit existing ones.</p>
           <Button href="/account/editAlbum">Add Photoalbum</Button>
-          <AlbumList publicOnly={false} count={5} confirmModalCB={confirmModalCB} />
+          <AlbumList albums={albums} bucketUrlMap={bucketUrlMap} confirmModalCB={confirmModalCB} />
         </Tab>
       </Tabs>
       <p className={user ? 'hidden' : undefined}>Please login!</p>

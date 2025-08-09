@@ -1,4 +1,4 @@
-import { AddPrefixToKeys, arrayUnion, deleteDoc, doc, DocumentData, DocumentReference, getDoc, getDocs, getFirestore, onSnapshot, query, QueryConstraint, QuerySnapshot, setDoc, updateDoc } from "firebase/firestore";
+import { arrayUnion, deleteDoc, doc, DocumentReference, getDoc, getDocs, getFirestore, onSnapshot, query, QueryConstraint, setDoc, updateDoc } from "firebase/firestore";
 import { initApp } from "./initFirebase";
 import { collection, addDoc } from "firebase/firestore";
 
@@ -8,7 +8,7 @@ const db = getFirestore(app);
 type FirestoreParams = {
     path: string;
     pathSegments?: string[];
-    converter?: any;
+    converter?: Record<string, unknown>;
     queryConstraints?: QueryConstraint[];
 }
 
@@ -17,8 +17,8 @@ type FirestoreSubscribe<T> = FirestoreParams & {
     unsubscribe?: () => void,
 }
 
-export type FirestoreWriteParams<T> = FirestoreParams & {
-    data: any;
+export type FirestoreWriteParams = FirestoreParams & {
+    data: Record<string, unknown>;
     existingDocId?: string;
     newDocId?: string;
 }
@@ -29,7 +29,7 @@ export type FirestoreAppendToArrayParams<T> = FirestoreParams & {
     existingDocId?: string
 }
 
-export const write = async <T>(params: FirestoreWriteParams<T>): Promise<DocumentReference> => {
+export const write = async (params: FirestoreWriteParams): Promise<DocumentReference> => {
     let docRef = params.existingDocId ? doc(db, params.path, params.existingDocId) : undefined;
     if (params.existingDocId) {
         await updateDoc(docRef, params.data);
@@ -56,15 +56,12 @@ export const arrayAppend = async <T>(params: FirestoreAppendToArrayParams<T>): P
 }
 
 export const deleteDocument = async (params: FirestoreParams) => {
-    await deleteDoc(doc(db, params.path));
+    await deleteDoc(doc(db, params.path, ...params.pathSegments));
 }
 
 export const queryOnce = async<T>(params: FirestoreParams): Promise<Array<T>> => {
     if (!params.queryConstraints) params.queryConstraints = []
     const q = query(collection(db, params.path), ...params.queryConstraints);
-    if (params.converter) {
-        q.withConverter(params.converter);
-    }
     const querySnapshot = await getDocs(q);
     const resp: Array<T> = [];
     querySnapshot.forEach((doc) => {
@@ -94,7 +91,7 @@ export const subscribeToCollectionUpdates = <T>(params: FirestoreSubscribe<T>) =
 export const getDocument = async<T>(params: FirestoreParams): Promise<T | undefined> => {
     const docSnap = await getDoc(doc(db, params.path, params.pathSegments[0]));
     if (docSnap.exists()) {
-        return <T>docSnap.data();
+        return docSnap.data() as T;
     } else {
         // doc.data() will be undefined in this case
         console.log("No such document!");

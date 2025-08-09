@@ -4,7 +4,7 @@ export type ImageListParams = {
     id?: string;
 }
 
-const ImageList = (params: ImageListParams) => {
+const ImageList = () => {
     return (
         <div>
             <ShowImage />

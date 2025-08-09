@@ -1,4 +1,4 @@
-import { PostType } from "../../pages/account/editpost"
+import { PostType } from "../../firebase/types";
 import Link from "next/link"
 
 export type RecentPostsBoxProps = {

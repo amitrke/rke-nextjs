@@ -8,7 +8,7 @@ const initApp = (): App => {
         if (existingApp) {
             return existingApp;
         }
-    } catch (err) {
+    } catch {
         return initializeApp({
             credential: cert({
                 projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,

@@ -1,51 +1,43 @@
-import { useEffect, useState } from "react"
-import { Button, Card } from "react-bootstrap"
-import { deleteDocument } from "../../firebase/firestore"
-import { AlbumType } from "../../pages/account/editAlbum"
-import { getImageDownloadURL } from "./showImage"
-import { ShowModalParams } from "./showModal"
+import { Button, Card } from "react-bootstrap";
+import Link from 'next/link';
+import { useUser } from "../../firebase/useUser";
+import { deleteDocument } from "../../firebase/firestore";
+import { AlbumType } from "../../pages/account/editAlbum";
+import { ShowModalParams } from "./showModal";
 
-export type AlbumListItemParams = {
-    album: AlbumType,
+export type DisplayAlbumParams = {
+    album: AlbumType
     confirmModalCB: (props: ShowModalParams) => void
+    mainImageUrl: string
 }
 
-const AlbumListItem = (params: AlbumListItemParams) => {
-    const mainFile = params.album.images && params.album.images.length > 0 ? params.album.images[0] : undefined;
-    const authorId = params.album.userId
-    const mainImage = mainFile ? `users/${authorId}/images/${mainFile}` : undefined;
-    const [mainImageUrl, setMainImageUrl] = useState("/no-image.png");
+const AlbumListItem = (params: DisplayAlbumParams) => {
+    const { user } = useUser();
 
-    useEffect(() => {
-        const getImageUrl = async () => {
-            try {
-                const url = await getImageDownloadURL({ file: mainImage, size: "m" });
-                setMainImageUrl(url);
-            } catch (error) {
-                console.log(`Image ${mainImage} not found`);
-            }
-        }
-        getImageUrl();
-    }, [mainImage])
-
-    const onDelete = async (params: any) => {
-        await deleteDocument({ path: `albums/${params.itemToDelete}` });
+    const onDelete = async () => {
+        await deleteDocument({ path: `albums/${params.album.id}` });
     }
 
-    const onDeleteClick = (itemToDelete: string) => {
-        params.confirmModalCB({ show: true, yesCallback: () => onDelete({ itemToDelete }) });
+    const onDeleteClick = () => {
+        params.confirmModalCB({ show: true, yesCallback: onDelete });
     }
 
     return (
         <Card style={{ width: '18rem' }}>
-            <Card.Img variant="top" src={mainImageUrl} />
+            <Link href={`/album/${params.album.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Card.Img variant="top" src={params.mainImageUrl} />
+                <Card.Body>
+                    <Card.Title>{params.album.name}</Card.Title>
+                    <Card.Text>
+                        {params.album.description}
+                    </Card.Text>
+                </Card.Body>
+            </Link>
             <Card.Body>
-                <Card.Title>{params.album.name}</Card.Title>
-                <Card.Text>
-                    {params.album.description}
-                </Card.Text>
-                <Button variant="primary" href={'/account/editAlbum?id=' + params.album.id}>Edit</Button>{' '}
-                <Button variant="secondary" onClick={() => onDeleteClick(params.album.id)}>Delete</Button>
+                <div className={user && user.id === params.album.userId ? '' : 'd-none'}>
+                    <Button variant="primary" href={'/account/editAlbum?id=' + params.album.id}>Edit</Button>{' '}
+                    <Button variant="secondary" onClick={onDeleteClick}>Delete</Button>
+                </div>
             </Card.Body>
             <Card.Footer>
                 <small className="text-muted">Public: {params.album.public.toString()}</small>
@@ -54,5 +46,4 @@ const AlbumListItem = (params: AlbumListItemParams) => {
     )
 }
 
-AlbumListItem.noSSR = true;
 export default AlbumListItem;

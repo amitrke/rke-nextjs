@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
-import { Button, Container, Form, FormSelect } from "react-bootstrap";
+import { Button, Container, Form } from "react-bootstrap";
 import { write } from "../firebase/firestore";
 import { MessageType } from "../firebase/types";
 import { useUser } from "../firebase/useUser";

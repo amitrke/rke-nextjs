@@ -1,151 +1,205 @@
-
+import Head from 'next/head';
+import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { Col, Container, Image, Row } from 'react-bootstrap'
-import { ShowImageRaw } from '../components/ui/showImage';
-import { uiDateFormat, uiRound } from '../components/ui/uiUtils';
+import styles from '../styles/IndexDev.module.css';
 import { getDocument } from '../firebase/firestore';
-import { PostDisplayType } from './posts/[id]';
+import { getAlbums, getEvents, getNews, getPostsWithDetails } from '../service/PostService';
+import { useEffect, useState } from 'react';
 import { Weather } from './weather/[id]';
-import HeadTag from '../components/ui/headTag';
-import { getPostsWithDetails } from '../service/PostService';
+import { uiRound } from '../components/ui/uiUtils';
 
-export default function Home({ data, posts, cacheCreatedAt }) {
+import { PostDisplayType } from '../firebase/types';
+import { Event, NewsArticle } from '../service/PostService';
+import { AlbumType } from '../pages/account/editAlbum';
 
-  const [weather, setWeather] = useState({} as Weather)
-  const [weatherText, setWeatherText] = useState('' as string)
-  const [weatherImg, setWeatherImg] = useState('' as string)
+type IndexDevProps = {
+  posts: PostDisplayType[];
+  news: NewsArticle[];
+  events: Event[];
+  albums: AlbumType[];
+  data: {
+    heroTextDesc: string;
+  };
+};
+
+function IndexDev({ posts = [], news = [], events = [], albums = [], data = { heroTextDesc: "Welcome to our town. Find all the information you need about our vibrant community."} }: IndexDevProps) {
+  const [weather, setWeather] = useState({} as Weather);
+  const [todayWeather, setTodayWeather] = useState({ temp: '', condition: '', icon: '' });
+  const [tomorrowWeather, setTomorrowWeather] = useState({ temp: '', condition: '', icon: '' });
 
   useEffect(() => {
-    getDocument<Weather>({ path: `weather`, pathSegments: ['roorkee-in'] }).then((w: Weather) => {
-      setWeather(w);
-    })
+    fetch('/api/weather')
+      .then(res => res.json())
+      .then(w => setWeather(w));
   }, []);
 
   useEffect(() => {
     if (weather.current) {
-      setWeatherText(`${uiRound(weather.current.temp, 1)}°C, ${weather.current.weather[0].description}`);
-      setWeatherImg('https://openweathermap.org/img/wn/' + weather.current.weather[0].icon + '@2x.png');
+      setTodayWeather({
+        temp: `${uiRound(weather.current.temp, 0)}°C`,
+        condition: weather.current.weather[0].main,
+        icon: `https://openweathermap.org/img/wn/${weather.current.weather[0].icon}@2x.png`
+      });
+    }
+    if (weather.daily && weather.daily.length > 1) {
+      setTomorrowWeather({
+        temp: `${uiRound(weather.daily[1].temp.day, 0)}°C`,
+        condition: weather.daily[1].weather[0].main,
+        icon: `https://openweathermap.org/img/wn/${weather.daily[1].weather[0].icon}@2x.png`
+      });
     }
   }, [weather]);
 
   return (
     <>
-      <HeadTag title="Roorkee.org: Town Information." description="Roorkee.org: Town Information." />
-      <Container>
-        <div className="p-4 p-md-5 mb-4 rounded text-bg-dark">
-          <div className="jumbotron col-md-10 px-0">
-            <h1 className="display-4 fst-italic">{weatherText}<Image className='d-none d-md-inline' src={weatherImg} alt='Weather Image' /></h1>
-            <p className="lead my-3">{data.heroTextDesc}</p>
-            <p className="lead mb-0"><Link href="/weather/roorkee-in" className="text-white fw-bold">Detailed weather forcast...</Link></p>
+      <Head>
+        <title>Roorkee.org: Town Information</title>
+        <meta name="description" content="Roorkee.org: Town Information." />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      
+
+      <main className={styles.container}>
+        <section className={styles.hero}>
+          <div className={styles.heroText}>
+            <h1>Welcome to Roorkee</h1>
+            <p>{data.heroTextDesc}</p>
+            {/* <Link href="/directory" className={styles.ctaButton}>Explore Directory</Link> */}
           </div>
+          <div className={styles.weatherContainer}>
+            <h3>Roorkee Weather</h3>
+            <div className={styles.weatherForecasts}>
+              <div className={styles.weatherWidget}>
+                <h4>Today</h4>
+                <div className={styles.condition}>
+                  {todayWeather.icon && <Image src={todayWeather.icon} alt="Weather icon" width={50} height={50} />}
+                </div>
+                <div className={styles.temp}>{todayWeather.temp}</div>
+                <div className={styles.conditionText}>{todayWeather.condition}</div>
+              </div>
+              <div className={styles.weatherWidget}>
+                <h4>Tomorrow</h4>
+                <div className={styles.condition}>
+                  {tomorrowWeather.icon && <Image src={tomorrowWeather.icon} alt="Weather icon" width={50} height={50} />}
+                </div>
+                <div className={styles.temp}>{tomorrowWeather.temp}</div>
+                <div className={styles.conditionText}>{tomorrowWeather.condition}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Posts Section */}
+        <section className={styles.section}>
+            <div className={styles.centerTitle}>
+                <h2 className={styles.sectionTitle}>Recent Posts</h2>
+            </div>
+            <div className={styles.cardGrid4}>
+                {posts.map((post) => (
+                    <div className={styles.card} key={post.id}>
+                        <div className={styles.cardImage} style={{backgroundImage: `url(${post.images && post.images.length > 0 ? post.images[0] : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                        <div className={styles.cardContent}>
+                            <h3>{post.title}</h3>
+                            <p>By {post.author.name}</p>
+                            <p>{post.intro && post.intro.length > 120 ? `${post.intro.substring(0, 120)}...` : post.intro}</p>
+                            <Link href={`/post/${post.category}/${post.slug}`}>Read More</Link>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+
+        {/* News Section */}
+        <section className={styles.section}>
+            <div className={styles.centerTitle}>
+                <h2 className={styles.sectionTitle}>Latest News</h2>
+            </div>
+            <div className={styles.cardGrid4}>
+                {news.map((item) => (
+                    <div className={styles.card} key={item.id}>
+                        <div className={styles.cardImage} style={{backgroundImage: `url(${item.image_url ? item.image_url : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                        <div className={styles.cardContent}>
+                            <h3>{item.title}</h3>
+                            <p>{item.formattedPubDate}</p>
+                            <p>{item.description && item.description.length > 120 ? `${item.description.substring(0, 120)}...` : item.description}</p>
+                            <Link href={item.url}>Read More</Link>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+
+        {/* Upcoming Events Section */}
+        <section className={styles.section}>
+            <div className={styles.centerTitle}>
+                <h2 className={styles.sectionTitle}>Upcoming Events</h2>
+            </div>
+            <div>
+                {events.map((event) => (
+                    <div className={styles.eventCard} key={event.id}>
+                        <div className={styles.eventDate}>
+                            <div className={styles.month}>{event.formattedMonth}</div>
+                            <div className={styles.day}>{event.formattedDay}</div>
+                        </div>
+                        <div className={styles.eventDetails}>
+                            <h3>{event.name}</h3>
+                            <p>{event.description}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+
+        {/* Photo Gallery Section */}
+        <section className={styles.section}>
+            <div className={styles.centerTitle}>
+                <h2 className={styles.sectionTitle}>From the Gallery</h2>
+            </div>
+            <div className={styles.cardGrid6}>
+                {albums.map((album, i) => (
+                    <Link href={`/album/${album.id}`} className={styles.galleryCard} key={album.id}>
+                        <Image src={album.images[0]} alt={`Gallery image ${i+1}`} width={300} height={300} />
+                    </Link>
+                ))}
+            </div>
+        </section>
+
+      </main>
+
+      {/* <section className={styles.ctaSection}>
+        <div className={styles.container}>
+            <h2>Get Involved!</h2>
+            <p>Want to contribute to our community? Find out how you can get involved.</p>
+            <Link href="#" className={styles.ctaButton}>Learn More</Link>
         </div>
+      </section> */}
 
-        <Row className="mb-2">
-          <div className="col-md-6">
-            <div className="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-              <div className="col p-4 d-flex flex-column position-static">
-                <strong className="d-inline-block mb-2 text-primary">World</strong>
-                <h3 className="mb-0">Photo Albums</h3>
-                <div className="mb-1 text-muted">Nov 12</div>
-                <p className="card-text mb-auto">Discover and upload awesome pictures of this beautiful town</p>
-                <Link href="/albums/" className="stretched-link">Continue to albums</Link>
-              </div>
-              <div className="col-auto d-none d-lg-block">
-                <svg className="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <div className="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-              <div className="col p-4 d-flex flex-column position-static">
-                <strong className="d-inline-block mb-2 text-success">Design</strong>
-                <h3 className="mb-0">Post title</h3>
-                <div className="mb-1 text-muted">Nov 11</div>
-                <p className="mb-auto">This is a wider card with supporting text below as a natural lead-in to additional content.</p>
-                <a href="#" className="stretched-link">Continue reading</a>
-              </div>
-              <div className="col-auto d-none d-lg-block">
-                <svg className="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c" /><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-
-              </div>
-            </div>
-          </div>
-        </Row>
-
-        <Row className="g-5 text-black">
-          <Col md={8}>
-            <h3 className="pb-4 mb-4 fst-italic border-bottom">
-              From the Firehose
-            </h3>
-
-            {[...posts].map((x: PostDisplayType, i) =>
-              <Link key={x.id} href={`post/${x.category}/${x.slug}`} style={{ textDecoration: 'none' }}>
-                <Row className="blog-post">
-                  <Col md={8}>
-                    <h2 className="blog-post-title mb-1 text-black">{x.title}</h2>
-                    <p className="blog-post-meta">Posted on {x.formattedUpdateDate} by {x.author.name}</p>
-                    <p className='text-black'>
-                      {x.intro}
-                    </p>
-                  </Col>
-                  <Col md={4}>
-                    <ShowImageRaw size="s" imageUrl={x.images[0]} classes="img-thumbnail imgshadow" />
-                  </Col>
-                  <hr />
-                </Row>
-              </Link>
-            )}
-            {/* <nav className="blog-pagination" aria-label="Pagination">
-              <a className="btn btn-outline-primary rounded-pill" href="#">Older</a>
-              <a className="btn btn-outline-secondary rounded-pill disabled">Newer</a>
-            </nav> */}
-
-          </Col>
-
-          <Col md={4}>
-            <div className="position-sticky">
-              <div className="p-4 mb-3 bg-light rounded">
-                <h4 className="fst-italic">About</h4>
-                <p className="mb-0">Born in 2001, this website is a personal project to bring people of this town together, not affiliated to government / corporation.</p>
-              </div>
-              <div className="p-4">
-                <h4 className="fst-italic">Elsewhere</h4>
-                <ol className="list-unstyled">
-                  <li><a href="#">GitHub</a></li>
-                  <li><a href="#">Twitter</a></li>
-                  <li><a href="#">Facebook</a></li>
-                </ol>
-              </div>
-            </div>
-          </Col>
-        </Row >
-        <Row>
-          <Col>
-            <hr />
-            <p className="text-center">This page was generated at {cacheCreatedAt}</p>
-          </Col>
-        </Row>
-      </Container >
+      
     </>
-  )
-}
+  );
+};
 
-/**
- * This function gets called at build time on server-side.
- * It won't be called on client-side
- */
+
+
+export default IndexDev;
+
 export async function getStaticProps() {
   const resp = await getDocument({ path: 'appconfig', pathSegments: ['homepage'] });
   const postDisplay = await getPostsWithDetails();
-  const cacheCreatedAt = uiDateFormat((new Date()).getTime());
+  const news = await getNews({ limit: 8 });
+  const events = await getEvents({ limit: 4 });
+  const allAlbums = await getAlbums({ limit: 12 });
+  const albums = allAlbums.filter(a => a.images && a.images.length > 0).slice(0, 6);
+  
   return {
     props: {
       data: resp,
       posts: postDisplay,
-      cacheCreatedAt
+      news,
+      events,
+      albums,
     },
-    revalidate: 86400, // regenerate page every 24 hours
+    revalidate: 86400, // regenerate page every day
   }
 }

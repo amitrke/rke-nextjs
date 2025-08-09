@@ -15,18 +15,7 @@ const Editor = dynamic(() => import("../../components/ui/richTextEditor"), {
   ssr: false
 })
 
-export type PostType = {
-  id: string;
-  title: string;
-  intro: string;
-  edState: string;
-  updateDate: number;
-  images: string[];
-  public: boolean;
-  userId: string;
-  category: string;
-  slug: string;
-}
+import { PostType } from '../../firebase/types';
 
 const EditPost = () => {
   const router = useRouter()
@@ -112,25 +101,23 @@ const EditPost = () => {
 
   return (
     <>
-      {[...toasts].map((x, i) =>
+      {[...toasts].map((x) =>
         <ToastMsg key={x.body} header={x.header} body={x.body} />
       )}
       <Container fluid>
-        <Row className={!user ? 'hidden' : undefined}>
-          <div className="col col-lg-2 d-none d-md-block border">
-            Column 1
-          </div>
-          <div className="col col-xxl border">
-            <Form >
-              <Form.Group controlId="editForm.title">
+        <Row className={!user ? 'hidden' : 'justify-content-center'}>
+          <div className="col-md-8">
+            <h2>Create or Edit a Post</h2>
+            <Form>
+              <Form.Group controlId="editForm.title" className="mb-3">
                 <Form.Label>Title</Form.Label>
-                <Form.Control type="Text" placeholder="Content Title" name='title' value={post.title} onChange={(e) => { setPost({ ...post, title: e.target.value }) }} />
+                <Form.Control type="text" placeholder="Content Title" name='title' value={post.title} onChange={(e) => { setPost({ ...post, title: e.target.value }) }} />
               </Form.Group>
-              <Form.Group controlId="editForm.intro">
+              <Form.Group controlId="editForm.intro" className="mb-3">
                 <Form.Label>Intro</Form.Label>
                 <Form.Control as="textarea" rows={3} name='intro' value={post.intro} onChange={(e) => { setPost({ ...post, intro: e.target.value }) }} />
               </Form.Group>
-              <Form.Group controlId="editForm.category">
+              <Form.Group controlId="editForm.category" className="mb-3">
                 <Form.Label>Category</Form.Label>
                 <Form.Select value={post.category}
                   onChange={(e) => { setPost({ ...post, category: e.target.value }) }}>
@@ -142,33 +129,34 @@ const EditPost = () => {
                   <option value={"business"}>Business</option>
                 </Form.Select>
               </Form.Group>
-              Images <br />
-              {[...post.images].map((x, i) =>
+              <h3 className="mt-4">Content</h3>
+              <hr />
+              <h5>Images</h5>
+              {[...post.images].map((x) =>
                 <ShowImage size="s" key={x} file={`users/${user.id}/images/${x}`} />
               )}
               <UploadFile toastCallback={toastCallback} disabled={post.id === ""} statusCallback={onFileUpload} />
-              Body
+              <h5 className="mt-3">Body</h5>
               <Editor
                 key={post.id}
                 onEdStateChange={(edState) => { setPost({ ...post, edState }) }}
                 initState={post.edState}
               />
-              <Button variant="primary" onClick={(element) => onSave(element)}>
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                  className="visually-hidden"
-                />
-                <span>Save</span>
-              </Button>
-              <Form.Check type="checkbox" label="Publish to Everyone" checked={post.public} onChange={(e) => { setPost({ ...post, public: e.target.checked }) }} />
+              <div className="d-flex justify-content-between align-items-center mt-4">
+                <Button variant="primary" onClick={(element) => onSave(element)}>
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                    className="visually-hidden"
+                  />
+                  <span>Save</span>
+                </Button>
+                <Form.Check type="checkbox" label="Publish to Everyone" checked={post.public} onChange={(e) => { setPost({ ...post, public: e.target.checked }) }} />
+              </div>
             </Form>
-          </div>
-          <div className="col col-xxl-2 d-none d-xxl-block border">
-            Column 3
           </div>
         </Row>
         <Row className={user ? 'hidden' : undefined}>

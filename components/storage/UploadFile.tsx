@@ -26,7 +26,7 @@ const UploadFile = (props: UploadFileParam) => {
         if (!user) return;
 
         // get file
-        var file = inputEl.current.files[0]
+        const file = inputEl.current.files[0]
 
         if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
             props.toastCallback({body: "Failed to upload, FileType should be jpeg or png", header: "Image Upload"});
@@ -35,10 +35,10 @@ const UploadFile = (props: UploadFileParam) => {
         }
         
         // create a storage ref
-        var storageRef = firebase.storage().ref(`users/${user.id}/upload/` + file.name)
+        const storageRef = firebase.storage().ref(`users/${user.id}/upload/` + file.name)
 
         // upload file
-        var task = storageRef.put(file)
+        const task = storageRef.put(file)
 
         // update progress bar
         task.on('state_change',

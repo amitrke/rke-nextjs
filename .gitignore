@@ -26,3 +26,5 @@ yarn-error.log*
 .vercel
 
 .idea/
+env.txt
+env2.txt

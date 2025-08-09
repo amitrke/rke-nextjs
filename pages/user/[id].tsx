@@ -9,7 +9,7 @@ import { getDocument, queryOnce } from "../../firebase/firestore";
 import { User } from "../../firebase/types";
 import { getPosts } from "../../service/PostService";
 import { AlbumType } from "../account/editAlbum";
-import { PostType } from "../account/editpost";
+import { PostType } from "../../firebase/types";
 
 type UserPropType = {
     user: User,

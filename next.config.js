@@ -1,4 +1,5 @@
-const path = require('path')
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const path = require('path');
 
 module.exports = {
   sassOptions: {
@@ -16,6 +17,16 @@ module.exports = {
         hostname: 'storage.googleapis.com',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'openweathermap.org',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        pathname: '**',
+      },
     ],
     minimumCacheTTL: 1500000
   },
@@ -24,5 +35,4 @@ module.exports = {
 
     return config;
   },
-  swcMinify: true
 }
