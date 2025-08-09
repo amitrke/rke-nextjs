@@ -4,7 +4,11 @@ const ImageUpload = () => {
     const [, setFile] = useState("");
 
     function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-        setFile(event.target.files[0].name);
+        if (event.target.files && event.target.files.length > 0) {
+            setFile(event.target.files[0].name);
+        } else {
+            setFile("");
+        }
     }
     
     return (
