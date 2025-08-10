@@ -1,5 +1,8 @@
 # Roorkee.org NextJS App
 
+[![CodeFactor](https://www.codefactor.io/repository/github/amitrke/rke-nextjs/badge)](https://www.codefactor.io/repository/github/amitrke/rke-nextjs)
+
+
 Roorkee is a town in North India; Roorkee.org is a website for people who have lived in this beautiful place at some point in their life.
 The website provides ways for Residents of Roorkee to share posts and pictures of the Town.
 
