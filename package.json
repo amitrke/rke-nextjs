@@ -12,7 +12,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.0.0",
     "@fortawesome/free-solid-svg-icons": "^7.0.0",
-    "@fortawesome/react-fontawesome": "^0.2.3",
+    "@fortawesome/react-fontawesome": "^3.0.0",
     "@popperjs/core": "^2.11.8",
     "@types/probe-image-size": "^7.2.5",
     "bootstrap": "^5.3.7",
