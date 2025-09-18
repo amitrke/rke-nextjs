@@ -67,28 +67,28 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
             <p>{data.heroTextDesc}</p>
             {/* <Link href="/directory" className={styles.ctaButton}>Explore Directory</Link> */}
           </div>
-          <div className={styles.weatherContainer}>
-            <h3>Roorkee Weather</h3>
-            <div className={styles.weatherForecasts}>
-              <div className={styles.weatherWidget}>
-                <h4>Today</h4>
-                <div className={styles.condition}>
-                  {todayWeather.icon && <Image src={todayWeather.icon} alt="Weather icon" width={50} height={50} />}
-                </div>
-                <div className={styles.temp}>{todayWeather.temp}</div>
-                <div className={styles.conditionText}>{todayWeather.condition}</div>
-              </div>
-              <div className={styles.weatherWidget}>
-                <h4>Tomorrow</h4>
-                <div className={styles.condition}>
-                  {tomorrowWeather.icon && <Image src={tomorrowWeather.icon} alt="Weather icon" width={50} height={50} />}
-                </div>
-                <div className={styles.temp}>{tomorrowWeather.temp}</div>
-                <div className={styles.conditionText}>{tomorrowWeather.condition}</div>
-              </div>
-            </div>
-          </div>
-        </section>
+                      <div className={styles.weatherContainer}>
+                      <h3>Roorkee Weather</h3>
+                      <div className={styles.weatherForecasts}>
+                        <div className={styles.weatherWidget}>
+                          <h4>Today</h4>
+                          <div className={styles.condition}>
+                            {todayWeather.icon && <Image src={todayWeather.icon} alt="Weather icon" width={50} height={50} />}
+                          </div>
+                          <div className={styles.temp}>{todayWeather.temp}</div>
+                          <div className={styles.conditionText}>{todayWeather.condition}</div>
+                        </div>
+                        <div className={styles.weatherWidget}>
+                          <h4>Tomorrow</h4>
+                          <div className={styles.condition}>
+                            {tomorrowWeather.icon && <Image src={tomorrowWeather.icon} alt="Weather icon" width={50} height={50} />}
+                          </div>
+                          <div className={styles.temp}>{tomorrowWeather.temp}</div>
+                          <div className={styles.conditionText}>{tomorrowWeather.condition}</div>
+                        </div>
+                      </div>
+                      <Link href="/weather/roorkee-in">More Details</Link>
+                    </div>        </section>
 
         {/* Posts Section */}
         <section className={styles.section}>
