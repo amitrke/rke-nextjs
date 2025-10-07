@@ -1,13 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/database';
+import { ref, runTransaction } from 'firebase/database';
+import { getFirebaseDatabase } from '../../firebase/initFirebase';
 
 const incrementCount = async (
     req: NextApiRequest,
     res: NextApiResponse
 ): Promise<void> => {
-    const ref = firebase.database().ref('counts').child(req.query.id as string);
-    const { snapshot } = await ref.transaction((count) => {
+    const database = getFirebaseDatabase();
+    const countRef = ref(database, `counts/${req.query.id as string}`);
+
+    const result = await runTransaction(countRef, (count) => {
         if (count === null) {
             return 1;
         }
@@ -15,7 +17,7 @@ const incrementCount = async (
     });
 
     return res.status(200).json({
-        total: snapshot.val(),
+        total: result.snapshot.val(),
     });
 };
 

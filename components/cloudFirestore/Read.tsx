@@ -1,5 +1,5 @@
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { getFirebaseFirestore } from '../../firebase/initFirebase';
 import { useUser } from '../../firebase/useUser';
 import Button from 'react-bootstrap/Button';
 
@@ -11,13 +11,13 @@ const ReadDataFromCloudFirestore = (): JSX.Element => {
             return;
         }
         try {
-            firebase
-                .firestore()
-                .collection('myCollection')
-                .doc(user.id)
-                .onSnapshot((doc) => {
-                    console.log(doc.data());
-                });
+            const firestore = getFirebaseFirestore();
+            const docRef = doc(firestore, 'myCollection', user.id);
+
+            onSnapshot(docRef, (doc) => {
+                console.log(doc.data());
+            });
+
             alert(
                 'Data was successfully fetched from cloud firestore! Close this alert and check console for output.'
             );

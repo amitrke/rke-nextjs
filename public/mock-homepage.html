@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage Wireframe</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background-color: #fff;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header .logo {
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        .header nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #555;
+        }
+
+        /* Hero Section */
+        .hero {
+            background-color: #e9ecef;
+            padding: 40px 20px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+        }
+
+        .hero-text {
+            max-width: 60%;
+        }
+
+        .hero-text h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero-text p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .hero-text .cta-button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+
+        /* Weather Widget Container */
+        .weather-container {
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 35%;
+            max-width: 400px;
+        }
+        
+        .weather-container h3 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .weather-forecasts {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        /* Weather Widget */
+        .weather-widget {
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .weather-widget h4 {
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+
+        .weather-widget .temp {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .weather-widget .condition {
+            font-size: 16px;
+            text-transform: capitalize;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .weather-widget .condition img {
+            width: 50px;
+            height: 50px;
+        }
+
+        /* Gallery Card */
+        .gallery-card {
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .gallery-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-card .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .card-grid-6 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        /* Social links */
+        .social-links a {
+            margin: 0 10px;
+            display: inline-block;
+        }
+        .social-links img {
+            width: 24px;
+            height: 24px;
+        }
+
+
+        /* Section */
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .center-title {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+
+        /* Card Layout */
+        .card-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 150px;
+            background-color: #ccc;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-content h3 {
+            margin-top: 0;
+            font-size: 18px;
+        }
+
+        .card-content p {
+            font-size: 14px;
+        }
+
+        .card-content a {
+            font-size: 14px;
+        }
+
+        /* Event Card */
+        .event-card {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .event-date {
+            background-color: #007bff;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin-right: 20px;
+        }
+
+        .event-date .month {
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .event-date .day {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .event-details h3 {
+            margin: 0 0 5px;
+        }
+
+
+        /* About Section */
+        .about {
+            background-color: #fff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background-color: #007bff;
+            color: #fff;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .cta-section .cta-button {
+            background-color: #fff;
+            color: #007bff;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #343a40;
+            color: #fff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .footer .footer-links {
+            margin-bottom: 20px;
+        }
+
+        .footer .footer-links a {
+            color: #fff;
+            margin: 0 15px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">TownLogo</div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">News</a>
+            <a href="#">Posts</a>
+            <a href="#">Events</a>
+            <a href="#">Gallery</a>
+            <a href="#">Contact</a>
+        </nav>
+    </header>
+
+    <main class="container">
+
+        <section class="hero">
+            <div class="hero-text">
+                <h1>Welcome to Our Town</h1>
+                <p>Discover everything you need to know about our vibrant community.</p>
+                <a href="#" class="cta-button">Explore Directory</a>
+            </div>
+            <div class="weather-container">
+                <h3>Roorkee Weather</h3>
+                <div class="weather-forecasts">
+                    <div class="weather-widget">
+                        <h4>Today</h4>
+                        <div class="condition">
+                            <img src="https://openweathermap.org/img/wn/01d@2x.png" alt="Weather icon">
+                        </div>
+                        <div class="temp">24°C</div>
+                        <div class="condition-text">Sunny</div>
+                    </div>
+                    <div class="weather-widget">
+                        <h4>Tomorrow</h4>
+                        <div class="condition">
+                            <img src="https://openweathermap.org/img/wn/02d@2x.png" alt="Weather icon">
+                        </div>
+                        <div class="temp">26°C</div>
+                        <div class="condition-text">Partly Cloudy</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Posts Section -->
+        <section class="section">
+            <div class="center-title">
+                <h2 class="section-title">Recent Posts</h2>
+            </div>
+            <div class="card-grid-4">
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>My Favorite Hiking Trails</h3>
+                        <p>By John Doe</p>
+                        <p>Discover the hidden gems right in our backyard...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>A Guide to Local Eateries</h3>
+                        <p>By Jane Smith</p>
+                        <p>From cozy cafes to fine dining, our town has it all...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>Volunteering Opportunities</h3>
+                        <p>By Community Outreach</p>
+                        <p>Make a difference and get involved with local charities...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>Weekend Photography</h3>
+                        <p>By PhotoClub</p>
+                        <p>Capturing the beauty of our town, one snapshot at a time...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>Post Title 5</h3>
+                        <p>By Author</p>
+                        <p>Short post description...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>Post Title 6</h3>
+                        <p>By Author</p>
+                        <p>Short post description...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>Post Title 7</h3>
+                        <p>By Author</p>
+                        <p>Short post description...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>Post Title 8</h3>
+                        <p>By Author</p>
+                        <p>Short post description...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- News Section -->
+        <section class="section">
+            <div class="center-title">
+                <h2 class="section-title">Latest News</h2>
+            </div>
+            <div class="card-grid-4">
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>New Park Opening</h3>
+                        <p>A new community park is set to open next month...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>Annual Town Festival</h3>
+                        <p>Join us for our annual town festival featuring live music...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>Local Business Awards</h3>
+                        <p>Celebrating the best local businesses...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>Library Expansion</h3>
+                        <p>The town library is expanding its collection...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>News Title 5</h3>
+                        <p>Short news description...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>News Title 6</h3>
+                        <p>Short news description...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>News Title 7</h3>
+                        <p>Short news description...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>News Title 8</h3>
+                        <p>Short news description...</p>
+                        <a href="#">Read More</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upcoming Events Section -->
+        <section class="section">
+            <div class="center-title">
+                <h2 class="section-title">Upcoming Events</h2>
+            </div>
+            <div>
+                <div class="event-card">
+                    <div class="event-date">
+                        <div class="month">AUG</div>
+                        <div class="day">15</div>
+                    </div>
+                    <div class="event-details">
+                        <h3>Farmer's Market</h3>
+                        <p>Town Square, 9:00 AM - 1:00 PM</p>
+                    </div>
+                </div>
+                <div class="event-card">
+                    <div class="event-date">
+                        <div class="month">AUG</div>
+                        <div class="day">22</div>
+                    </div>
+                    <div class="event-details">
+                        <h3>Outdoor Movie Night</h3>
+                        <p>Central Park, 8:00 PM</p>
+                    </div>
+                </div>
+                <div class="event-card">
+                    <div class="event-date">
+                        <div class="month">SEP</div>
+                        <div class="day">05</div>
+                    </div>
+                    <div class="event-details">
+                        <h3>Labor Day Parade</h3>
+                        <p>Main Street, 11:00 AM</p>
+                    </div>
+                </div>
+                 <div class="event-card">
+                    <div class="event-date">
+                        <div class="month">SEP</div>
+                        <div class="day">10</div>
+                    </div>
+                    <div class="event-details">
+                        <h3>Charity Run 5K</h3>
+                        <p>Riverside Path, 9:00 AM</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Photo Gallery Section -->
+        <section class="section">
+            <div class="center-title">
+                <h2 class="section-title">From the Gallery</h2>
+            </div>
+            <div class="card-grid-6">
+                <a href="#" class="gallery-card">
+                    <img src="https://via.placeholder.com/300x300.png?text=Town+Image+1" alt="Gallery image 1">
+                    <div class="overlay">View More</div>
+                </a>
+                <a href="#" class="gallery-card">
+                    <img src="https://via.placeholder.com/300x300.png?text=Town+Image+2" alt="Gallery image 2">
+                    <div class="overlay">View More</div>
+                </a>
+                <a href="#" class="gallery-card">
+                    <img src="https://via.placeholder.com/300x300.png?text=Town+Image+3" alt="Gallery image 3">
+                    <div class="overlay">View More</div>
+                </a>
+                <a href="#" class="gallery-card">
+                    <img src="https://via.placeholder.com/300x300.png?text=Town+Image+4" alt="Gallery image 4">
+                    <div class="overlay">View More</div>
+                </a>
+                <a href="#" class="gallery-card">
+                    <img src="https://via.placeholder.com/300x300.png?text=Town+Image+5" alt="Gallery image 5">
+                    <div class="overlay">View More</div>
+                </a>
+                <a href="#" class="gallery-card">
+                    <img src="https://via.placeholder.com/300x300.png?text=Town+Image+6" alt="Gallery image 6">
+                    <div class="overlay">View More</div>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>Get Involved!</h2>
+            <p>Want to contribute to our community? Find out how you can get involved.</p>
+            <a href="#" class="cta-button">Learn More</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#">About Us</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Contact Us</a>
+        </div>
+        <div class="social-links">
+            <a href="#"><img src="https://simpleicons.org/icons/facebook.svg" alt="Facebook"></a>
+            <a href="#"><img src="https://simpleicons.org/icons/twitter.svg" alt="Twitter"></a>
+            <a href="#"><img src="https://simpleicons.org/icons/instagram.svg" alt="Instagram"></a>
+        </div>
+        <p>&copy; 2025 TownName. All Rights Reserved.</p>
+    </footer>
+
+</body>
+
+</html>

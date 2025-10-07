@@ -1,13 +1,10 @@
-import firebase from 'firebase/compat/app';
-// the below imports are option - comment out what you don't need
-import 'firebase/compat/auth'
-import 'firebase/compat/firestore'
-import 'firebase/compat/storage'
-import 'firebase/compat/analytics'
-import 'firebase/compat/performance'
-import { FirebaseApp, initializeApp } from "firebase/app";
-
-//TODO: Refactor firebase to use https://firebase.google.com/docs/web/modular-upgrade
+import { FirebaseApp, initializeApp, getApps, getApp } from "firebase/app";
+import { getAuth, Auth } from "firebase/auth";
+import { getFirestore, Firestore } from "firebase/firestore";
+import { getStorage, FirebaseStorage } from "firebase/storage";
+import { getAnalytics, Analytics } from "firebase/analytics";
+import { getPerformance, FirebasePerformance } from "firebase/performance";
+import { getDatabase, Database } from "firebase/database";
 
 const clientCredentials = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -19,21 +16,82 @@ const clientCredentials = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 }
 
-export default function initFirebase() {
-    if (!firebase.apps.length) {
-        firebase.initializeApp(clientCredentials)
+let app: FirebaseApp;
+let auth: Auth;
+let firestore: Firestore;
+let storage: FirebaseStorage;
+let analytics: Analytics | null = null;
+let performance: FirebasePerformance | null = null;
+let database: Database;
+
+export default function initFirebase(): FirebaseApp {
+    if (!getApps().length) {
+        app = initializeApp(clientCredentials);
+        auth = getAuth(app);
+        firestore = getFirestore(app);
+        storage = getStorage(app);
+        database = getDatabase(app);
+
         // Check that `window` is in scope for the analytics module!
         if (typeof window !== 'undefined') {
             // Enable analytics. https://firebase.google.com/docs/analytics/get-started
             if ('measurementId' in clientCredentials) {
-                firebase.analytics()
-                firebase.performance()
+                analytics = getAnalytics(app);
+                performance = getPerformance(app);
             }
         }
-        console.log('Firebase was successfully init.')
+        console.log('Firebase was successfully init.');
+    } else {
+        app = getApp();
+        auth = getAuth(app);
+        firestore = getFirestore(app);
+        storage = getStorage(app);
+        database = getDatabase(app);
     }
+
+    return app;
 }
 
 export function initApp(): FirebaseApp {
-    return initializeApp(clientCredentials);
+    if (!getApps().length) {
+        return initializeApp(clientCredentials);
+    }
+    return getApp();
+}
+
+// Export initialized instances for easy access
+export function getFirebaseAuth(): Auth {
+    if (!auth) {
+        initFirebase();
+    }
+    return auth;
+}
+
+export function getFirebaseFirestore(): Firestore {
+    if (!firestore) {
+        initFirebase();
+    }
+    return firestore;
+}
+
+export function getFirebaseStorage(): FirebaseStorage {
+    if (!storage) {
+        initFirebase();
+    }
+    return storage;
+}
+
+export function getFirebaseDatabase(): Database {
+    if (!database) {
+        initFirebase();
+    }
+    return database;
+}
+
+export function getFirebaseAnalytics(): Analytics | null {
+    return analytics;
+}
+
+export function getFirebasePerformance(): FirebasePerformance | null {
+    return performance;
 }

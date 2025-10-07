@@ -1,12 +1,12 @@
 import Link from 'next/link';
-import FirebaseAuth from '../components/auth/FirebaseAuth'
+import CustomAuth from '../components/auth/CustomAuth'
 
 const Auth = () => {
     return (
-        <div>
+        <div className="container py-5">
             <div>
-                <FirebaseAuth />
-                <p><Link href="/">Go Home</Link></p>
+                <CustomAuth />
+                <p className="text-center mt-3"><Link href="/">Go Home</Link></p>
             </div>
         </div>
     )

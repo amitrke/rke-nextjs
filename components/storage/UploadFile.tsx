@@ -1,8 +1,8 @@
 // to learn how to download a file, get/use file metadata, delete files, and list files see https://firebase.google.com/docs/storage/web/start
 
 import { useRef, useState } from 'react'
-import firebase from 'firebase/compat/app'
-import 'firebase/compat/storage'
+import { ref, uploadBytesResumable } from 'firebase/storage'
+import { getFirebaseStorage } from '../../firebase/initFirebase'
 import { useUser } from '../../firebase/useUser'
 import { ToastMsgProps } from '../ui/toastMsg'
 
@@ -33,27 +33,28 @@ const UploadFile = (props: UploadFileParam) => {
             inputEl.current.value = null
             return;
         }
-        
+
         // create a storage ref
-        const storageRef = firebase.storage().ref(`users/${user.id}/upload/` + file.name)
+        const storage = getFirebaseStorage();
+        const storageRef = ref(storage, `users/${user.id}/upload/${file.name}`)
 
         // upload file
-        const task = storageRef.put(file)
+        const uploadTask = uploadBytesResumable(storageRef, file)
 
         // update progress bar
-        task.on('state_change',
-
-            function progress(snapshot) {
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                // progress
                 setValue((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
             },
-
-            async function error(err) {
+            async (err) => {
+                // error
                 console.error(err);
                 await props.statusCallback({filename: file.name, status: false})
                 props.toastCallback({body: err.message, header: "Image Upload"});
             },
-
-            async function compleete() {
+            async () => {
+                // complete
                 await props.statusCallback({filename: file.name, status: true})
                 props.toastCallback({body: 'Uploaded to firebase storage successfully!', header: "Image Upload"});
             }
