@@ -1,21 +1,20 @@
 import { useState, useEffect } from 'react'
-import firebase from 'firebase/compat/app'
-import 'firebase/compat/database'
+import { ref, onValue, off } from 'firebase/database'
+import { getFirebaseDatabase } from '../../firebase/initFirebase'
 import Button from 'react-bootstrap/Button'
 
 const Counter = ({ id }) => {
     const [count, setCount] = useState('')
     useEffect(() => {
-        const onCountIncrease = (count) => setCount(count.val())
+        const database = getFirebaseDatabase();
+        const countRef = ref(database, `counts/${id}`);
 
-        const fetchData = async () => {
-            firebase.database().ref('counts').child(id).on('value', onCountIncrease)
-        }
-
-        fetchData()
+        const unsubscribe = onValue(countRef, (snapshot) => {
+            setCount(snapshot.val())
+        })
 
         return () => {
-            firebase.database().ref('counts').child(id).off('value', onCountIncrease)
+            off(countRef, 'value', unsubscribe)
         }
     }, [id])
 

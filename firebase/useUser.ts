@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import firebase from 'firebase/compat/app'
-import 'firebase/compat/auth'
-import initFirebase from './initFirebase'
+import { signOut, onAuthStateChanged } from 'firebase/auth'
+import initFirebase, { getFirebaseAuth } from './initFirebase'
 import {
     removeUserCookie,
     setUserCookie,
@@ -19,9 +18,8 @@ const useUser = () => {
     const router = useRouter()
 
     const logout = async () => {
-        return firebase
-            .auth()
-            .signOut()
+        const auth = getFirebaseAuth();
+        return signOut(auth)
             .then(() => {
                 // Sign-out successful.
                 router.push('/auth')
@@ -32,10 +30,10 @@ const useUser = () => {
     }
 
     const updateUserPublicInfo = async (user: User) => {
-        const userInfo ={ 
-            name: user.name, 
-            profilePic: user.profilePic || "", 
-            updateDate: (new Date()).getTime(), 
+        const userInfo ={
+            name: user.name,
+            profilePic: user.profilePic || "",
+            updateDate: (new Date()).getTime(),
             email: user.email,
             id: user.id
         };
@@ -48,7 +46,8 @@ const useUser = () => {
     }
 
     useEffect(() => {
-        const cancelAuthListener = firebase.auth().onAuthStateChanged((user) => {
+        const auth = getFirebaseAuth();
+        const cancelAuthListener = onAuthStateChanged(auth, (user) => {
             if (user) {
                 const userData = mapUserData(user)
                 updateUserPublicInfo(userData);
