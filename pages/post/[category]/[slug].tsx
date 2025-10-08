@@ -92,7 +92,16 @@ export default function Page({
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <HeadTag title={post.title} description={post.intro} />
+            <HeadTag
+                title={post.title}
+                description={post.intro}
+                type="article"
+                author={post.author.name}
+                publishedTime={jsonLdDateFormat(post.updateDate)}
+                url={`/post/${post.category}/${post.slug}`}
+                image={post.displayImages.length > 0 ? post.displayImages[0].url : undefined}
+                keywords={[post.category, 'Roorkee', post.title]}
+            />
             <Row>
                 <Col className="md-8">
                     <h1>{post.title}</h1>

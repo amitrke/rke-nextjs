@@ -7,6 +7,8 @@ import { getAlbums, getEvents, getNews, getPostsWithDetails } from '../service/P
 import { useEffect, useState } from 'react';
 import { Weather } from './weather/[id]';
 import { uiRound } from '../components/ui/uiUtils';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import EmptyState from '../components/ui/EmptyState';
 
 import { PostDisplayType } from '../firebase/types';
 import { Event, NewsArticle } from '../service/PostService';
@@ -26,11 +28,17 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
   const [weather, setWeather] = useState({} as Weather);
   const [todayWeather, setTodayWeather] = useState({ temp: '', condition: '', icon: '' });
   const [tomorrowWeather, setTomorrowWeather] = useState({ temp: '', condition: '', icon: '' });
+  const [weatherLoading, setWeatherLoading] = useState(true);
 
   useEffect(() => {
+    setWeatherLoading(true);
     fetch('/api/weather')
       .then(res => res.json())
-      .then(w => setWeather(w));
+      .then(w => {
+        setWeather(w);
+        setWeatherLoading(false);
+      })
+      .catch(() => setWeatherLoading(false));
   }, []);
 
   useEffect(() => {
@@ -53,8 +61,25 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
   return (
     <>
       <Head>
-        <title>Roorkee.org: Town Information</title>
-        <meta name="description" content="Roorkee.org: Town Information." />
+        <title>Roorkee.org: Town Information & Community Hub</title>
+        <meta name="description" content="Welcome to Roorkee.org - Your community hub for Roorkee town information, news, events, photo galleries, and local stories. Stay connected with fellow Roorkee residents." />
+        <meta name="keywords" content="Roorkee, Roorkee town, Roorkee community, IIT Roorkee, Roorkee news, Roorkee events, Roorkee photos" />
+
+        {/* Open Graph Tags */}
+        <meta property="og:title" content="Roorkee.org: Town Information & Community Hub" />
+        <meta property="og:description" content="Your community hub for Roorkee town information, news, events, and local stories" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.roorkee.org" />
+        <meta property="og:site_name" content="Roorkee.org" />
+        <meta property="og:image" content="https://www.roorkee.org/og-image.png" />
+
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Roorkee.org: Town Information & Community Hub" />
+        <meta name="twitter:description" content="Your community hub for Roorkee town information, news, events, and local stories" />
+        <meta name="twitter:image" content="https://www.roorkee.org/og-image.png" />
+
+        <link rel="canonical" href="https://www.roorkee.org" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -65,104 +90,145 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
           <div className={styles.heroText}>
             <h1>Welcome to Roorkee</h1>
             <p>{data.heroTextDesc}</p>
-            {/* <Link href="/directory" className={styles.ctaButton}>Explore Directory</Link> */}
+            <div className={styles.heroActions}>
+              <Link href="/posts" className={styles.ctaButton}>Explore Posts</Link>
+              <Link href="/albums" className={styles.ctaButtonSecondary}>View Gallery</Link>
+            </div>
           </div>
-                      <div className={styles.weatherContainer}>
-                      <h3>Roorkee Weather</h3>
-                      <div className={styles.weatherForecasts}>
-                        <div className={styles.weatherWidget}>
-                          <h4>Today</h4>
-                          <div className={styles.condition}>
-                            {todayWeather.icon && <Image src={todayWeather.icon} alt="Weather icon" width={50} height={50} />}
+                      <Link href="/weather/roorkee-in" className={styles.weatherContainer}>
+                      {weatherLoading ? (
+                        <LoadingSpinner size="small" text="Loading weather..." />
+                      ) : (
+                        <div className={styles.weatherForecasts}>
+                          <div className={styles.weatherWidget}>
+                            <h4>Today</h4>
+                            <div className={styles.condition}>
+                              {todayWeather.icon && <Image src={todayWeather.icon} alt="Weather icon" width={50} height={50} />}
+                            </div>
+                            <div className={styles.temp}>{todayWeather.temp}</div>
+                            <div className={styles.conditionText}>{todayWeather.condition}</div>
                           </div>
-                          <div className={styles.temp}>{todayWeather.temp}</div>
-                          <div className={styles.conditionText}>{todayWeather.condition}</div>
-                        </div>
-                        <div className={styles.weatherWidget}>
-                          <h4>Tomorrow</h4>
-                          <div className={styles.condition}>
-                            {tomorrowWeather.icon && <Image src={tomorrowWeather.icon} alt="Weather icon" width={50} height={50} />}
+                          <div className={styles.weatherWidget}>
+                            <h4>Tomorrow</h4>
+                            <div className={styles.condition}>
+                              {tomorrowWeather.icon && <Image src={tomorrowWeather.icon} alt="Weather icon" width={50} height={50} />}
+                            </div>
+                            <div className={styles.temp}>{tomorrowWeather.temp}</div>
+                            <div className={styles.conditionText}>{tomorrowWeather.condition}</div>
                           </div>
-                          <div className={styles.temp}>{tomorrowWeather.temp}</div>
-                          <div className={styles.conditionText}>{tomorrowWeather.condition}</div>
                         </div>
-                      </div>
-                      <Link href="/weather/roorkee-in">More Details</Link>
-                    </div>        </section>
+                      )}
+                    </Link>        </section>
 
         {/* Posts Section */}
         <section className={styles.section}>
-            <div className={styles.centerTitle}>
+            <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>Recent Posts</h2>
+                <Link href="/posts" className={styles.viewAllLink}>View All →</Link>
             </div>
-            <div className={styles.cardGrid4}>
-                {posts.map((post) => (
-                    <div className={styles.card} key={post.id}>
-                        <div className={styles.cardImage} style={{backgroundImage: `url(${post.images && post.images.length > 0 ? post.images[0] : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                        <div className={styles.cardContent}>
-                            <h3>{post.title}</h3>
-                            <p>By {post.author.name}</p>
-                            <p>{post.intro && post.intro.length > 120 ? `${post.intro.substring(0, 120)}...` : post.intro}</p>
-                            <Link href={`/post/${post.category}/${post.slug}`}>Read More</Link>
+            {posts.length > 0 ? (
+                <div className={styles.cardGrid4}>
+                    {posts.map((post) => (
+                        <div className={styles.card} key={post.id}>
+                            <div className={styles.cardImage} style={{backgroundImage: `url(${post.images && post.images.length > 0 ? post.images[0] : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                            <div className={styles.cardContent}>
+                                <h3>{post.title}</h3>
+                                <p>By {post.author.name}</p>
+                                <p>{post.intro && post.intro.length > 120 ? `${post.intro.substring(0, 120)}...` : post.intro}</p>
+                                <Link href={`/post/${post.category}/${post.slug}`}>Read More</Link>
+                            </div>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            ) : (
+                <EmptyState
+                    title="No Posts Yet"
+                    message="Be the first to share your story with the community!"
+                    icon="📝"
+                />
+            )}
         </section>
 
         {/* News Section */}
         <section className={styles.section}>
-            <div className={styles.centerTitle}>
+            <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>Latest News</h2>
+                <Link href="/news" className={styles.viewAllLink}>View All →</Link>
             </div>
-            <div className={styles.cardGrid4}>
-                {news.map((item) => (
-                    <div className={styles.card} key={item.id}>
-                        <div className={styles.cardImage} style={{backgroundImage: `url(${item.image_url ? item.image_url : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                        <div className={styles.cardContent}>
-                            <h3>{item.title}</h3>
-                            <p>{item.formattedPubDate}</p>
-                            <p>{item.description && item.description.length > 120 ? `${item.description.substring(0, 120)}...` : item.description}</p>
-                            <Link href={item.url}>Read More</Link>
+            {news.length > 0 ? (
+                <div className={styles.cardGrid4}>
+                    {news.map((item) => (
+                        <div className={styles.card} key={item.id}>
+                            <div className={styles.cardImage} style={{backgroundImage: `url(${item.image_url ? item.image_url : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                            <div className={styles.cardContent}>
+                                <h3>{item.title}</h3>
+                                <p>{item.formattedPubDate}</p>
+                                <p>{item.description && item.description.length > 120 ? `${item.description.substring(0, 120)}...` : item.description}</p>
+                                <Link href={item.url}>Read More</Link>
+                            </div>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            ) : (
+                <EmptyState
+                    title="No News Available"
+                    message="Check back soon for the latest news about Roorkee!"
+                    icon="📰"
+                />
+            )}
         </section>
 
         {/* Upcoming Events Section */}
         <section className={styles.section}>
-            <div className={styles.centerTitle}>
+            <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>Upcoming Events</h2>
+                <Link href="/events" className={styles.viewAllLink}>View All →</Link>
             </div>
-            <div>
-                {events.map((event) => (
-                    <div className={styles.eventCard} key={event.id}>
-                        <div className={styles.eventDate}>
-                            <div className={styles.month}>{event.formattedMonth}</div>
-                            <div className={styles.day}>{event.formattedDay}</div>
+            {events.length > 0 ? (
+                <div className={styles.eventGrid}>
+                    {events.map((event) => (
+                        <div className={styles.eventCard} key={event.id}>
+                            <div className={styles.eventDate}>
+                                <div className={styles.month}>{event.formattedMonth}</div>
+                                <div className={styles.day}>{event.formattedDay}</div>
+                            </div>
+                            <div className={styles.eventDetails}>
+                                <h3>{event.name}</h3>
+                                <p>{event.description}</p>
+                            </div>
                         </div>
-                        <div className={styles.eventDetails}>
-                            <h3>{event.name}</h3>
-                            <p>{event.description}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            ) : (
+                <EmptyState
+                    title="No Upcoming Events"
+                    message="Stay tuned for exciting community events coming soon!"
+                    icon="📅"
+                />
+            )}
         </section>
 
         {/* Photo Gallery Section */}
         <section className={styles.section}>
-            <div className={styles.centerTitle}>
+            <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>From the Gallery</h2>
+                <Link href="/albums" className={styles.viewAllLink}>View All →</Link>
             </div>
-            <div className={styles.cardGrid6}>
-                {albums.map((album, i) => (
-                    <Link href={`/album/${album.id}`} className={styles.galleryCard} key={album.id}>
-                        <Image src={album.images[0]} alt={`Gallery image ${i+1}`} width={300} height={300} />
-                    </Link>
-                ))}
-            </div>
+            {albums.length > 0 ? (
+                <div className={styles.cardGrid6}>
+                    {albums.map((album, i) => (
+                        <Link href={`/album/${album.id}`} className={styles.galleryCard} key={album.id}>
+                            <Image src={album.images[0]} alt={`Gallery image ${i+1}`} width={300} height={300} />
+                        </Link>
+                    ))}
+                </div>
+            ) : (
+                <EmptyState
+                    title="No Photos Yet"
+                    message="Share your memories with the community by uploading photos!"
+                    icon="📸"
+                />
+            )}
         </section>
 
       </main>
@@ -191,10 +257,10 @@ export async function getStaticProps() {
   const events = await getEvents({ limit: 4 });
   const allAlbums = await getAlbums({ limit: 12 });
   const albums = allAlbums.filter(a => a.images && a.images.length > 0).slice(0, 6);
-  
+
   return {
     props: {
-      data: resp,
+      data: resp || { heroTextDesc: "Welcome to our town. Find all the information you need about our vibrant community." },
       posts: postDisplay,
       news,
       events,

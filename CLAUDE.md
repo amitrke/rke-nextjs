@@ -10,17 +10,17 @@ Roorkee.org is a Next.js community website for people who have lived in Roorkee,
 
 ### Development
 ```bash
-pnpm dev          # Start development server on http://localhost:3000
-pnpm build        # Build for production
-pnpm start        # Start production server
-pnpm lint:fix     # Fix linting issues in .tsx files
+yarn dev          # Start development server on http://localhost:3000
+yarn build        # Build for production (IMPORTANT: Only run when explicitly requested by user, not after every change)
+yarn start        # Start production server
+yarn lint:fix     # Fix linting issues in .tsx files
 ```
 
 ### Package Management
 ```bash
-pnpm install      # Install dependencies
-pnpm add next@latest react@latest react-dom@latest eslint-config-next@latest  # Upgrade Next.js
-pnpm up -u        # Upgrade all packages
+yarn install      # Install dependencies
+yarn add next@latest react@latest react-dom@latest eslint-config-next@latest  # Upgrade Next.js
+yarn upgrade      # Upgrade all packages
 ```
 
 ### Commit Messages

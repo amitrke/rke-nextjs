@@ -5,6 +5,12 @@ import { collection, addDoc } from "firebase/firestore";
 const app = initApp();
 const db = getFirestore(app);
 
+// Type-safe wrapper for Firestore documents with id and path
+export type FirestoreDocument<T> = T & {
+    id: string;
+    path?: string;
+}
+
 type FirestoreParams = {
     path: string;
     pathSegments?: string[];
@@ -41,7 +47,6 @@ export const write = async (params: FirestoreWriteParams): Promise<DocumentRefer
     if (!params.existingDocId && !params.newDocId) {
         docRef = await addDoc(collection(db, params.path), params.data);
     }
-    console.debug("Document written with ID: ", docRef.id);
     return docRef;
 }
 
@@ -51,7 +56,6 @@ export const arrayAppend = async <T>(params: FirestoreAppendToArrayParams<T>): P
     await updateDoc(docRef, {
         [params.arrayAttribute]: arrayUnion(params.newArrayItem)
     });
-    console.debug("Document array updated");
     return docRef;
 }
 
@@ -59,16 +63,19 @@ export const deleteDocument = async (params: FirestoreParams) => {
     await deleteDoc(doc(db, params.path, ...params.pathSegments));
 }
 
-export const queryOnce = async<T>(params: FirestoreParams): Promise<Array<T>> => {
+export const queryOnce = async<T>(params: FirestoreParams): Promise<Array<FirestoreDocument<T>>> => {
     if (!params.queryConstraints) params.queryConstraints = []
     const q = query(collection(db, params.path), ...params.queryConstraints);
     const querySnapshot = await getDocs(q);
-    const resp: Array<T> = [];
+    const resp: Array<FirestoreDocument<T>> = [];
     querySnapshot.forEach((doc) => {
-        const item = doc.data();
-        item['id'] = doc.id;
-        item['path'] = doc.ref.path;
-        resp.push(<T>item)
+        const data = doc.data() as T;
+        const firestoreDoc: FirestoreDocument<T> = {
+            ...data,
+            id: doc.id,
+            path: doc.ref.path
+        };
+        resp.push(firestoreDoc);
     });
     return resp;
 }
@@ -77,11 +84,14 @@ export const subscribeToCollectionUpdates = <T>(params: FirestoreSubscribe<T>) =
     if (!params.queryConstraints) params.queryConstraints = []
     const q = query(collection(db, params.path), ...params.queryConstraints);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const items:T[] = [];
+        const items: FirestoreDocument<T>[] = [];
         querySnapshot.forEach((doc) => {
-            const item = doc.data();
-            item['id'] = doc.id;
-            items.push(<T>item);
+            const data = doc.data() as T;
+            const firestoreDoc: FirestoreDocument<T> = {
+                ...data,
+                id: doc.id
+            };
+            items.push(firestoreDoc);
         });
         params.updateCB(items);
     });
@@ -92,8 +102,7 @@ export const getDocument = async<T>(params: FirestoreParams): Promise<T | undefi
     const docSnap = await getDoc(doc(db, params.path, params.pathSegments[0]));
     if (docSnap.exists()) {
         return docSnap.data() as T;
-    } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
     }
+    // Return undefined if document doesn't exist
+    return undefined;
 }

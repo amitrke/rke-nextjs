@@ -5,7 +5,7 @@ import { Button, ButtonGroup, Card, Col, Container, Image, Modal, Row } from 're
 import HeadTag from '../../components/ui/headTag'
 import PostUserInfo from '../../components/ui/postUserInfo'
 import { getImageBucketUrl } from '../../components/ui/showImage'
-import { uiDateFormat } from '../../components/ui/uiUtils'
+import { jsonLdDateFormat, uiDateFormat } from '../../components/ui/uiUtils'
 import { getDocument, queryOnce } from '../../firebase/firestore'
 import { User } from '../../firebase/types'
 import { AlbumType } from '../account/editAlbum'
@@ -29,7 +29,20 @@ export async function getStaticPaths() {
 export const getStaticProps = (async (context) => {
     const aid = context.params.aid as string;
     const albumDoc = await getDocument<AlbumType>({ path: `albums`, pathSegments: [aid] })
+
+    if (!albumDoc) {
+        return {
+            notFound: true,
+        };
+    }
+
     const userDoc = await getDocument<User>({ path: `users`, pathSegments: [albumDoc.userId] })
+
+    if (!userDoc) {
+        return {
+            notFound: true,
+        };
+    }
 
     // imageResponseMap to Array
     const imageResponseArray: { m: string, l: string }[] = []
@@ -72,7 +85,15 @@ export default function Page({
 
     return (
         <div className="album py-5 bg-light">
-            <HeadTag title={`Photo Album - ${album.name}.`} />
+            <HeadTag
+                title={`${album.name} - Photo Album`}
+                description={`Photo album by ${user.name} - ${album.images.length} photos from Roorkee`}
+                url={`/album/${album.id}`}
+                image={images.length > 0 ? images[0].m : undefined}
+                keywords={['Roorkee', 'photos', 'album', album.name]}
+                author={user.name}
+                publishedTime={album.updateDate ? jsonLdDateFormat(album.updateDate) : undefined}
+            />
             <Modal show={show} onHide={handleClose} fullscreen centered>
                 {/* <Modal.Header closeButton>
                     <Modal.Title>Modal heading</Modal.Title>
