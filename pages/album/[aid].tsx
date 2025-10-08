@@ -1,7 +1,7 @@
 import { where } from 'firebase/firestore'
 import { GetStaticProps, InferGetStaticPropsType } from 'next'
 import { useState } from 'react'
-import { Button, ButtonGroup, Card, Col, Container, Image, Modal, Row } from 'react-bootstrap'
+import { Button, Container, Image, Modal } from 'react-bootstrap'
 import HeadTag from '../../components/ui/headTag'
 import PostUserInfo from '../../components/ui/postUserInfo'
 import { getImageBucketUrl } from '../../components/ui/showImage'
@@ -9,6 +9,7 @@ import { jsonLdDateFormat, uiDateFormat } from '../../components/ui/uiUtils'
 import { getDocument, queryOnce } from '../../firebase/firestore'
 import { User } from '../../firebase/types'
 import { AlbumType } from '../account/editAlbum'
+import styles from '../../styles/AlbumDetails.module.css'
 
 type AlbumPropType = {
     album: AlbumType,
@@ -84,7 +85,7 @@ export default function Page({
     }
 
     return (
-        <div className="album py-5 bg-light">
+        <>
             <HeadTag
                 title={`${album.name} - Photo Album`}
                 description={`Photo album by ${user.name} - ${album.images.length} photos from Roorkee`}
@@ -94,70 +95,45 @@ export default function Page({
                 author={user.name}
                 publishedTime={album.updateDate ? jsonLdDateFormat(album.updateDate) : undefined}
             />
-            <Modal show={show} onHide={handleClose} fullscreen centered>
-                {/* <Modal.Header closeButton>
-                    <Modal.Title>Modal heading</Modal.Title>
-                </Modal.Header> */}
-                <Modal.Body>
-                    <Image src={showImage} alt="" className="w-100" />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
+            <Modal show={show} onHide={handleClose} fullscreen centered className={styles.imageModal}>
+                <Modal.Body className={styles.modalBody}>
+                    <Button variant="light" className={styles.closeButton} onClick={handleClose}>
+                        ✕
                     </Button>
-                    {/* <Button variant="primary" onClick={handleClose}>
-                        Save Changes
-                    </Button> */}
-                </Modal.Footer>
+                    <Image src={showImage} alt="" className={styles.fullImage} />
+                </Modal.Body>
             </Modal>
             <Container>
-                <Row>
-                    <Col>
-                        <h1>{album.name}</h1>
-                        <PostUserInfo user={user} postDate={album.updateDate} />
-                        <p>{album.description}</p>
-                    </Col>
-                </Row>
-                <Row>
-                    {images.map((item, key) => {
-                        return (
-                            <Col md="4" key={key}>
-                                <Card className="mb-4 box-shadow">
-                                    <Image src={item.m} alt="" onClick={() => handleShow(item.l)} />
-                                    <Card.Body>
-                                        {/* <Card.Text>{item.l.url}</Card.Text> */}
-                                        <div className="d-flex justify-content-between align-items-center">
-                                            <ButtonGroup>
-                                                <Button
-                                                    color="secondary"
-                                                    size="sm" onClick={() => handleShow(item.l)}
-                                                >
-                                                    View
-                                                </Button>
-                                                {/* <Button
-                                                    color="secondary"
-                                                    size="sm"
-                                                >
-                                                    Edit
-                                                </Button> */}
-                                            </ButtonGroup>
-                                            {/* <small className="text-muted">
-                                                Time
-                                            </small> */}
-                                        </div>
-                                    </Card.Body>
-                                </Card>
-                            </Col>
-                        );
-                    })}
-                </Row>
-                <Row>
-                    <Col>
-                        <hr />
-                        <p className="text-center">This page was generated at {cacheCreatedAt}</p>
-                    </Col>
-                </Row>
+                <div className={styles.header}>
+                    <h1 className={styles.albumTitle}>{album.name}</h1>
+                    <PostUserInfo user={user} postDate={album.updateDate} />
+                    {album.description && (
+                        <p className={styles.albumDescription}>{album.description}</p>
+                    )}
+                    <p className={styles.photoCount}>
+                        {album.images.length} {album.images.length === 1 ? 'photo' : 'photos'}
+                    </p>
+                </div>
+
+                <div className={styles.imageGrid}>
+                    {images.map((item, key) => (
+                        <div
+                            key={key}
+                            className={styles.imageCard}
+                            onClick={() => handleShow(item.l)}
+                        >
+                            <div className={styles.imageWrapper}>
+                                <Image src={item.m} alt={`Photo ${key + 1}`} className={styles.image} />
+                                <div className={styles.imageOverlay}>
+                                    <Button variant="light" size="sm" className={styles.viewButton}>
+                                        View Full Size
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </Container>
-        </div>
+        </>
     );
 }

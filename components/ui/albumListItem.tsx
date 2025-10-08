@@ -4,10 +4,11 @@ import { useUser } from "../../firebase/useUser";
 import { deleteDocument } from "../../firebase/firestore";
 import { AlbumType } from "../../pages/account/editAlbum";
 import { ShowModalParams } from "./showModal";
+import styles from '../../styles/AlbumListItem.module.css';
 
 export type DisplayAlbumParams = {
     album: AlbumType
-    confirmModalCB: (props: ShowModalParams) => void
+    confirmModalCB?: (props: ShowModalParams) => void
     mainImageUrl: string
 }
 
@@ -19,29 +20,32 @@ const AlbumListItem = (params: DisplayAlbumParams) => {
     }
 
     const onDeleteClick = () => {
-        params.confirmModalCB({ show: true, yesCallback: onDelete });
+        if (params.confirmModalCB) {
+            params.confirmModalCB({ show: true, yesCallback: onDelete });
+        }
     }
 
     return (
-        <Card style={{ width: '18rem' }}>
+        <Card className={styles.albumCard}>
             <Link href={`/album/${params.album.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <Card.Img variant="top" src={params.mainImageUrl} />
+                <div className={styles.imageWrapper}>
+                    <Card.Img variant="top" src={params.mainImageUrl} className={styles.albumImage} />
+                </div>
                 <Card.Body>
-                    <Card.Title>{params.album.name}</Card.Title>
-                    <Card.Text>
-                        {params.album.description}
+                    <Card.Title className={styles.albumTitle}>{params.album.name}</Card.Title>
+                    <Card.Text className={styles.albumDescription}>
+                        {params.album.description && params.album.description.length > 100
+                            ? `${params.album.description.substring(0, 100)}...`
+                            : params.album.description}
                     </Card.Text>
                 </Card.Body>
             </Link>
-            <Card.Body>
-                <div className={user && user.id === params.album.userId ? '' : 'd-none'}>
-                    <Button variant="primary" href={'/account/editAlbum?id=' + params.album.id}>Edit</Button>{' '}
-                    <Button variant="secondary" onClick={onDeleteClick}>Delete</Button>
-                </div>
-            </Card.Body>
-            <Card.Footer>
-                <small className="text-muted">Public: {params.album.public.toString()}</small>
-            </Card.Footer>
+            {user && user.id === params.album.userId && (
+                <Card.Body className={styles.actions}>
+                    <Button variant="primary" size="sm" href={'/account/editAlbum?id=' + params.album.id}>Edit</Button>{' '}
+                    <Button variant="secondary" size="sm" onClick={onDeleteClick}>Delete</Button>
+                </Card.Body>
+            )}
         </Card>
     )
 }

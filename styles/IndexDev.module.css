@@ -378,3 +378,146 @@
     width: 24px;
     height: 24px;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    /* Container */
+    .container {
+        padding: 15px;
+    }
+
+    /* Hero Section */
+    .hero {
+        flex-direction: column;
+        padding: 30px 15px;
+        gap: 25px;
+    }
+
+    .heroText {
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .heroText h1 {
+        font-size: 32px;
+        margin-bottom: 15px;
+    }
+
+    .heroText p {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .heroActions {
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .heroText .ctaButton,
+    .ctaButtonSecondary {
+        width: 100%;
+        text-align: center;
+        padding: 12px 20px;
+        font-size: 16px;
+    }
+
+    /* Weather Container */
+    .weatherContainer {
+        width: 100%;
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    .weatherForecasts {
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    .weatherWidget h4 {
+        font-size: 16px;
+    }
+
+    .weatherWidget .temp {
+        font-size: 24px;
+    }
+
+    /* Section Headers */
+    .sectionHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .sectionTitle {
+        font-size: 24px;
+        margin-bottom: 0;
+    }
+
+    .viewAllLink {
+        font-size: 14px;
+        align-self: flex-end;
+    }
+
+    /* Card Grids */
+    .cardGrid4 {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .cardGrid6 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    /* Event Grid */
+    .eventGrid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .eventCard {
+        padding: 15px;
+    }
+
+    .eventDate {
+        padding: 12px;
+        margin-right: 15px;
+    }
+
+    .eventDate .month {
+        font-size: 12px;
+    }
+
+    .eventDate .day {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extra small screens */
+    .heroText h1 {
+        font-size: 28px;
+    }
+
+    .heroText p {
+        font-size: 14px;
+    }
+
+    .sectionTitle {
+        font-size: 20px;
+    }
+
+    .cardGrid6 {
+        grid-template-columns: 1fr;
+    }
+
+    .weatherWidget .temp {
+        font-size: 20px;
+    }
+
+    .weatherWidget h4 {
+        font-size: 14px;
+    }
+}

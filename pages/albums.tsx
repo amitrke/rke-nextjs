@@ -1,5 +1,6 @@
 import AlbumList from '../components/ui/albumList';
 import HeadTag from '../components/ui/headTag';
+import EmptyState from '../components/ui/EmptyState';
 import { uiDateFormat } from '../components/ui/uiUtils';
 import { queryOnce } from '../firebase/firestore';
 import { AlbumType } from './account/editAlbum';
@@ -7,6 +8,7 @@ import { where } from 'firebase/firestore';
 import { InferGetStaticPropsType } from 'next';
 import { Container } from 'react-bootstrap';
 import { getImageBucketUrl } from '../components/ui/showImage2';
+import styles from '../styles/AlbumsPage.module.css';
 
 export default function Page({
     dbList,
@@ -15,11 +17,33 @@ export default function Page({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
     return (
         <>
-            <HeadTag title="Roorkee Photo Albums." />
+            <HeadTag
+                title="Photo Albums | Roorkee.org"
+                description="Browse photo albums from the Roorkee community. Explore memories, places, and moments captured by residents."
+                url="/albums"
+            />
             <Container>
-                <AlbumList albums={dbList} bucketUrlMap={bucketUrlMap} />
-                <hr />
-                <p className="text-center">This page was generated at {cacheCreatedAt}</p>
+                <div className={styles.header}>
+                    <h1>Photo Albums</h1>
+                    <p className={styles.description}>
+                        Explore visual memories and moments captured by the Roorkee community
+                    </p>
+                    {dbList.length > 0 && (
+                        <p className={styles.albumCount}>
+                            {dbList.length} {dbList.length === 1 ? 'album' : 'albums'} available
+                        </p>
+                    )}
+                </div>
+
+                {dbList.length > 0 ? (
+                    <AlbumList albums={dbList} bucketUrlMap={bucketUrlMap} />
+                ) : (
+                    <EmptyState
+                        title="No Albums Yet"
+                        message="Be the first to share your photos with the community!"
+                        icon="📸"
+                    />
+                )}
             </Container>
         </>
     );
