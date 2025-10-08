@@ -2,8 +2,11 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import { getPaginatedPosts } from '../../../service/PostService';
 import Pagination from '../../../components/ui/pagination';
 import PublicPostList from '../../../components/ui/publicPostList';
+import HeadTag from '../../../components/ui/headTag';
+import EmptyState from '../../../components/ui/EmptyState';
 
 import { PostDisplayType } from '../../../firebase/types';
+import styles from '../../../styles/PostsPage.module.css';
 
 type PostPageProps = {
     posts: PostDisplayType[];
@@ -12,12 +15,42 @@ type PostPageProps = {
 };
 
 const PostsPage = ({ posts, totalCount, page }: PostPageProps) => {
+    const totalPages = Math.ceil(totalCount / 12);
+
     return (
-        <div>
-            <h1>Posts</h1>
-            <PublicPostList posts={posts} />
-            <Pagination currentPage={page} totalPages={Math.ceil(totalCount / 12)} basePath="/posts" />
-        </div>
+        <>
+            <HeadTag
+                title="Community Posts | Roorkee.org"
+                description="Browse posts from the Roorkee community. Share stories, experiences, and memories about life in Roorkee."
+                url="/posts"
+            />
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <h1>Community Posts</h1>
+                    <p className={styles.description}>
+                        Discover stories, experiences, and memories shared by the Roorkee community
+                    </p>
+                    {totalCount > 0 && (
+                        <p className={styles.postCount}>
+                            Showing {(page - 1) * 12 + 1}-{Math.min(page * 12, totalCount)} of {totalCount} posts
+                        </p>
+                    )}
+                </div>
+
+                {posts.length > 0 ? (
+                    <>
+                        <PublicPostList posts={posts} />
+                        <Pagination currentPage={page} totalPages={totalPages} basePath="/posts/page" />
+                    </>
+                ) : (
+                    <EmptyState
+                        title="No Posts Found"
+                        message="Be the first to share your story with the community!"
+                        icon="📝"
+                    />
+                )}
+            </div>
+        </>
     );
 };
 

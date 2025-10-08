@@ -1,5 +1,5 @@
-import { limit, orderBy, where } from "firebase/firestore"
-import { queryOnce } from "../firebase/firestore"
+import { limit, orderBy, QueryConstraint, where } from "firebase/firestore"
+import { FirestoreDocument, queryOnce } from "../firebase/firestore"
 import { AlbumType } from "../pages/account/editAlbum"
 import { PostType } from "../firebase/types";
 import { PostDisplayType } from "../firebase/types";
@@ -31,10 +31,8 @@ export type NewsArticle = {
     description: string,
     link: string,
     url: string,
-    image_url: string,
-    urlToImage: string,
-    pubDate: string,
-    publishedAt: string,
+    image_url: string, // Standardized on image_url (NewsData.io uses this)
+    publishedAt: string, // Standardized on publishedAt (ISO format)
     source_id: string,
     keywords: string[],
     creator: string[],
@@ -117,6 +115,60 @@ function dedupeBySimilarTitle<T extends { title: string }>(items: T[]): T[] {
     return result;
 }
 
+// --- Image fetching utility ---
+type FetchImageUrlsArgs = {
+    items: Array<{ userId: string; images?: string[] }>;
+    size: 's' | 'm' | 'l';
+};
+
+async function fetchImageUrls({ items, size }: FetchImageUrlsArgs): Promise<string[][]> {
+    return Promise.all(items.map(async (item) => {
+        const imageUrls: string[] = [];
+        if (item.images && item.images.length > 0) {
+            const image = await getImageDownloadURLV2({
+                file: `users/${item.userId}/images/${item.images[0]}`,
+                size
+            });
+            imageUrls.push(image.url);
+        }
+        return imageUrls;
+    }));
+}
+
+// --- Pagination utility ---
+type PaginationArgs<T, R> = {
+    path: string;
+    queryConstraints: QueryConstraint[];
+    page: number;
+    limit: number;
+    preProcess?: (items: FirestoreDocument<T>[]) => FirestoreDocument<T>[];
+    transform: (items: FirestoreDocument<T>[]) => Promise<R[]> | R[];
+};
+
+async function getPaginatedCollection<T, R>(
+    args: PaginationArgs<T, R>
+): Promise<{ items: R[], totalCount: number }> {
+    // Fetch all documents
+    const allItems = await queryOnce<T>({
+        path: args.path,
+        queryConstraints: args.queryConstraints
+    });
+
+    // Apply pre-processing (e.g., deduplication)
+    const processedItems = args.preProcess ? args.preProcess(allItems) : allItems;
+    const totalCount = processedItems.length;
+
+    // Calculate pagination
+    const startIndex = (args.page - 1) * args.limit;
+    const endIndex = startIndex + args.limit;
+    const paginatedItems = processedItems.slice(startIndex, endIndex);
+
+    // Transform items
+    const transformedItems = await args.transform(paginatedItems);
+
+    return { items: transformedItems, totalCount };
+}
+
 export async function getAlbums(
     args: { limit: number } = { limit: 6 }
 ): Promise<AlbumType[]> {
@@ -130,15 +182,8 @@ export async function getAlbums(
             path: `albums`, queryConstraints: queryConstraints
         }
     );
-    const albumsWithImageUrls = await Promise.all(albums.map(async (album) => {
-        const images = [];
-        if (album.images && album.images.length > 0) {
-            const image = await getImageDownloadURLV2({ file: `users/${album.userId}/images/${album.images[0]}`, size: 's' });
-            images.push(image.url);
-        }
-        return { ...album, images: images };
-    }));
-    return albumsWithImageUrls;
+    const imageUrls = await fetchImageUrls({ items: albums, size: 's' });
+    return albums.map((album, index) => ({ ...album, images: imageUrls[index] }));
 }
 
 export async function getEvents(
@@ -172,74 +217,62 @@ export async function getEvents(
 export async function getPaginatedNews(
     args: { limit: number, page: number }
 ): Promise<{ news: NewsArticle[], totalCount: number }> {
-    const queryConstraints = [
-        where("apiSource", "==", "newsdata.io"),
-        orderBy("expireAt", "desc"),
-    ];
-
-    // Get all documents to determine total count and for pagination snapshots
-    const allNews = await queryOnce<NewsArticle>({
-        path: `news`,
-        queryConstraints: queryConstraints
+    const result = await getPaginatedCollection<NewsArticle, NewsArticle>({
+        path: 'news',
+        queryConstraints: [
+            where("apiSource", "==", "newsdata.io"),
+            orderBy("expireAt", "desc"),
+        ],
+        page: args.page,
+        limit: args.limit,
+        preProcess: dedupeBySimilarTitle,
+        transform: (items) => items.map(article => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { expireAt, ...rest } = article;
+            return {
+                ...rest,
+                formattedPubDate: uiDateFormat(new Date(article.publishedAt).getTime()),
+            };
+        })
     });
 
-    // Dedupe by very similar titles while preserving sort order (newest first)
-    const deduped = dedupeBySimilarTitle(allNews);
-    const totalCount = deduped.length;
-
-    // Get the subset of documents for the current page
-    const startIndex = (args.page - 1) * args.limit;
-    const endIndex = startIndex + args.limit;
-    const paginatedNews = deduped.slice(startIndex, endIndex);
-
-    const formattedNews = paginatedNews.map(article => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { expireAt, ...rest } = article;
-        return {
-            ...rest,
-            formattedPubDate: uiDateFormat(new Date(article.publishedAt).getTime()),
-        };
-    });
-
-    return { news: formattedNews, totalCount };
+    return { news: result.items, totalCount: result.totalCount };
 }
 
 export async function getPaginatedPosts(
     args: { limit: number, page: number }
 ): Promise<{ posts: PostDisplayType[], totalCount: number }> {
-    const queryConstraints = [
-        where("public", "==", true),
-        orderBy("updateDate", "desc"),
-    ];
+    const result = await getPaginatedCollection<PostType, PostDisplayType>({
+        path: 'posts',
+        queryConstraints: [
+            where("public", "==", true),
+            orderBy("updateDate", "desc"),
+        ],
+        page: args.page,
+        limit: args.limit,
+        transform: async (paginatedPosts) => {
+            // Fetch users for all posts
+            const userIds = [...new Set(paginatedPosts.map(post => post.userId))];
+            const users = await queryOnce<User>({ path: `users`, queryConstraints: [where("id", "in", userIds)] });
+            const userDict = users.reduce((dict, user) => {
+                dict[user.id] = user;
+                return dict;
+            }, {} as { [key: string]: User });
 
-    const allPosts = await queryOnce<PostType>({
-        path: `posts`,
-        queryConstraints: queryConstraints
-    });
-    const totalCount = allPosts.length;
+            // Fetch images for all posts
+            const imageUrls = await fetchImageUrls({ items: paginatedPosts, size: 's' });
 
-    const startIndex = (args.page - 1) * args.limit;
-    const endIndex = startIndex + args.limit;
-    const paginatedPosts = allPosts.slice(startIndex, endIndex);
-
-    const postDisplay = new Array<PostDisplayType>();
-    const userIds = [...new Set(paginatedPosts.map(post => post.userId))];
-    const users = await queryOnce<User>({ path: `users`, queryConstraints: [where("id", "in", userIds)] });
-    const userDict = users.reduce((dict, user) => {
-        dict[user.id] = user;
-        return dict;
-    }, {} as { [key: string]: User });
-
-    for (const post of paginatedPosts) {
-        const postImages = [];
-        if (post.images && post.images.length > 0) {
-            const image = await getImageDownloadURLV2({ file: `users/${post.userId}/images/${post.images[0]}`, size: 's' });
-            postImages.push(image.url);
+            // Combine all data
+            return paginatedPosts.map((post, index) => ({
+                ...post,
+                images: imageUrls[index],
+                formattedUpdateDate: uiDateFormat(post.updateDate),
+                author: userDict[post.userId]
+            }));
         }
-        postDisplay.push({ ...post, images: postImages, formattedUpdateDate: uiDateFormat(post.updateDate), author: userDict[post.userId] });
-    }
+    });
 
-    return { posts: postDisplay, totalCount };
+    return { posts: result.items, totalCount: result.totalCount };
 }
 
 export async function getNews(
@@ -298,7 +331,6 @@ export async function getPostsWithDetails(
     args: GetPostsWithDetailsArgs = { public: true, limit: 10, photoSize: 's' }
 ): Promise<PostDisplayType[]> {
     const posts = await getPosts(args)
-    const postDisplay = new Array<PostDisplayType>();
     //Get the list of unique user ids from posts
     const userIds = [...new Set(posts.map(post => post.userId))]
     //Query all users
@@ -308,16 +340,14 @@ export async function getPostsWithDetails(
         dict[user.id] = user
         return dict
     }, {} as { [key: string]: User })
-    for (const post of posts) {
-        const postImages = [];
-        if (post.images && post.images.length > 0) {
-            const image = await getImageDownloadURLV2({ file: `users/${post.userId}/images/${post.images[0]}`, size: args.photoSize });
-            postImages.push(image.url);
-        }
-        // console.log(postImages);
-        postDisplay.push({ ...post, images: postImages, formattedUpdateDate: uiDateFormat(post.updateDate), author: userDict[post.userId] })
-    }
-    return postDisplay;
+
+    const imageUrls = await fetchImageUrls({ items: posts, size: args.photoSize });
+    return posts.map((post, index) => ({
+        ...post,
+        images: imageUrls[index],
+        formattedUpdateDate: uiDateFormat(post.updateDate),
+        author: userDict[post.userId]
+    }));
 }
 
 export async function getPostBySlug(category: string, slug: string): Promise<PostType> {

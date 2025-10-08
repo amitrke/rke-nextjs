@@ -3,7 +3,7 @@ import { getDocument } from "../../firebase/firestore";
 import { PostType } from "../../firebase/types";
 import DOMPurify from 'isomorphic-dompurify';
 import { Col, Container, Row } from "react-bootstrap";
-import { uiDateFormat } from "../../components/ui/uiUtils";
+import { jsonLdDateFormat, uiDateFormat } from "../../components/ui/uiUtils";
 import Link from "next/link";
 import HeadTag from "../../components/ui/headTag";
 
@@ -42,6 +42,13 @@ import { getPostWithAuthor } from '../../service/PostService';
 export const getStaticProps: GetStaticProps = async (context) => {
     const { id } = context.params as IParams;
     const post = await getDocument<PostType>({ path: 'posts', pathSegments: [id] });
+
+    if (!post) {
+        return {
+            notFound: true,
+        };
+    }
+
     const postDisplay = await getPostWithAuthor(post);
     return {
         props: {
@@ -57,7 +64,16 @@ export default function Page({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
     return (
         <Container>
-            <HeadTag title={post.title} description={post.intro} />
+            <HeadTag
+                title={post.title}
+                description={post.intro}
+                type="article"
+                author={post.author.name}
+                publishedTime={jsonLdDateFormat(post.updateDate)}
+                url={`/posts/${post.id}`}
+                image={post.images.length > 0 ? post.images[0] : undefined}
+                keywords={[post.category || 'post', 'Roorkee', post.title]}
+            />
             <Row>
                 <Col className="md-8">
                     <h1>{post.title}</h1>

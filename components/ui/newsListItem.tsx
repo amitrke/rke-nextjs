@@ -8,9 +8,9 @@ export default function NewsListItem({ article }: NewsListItemProps) {
     return (
         <div className="col-md-6 col-lg-4 mb-4">
             <div className="card h-100">
-                {article.urlToImage && (
+                {article.image_url && (
                     <img
-                        src={article.urlToImage}
+                        src={article.image_url}
                         alt={article.title}
                         width={300}
                         height={200}

@@ -51,6 +51,12 @@
     margin-bottom: 30px;
 }
 
+.heroActions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
 .heroText .ctaButton {
     background-color: #007bff;
     color: #fff;
@@ -58,6 +64,29 @@
     text-decoration: none;
     border-radius: 5px;
     font-size: 18px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.heroText .ctaButton:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.ctaButtonSecondary {
+    background-color: transparent;
+    color: #007bff;
+    padding: 15px 30px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 18px;
+    border: 2px solid #007bff;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+.ctaButtonSecondary:hover {
+    background-color: #007bff;
+    color: #fff;
+    transform: translateY(-2px);
 }
 
 /* Weather Widget Container */
@@ -69,12 +98,16 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     width: 35%;
     max-width: 400px;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
 }
 
-.weatherContainer h3 {
-    text-align: center;
-    margin-top: 0;
-    margin-bottom: 20px;
+.weatherContainer:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .weatherForecasts {
@@ -132,6 +165,26 @@
     margin-bottom: 20px;
 }
 
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.viewAllLink {
+    font-size: 16px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.viewAllLink:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
 /* Card Layout */
 .cardGrid4 {
     display: grid;
@@ -142,9 +195,16 @@
 .card {
     background-color: #fff;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
 .cardImage {
@@ -168,17 +228,39 @@
 
 .cardContent a {
     font-size: 14px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
 }
 
-/* Event Card */
+.cardContent a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Event Grid and Card */
+.eventGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
 .eventCard {
     display: flex;
     align-items: center;
     background-color: #fff;
     border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 15px;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.eventCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
 .eventDate {
@@ -210,10 +292,16 @@
 
 /* Gallery Card */
 .galleryCard {
-    border-radius: 5px;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.galleryCard:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .galleryCard img {

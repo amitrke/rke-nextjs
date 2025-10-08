@@ -40,7 +40,6 @@ export default function initFirebase(): FirebaseApp {
                 performance = getPerformance(app);
             }
         }
-        console.log('Firebase was successfully init.');
     } else {
         app = getApp();
         auth = getAuth(app);

@@ -58,7 +58,9 @@ export async function getImageDownloadURLV2(params: ImageDownloadParams): Promis
                 url: downloadUrl, key: params.file, size: size
             };
         }
-    } catch {
+    } catch (error) {
+        // Log error for debugging, but return fallback image for user experience
+        console.error(`Failed to load image ${fileName}:`, error);
         return {
             url: '/no-image.png', key: params.file, size: size
         };
