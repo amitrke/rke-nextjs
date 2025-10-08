@@ -12,7 +12,6 @@ import styles from '../styles/AlbumsPage.module.css';
 
 export default function Page({
     dbList,
-    cacheCreatedAt,
     bucketUrlMap,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
     return (
