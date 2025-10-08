@@ -24,7 +24,7 @@ const PostsPage = ({ posts, totalCount, page }: PostPageProps) => {
                 description="Browse posts from the Roorkee community. Share stories, experiences, and memories about life in Roorkee."
                 url="/posts"
             />
-            <div className={styles.container}>
+            <div className="container">
                 <div className={styles.header}>
                     <h1>Community Posts</h1>
                     <p className={styles.description}>
