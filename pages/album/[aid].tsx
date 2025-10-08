@@ -74,7 +74,7 @@ export const getStaticProps = (async (context) => {
 }>
 
 export default function Page({
-    albumProp: { album, user, images, cacheCreatedAt }
+    albumProp: { album, user, images }
 }: InferGetStaticPropsType<typeof getStaticProps>) {
     const [show, setShow] = useState(false);
     const [showImage, setShowImage] = useState('');
