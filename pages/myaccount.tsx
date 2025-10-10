@@ -19,12 +19,12 @@ const MyAccount = () => {
   const [albums, setAlbums] = useState<AlbumType[]>([]);
   const [bucketUrlMap, setBucketUrlMap] = useState<{ [key: string]: string }>({});
   const [modalParams, setModalParams] = useState<ShowModalParams>({ show: false, yesCallback: async () => {} });
-  const [modalTrigger, setModalTrigger] = useState(0);
+  const [modalTrigger, setModalTrigger] = useState(new Date());
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const [isLoadingAlbums, setIsLoadingAlbums] = useState(true);
 
   const confirmModalCB = (params: ShowModalParams) => {
-    setModalTrigger(prev => prev + 1);
+    setModalTrigger(new Date());
     setModalParams(params);
   }
 
