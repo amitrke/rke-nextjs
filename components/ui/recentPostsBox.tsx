@@ -7,15 +7,24 @@ export type RecentPostsBoxProps = {
 
 export default function RecentPostsBox(props: RecentPostsBoxProps) {
     return (
-        <div className="p-4">
-            <h4 className="fst-italic">Recent Posts</h4>
-            <ol className="list-unstyled mb-0">
+        <div>
+            <h5 className="fw-bold mb-3">Recent Posts</h5>
+            <div className="list-group list-group-flush">
                 {[...props.posts].map((post: PostType, i) =>
-
-                    <li key={i.toString()}><Link href={`/post/${post.category}/${post.slug}`}>{post.title}</Link></li>
-
+                    <Link
+                        key={i.toString()}
+                        href={`/post/${post.category}/${post.slug}`}
+                        className="list-group-item list-group-item-action border-0 px-0 py-2"
+                    >
+                        <div className="d-flex align-items-start">
+                            <span className="text-primary me-2">→</span>
+                            <span className="text-dark" style={{ fontSize: '0.95rem' }}>
+                                {post.title}
+                            </span>
+                        </div>
+                    </Link>
                 )}
-            </ol>
+            </div>
         </div>
     )
 }

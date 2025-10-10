@@ -1,10 +1,11 @@
 import draftToHtml from 'draftjs-to-html';
 import DOMPurify from 'isomorphic-dompurify';
 import { GetStaticProps, InferGetStaticPropsType } from "next";
-import { Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row, Badge, Card } from "react-bootstrap";
 import HeadTag from "../../../components/ui/headTag";
 import PostUserInfo from "../../../components/ui/postUserInfo";
 import RecentPostsBox from "../../../components/ui/recentPostsBox";
+import Link from "next/link";
 
 import { jsonLdDateFormat, uiDateFormat } from "../../../components/ui/uiUtils";
 import { getDocument } from "../../../firebase/firestore";
@@ -87,7 +88,7 @@ export default function Page({
         }
     }
     return (
-        <Container>
+        <Container className="py-4">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -102,37 +103,97 @@ export default function Page({
                 image={post.displayImages.length > 0 ? post.displayImages[0].url : undefined}
                 keywords={[post.category, 'Roorkee', post.title]}
             />
-            <Row>
-                <Col className="md-8">
-                    <h1>{post.title}</h1>
-                    <PostUserInfo user={post.author} postDate={post.updateDate} />
-                    <p>{post.intro}</p>
-                    {[...post.displayImages].map((x) =>
-                        <ShowImage2 key={x.key} file={x.key} userId={post.userId} width={x.width} height={x.height} />
-                    )}
-                    <hr />
-                    <div id="articleBody" dangerouslySetInnerHTML={createMarkup(post.edState)}></div>
+
+            {/* Breadcrumb */}
+            <nav aria-label="breadcrumb" className="mb-3">
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item"><Link href="/">Home</Link></li>
+                    <li className="breadcrumb-item"><Link href={`/post/${post.category}`}>{post.category}</Link></li>
+                    <li className="breadcrumb-item active" aria-current="page">{post.title}</li>
+                </ol>
+            </nav>
+
+            <Row className="g-4">
+                <Col lg={8}>
+                    <article>
+                        {/* Category Badge */}
+                        <div className="mb-3">
+                            <Link href={`/post/${post.category}`} className="text-decoration-none">
+                                <Badge bg="primary" className="text-uppercase">{post.category}</Badge>
+                            </Link>
+                        </div>
+
+                        {/* Title */}
+                        <h1 className="display-4 fw-bold mb-3">{post.title}</h1>
+
+                        {/* Author and Date */}
+                        <PostUserInfo user={post.author} postDate={post.updateDate} />
+
+                        {/* Introduction */}
+                        <p className="lead my-4 text-muted">{post.intro}</p>
+
+                        {/* Featured Images */}
+                        {post.displayImages.length > 0 && (
+                            <div className="mb-4">
+                                {[...post.displayImages].map((x) =>
+                                    <div key={x.key} className="mb-3">
+                                        <ShowImage2 file={x.key} userId={post.userId} width={x.width} height={x.height} />
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <hr className="my-4" />
+
+                        {/* Article Body */}
+                        <div
+                            id="articleBody"
+                            className="article-content"
+                            style={{
+                                fontSize: '1.1rem',
+                                lineHeight: '1.8',
+                                color: '#333'
+                            }}
+                            dangerouslySetInnerHTML={createMarkup(post.edState)}
+                        />
+                    </article>
                 </Col>
-                <Col className="g-5" md={4}>
-                    <div className="p-4 mb-3 bg-light rounded">
-                        <h4 className="fst-italic">About the website</h4>
-                        <p className="mb-0">Born in 2001, this website is a personal project to bring people of this town together, not affiliated to government / corporation.</p>
+
+                {/* Sidebar */}
+                <Col lg={4}>
+                    <div className="sticky-top" style={{ top: '20px' }}>
+                        {/* Recent Posts */}
+                        <Card className="mb-3 border-0 shadow-sm">
+                            <Card.Body className="p-4">
+                                <RecentPostsBox posts={post.recentPosts} />
+                            </Card.Body>
+                        </Card>
+
+                        {/* Share Section */}
+                        <Card className="border-0 shadow-sm">
+                            <Card.Body className="p-4">
+                                <h5 className="fw-bold mb-3">Share This Post</h5>
+                                <div className="d-grid gap-2">
+                                    <a
+                                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`https://roorkee.org/post/${post.category}/${post.slug}`)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="btn btn-outline-primary btn-sm"
+                                    >
+                                        Share on Twitter
+                                    </a>
+                                    <a
+                                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://roorkee.org/post/${post.category}/${post.slug}`)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="btn btn-outline-primary btn-sm"
+                                    >
+                                        Share on Facebook
+                                    </a>
+                                </div>
+                            </Card.Body>
+                        </Card>
                     </div>
-                    <RecentPostsBox posts={post.recentPosts} />
-                    <div className="p-4">
-                        <h4 className="fst-italic">Elsewhere</h4>
-                        <ol className="list-unstyled">
-                            <li><a href="#">GitHub</a></li>
-                            <li><a href="#">Twitter</a></li>
-                            <li><a href="#">Facebook</a></li>
-                        </ol>
-                    </div>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <hr />
-                    <p className="text-center">This page was generated at {post.cacheCreatedAt}</p>
                 </Col>
             </Row>
         </Container>
