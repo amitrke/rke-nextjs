@@ -630,11 +630,6 @@
   resolved "https://registry.yarnpkg.com/@firebase/webchannel-wrapper/-/webchannel-wrapper-1.0.1.tgz#0b62c9f47f557a5b4adc073bb0a47542ce6af4c4"
   integrity sha512-jmEnr/pk0yVkA7mIlHNnxCi+wWzOFUg0WyIotgkKAb2u1J7fAeDBcVNSTjTihbAYNusCLQdW5s9IJ5qwnEufcQ==
 
-"@fortawesome/fontawesome-common-types@7.0.1":
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-7.0.1.tgz#e9ab94b1ca93e7020e3c7eda2ef1ba8cca8ba1dc"
-  integrity sha512-0VpNtO5cNe1/HQWMkl4OdncYK/mv9hnBte0Ew0n6DMzmo3Q3WzDFABHm6LeNTipt5zAyhQ6Ugjiu8aLaEjh1gg==
-
 "@fortawesome/fontawesome-common-types@7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-7.1.0.tgz#a4e0b7e40073d5fdef41182da1bc216a05875659"
@@ -654,12 +649,12 @@
   dependencies:
     "@fortawesome/fontawesome-common-types" "7.1.0"
 
-"@fortawesome/free-solid-svg-icons@^7.0.1":
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/@fortawesome/free-solid-svg-icons/-/free-solid-svg-icons-7.0.1.tgz#890ae28848c97c41a77cac829dee558ccc1851c9"
-  integrity sha512-esKuSrl1WMOTMDLNt38i16VfLe/gRZt2ZAJ3Yw7slfs7sj583MKqNFqO57zmhknk1Sya6f9Wys89aCzIJkcqlg==
+"@fortawesome/free-solid-svg-icons@^7.1.0":
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/@fortawesome/free-solid-svg-icons/-/free-solid-svg-icons-7.1.0.tgz#cb9d149cefd3419a7a3fd041106e3a2315463e3e"
+  integrity sha512-Udu3K7SzAo9N013qt7qmm22/wo2hADdheXtBfxFTecp+ogsc0caQNRKEb7pkvvagUGOpG9wJC1ViH6WXs8oXIA==
   dependencies:
-    "@fortawesome/fontawesome-common-types" "7.0.1"
+    "@fortawesome/fontawesome-common-types" "7.1.0"
 
 "@fortawesome/react-fontawesome@^3.1.0":
   version "3.1.0"
@@ -2948,11 +2943,6 @@ form-data@^2.5.0:
     asynckit "^0.4.0"
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
-
-fs@^0.0.1-security:
-  version "0.0.1-security"
-  resolved "https://registry.yarnpkg.com/fs/-/fs-0.0.1-security.tgz#8a7bd37186b6dddf3813f23858b57ecaaf5e41d4"
-  integrity sha512-3XY9e1pP0CVEUCdj5BmfIZxRBTSDycnbqhIOGec9QYtmVH2fbLpj86CFWkrNOkt/Fvty4KZG5lTglL9j/gJ87w==
 
 function-bind@^1.1.2:
   version "1.1.2"
