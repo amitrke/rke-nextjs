@@ -11,7 +11,7 @@ import { jsonLdDateFormat, uiDateFormat } from "../../../components/ui/uiUtils";
 import { getDocument } from "../../../firebase/firestore";
 import { PostDisplayType, PostType, User } from "../../../firebase/types";
 import { getPostBySlug, getPosts } from "../../../service/PostService";
-import ShowImage2, { getImageSizes, ImageDisplayType } from '../../../components/ui/showImage2';
+import ShowImage2, { ImageDisplayType, getImageBucketUrl } from '../../../components/ui/showImage2';
 
 type PageType = PostDisplayType & {
     cacheCreatedAt: string,
@@ -44,7 +44,16 @@ export const getStaticProps = (async (context) => {
     const postBody = draftToHtml(draftRaw);
     const authorPromise = getDocument<User>({ path: 'users', pathSegments: [postDoc.userId] });
     const recentPostsPromise = getPosts({ limit: 5, public: true });
-    const imagesPromise = getImageSizes([...postDoc.images], 'm', postDoc.userId);
+    const imagesPromise: Promise<ImageDisplayType[]> = (async () => {
+        const { probeRemoteImage } = await import('../../../lib/imageProbe');
+        return Promise.all(
+            [...postDoc.images].map(async (key) => {
+                const url = getImageBucketUrl(key, 'm', postDoc.userId);
+                const { width, height } = await probeRemoteImage(url);
+                return { key, url, width, height };
+            })
+        );
+    })();
     const [author, recentPosts, images] = await Promise.all([authorPromise, recentPostsPromise, imagesPromise]);
 
     const post: PageType = {

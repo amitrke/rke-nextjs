@@ -1,5 +1,4 @@
 import Image from "next/image";
-import probe from "probe-image-size";
 
 export type ImageDownloadParams = {
     file: string;
@@ -51,15 +50,6 @@ const fileNameToNameWithDimensions = (fileName: string, size: string = 'm') => {
 export const getImageBucketUrl = (fileName: string, size: string, userId: string) => {
     const fileNameWithDimensions = fileNameToNameWithDimensions(fileName, size);
     return `https://storage.googleapis.com/rkeorg.appspot.com/users/${userId}/images/${fileNameWithDimensions}`
-}
-
-export const getImageSizes = async (imageUrl: string[], size: string, userId: string): Promise<ImageDisplayType[]> => {
-    const sizes = imageUrl.map(async (key) => {
-        const bucketUrl = getImageBucketUrl(key, size, userId);
-        const { width , height } = await probe(bucketUrl);
-        return { key, width, height, url: bucketUrl};
-    });
-    return await Promise.all(sizes);
 }
 
 const ShowImage2 = (props: ShowImageParams) => {

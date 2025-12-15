@@ -1,6 +1,7 @@
 import '../styles/globals.css'
 import '../styles/main.scss'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import Layout from '../components/layout'
 import { SSRProvider } from '@react-aria/ssr';
 import Script from 'next/script';
