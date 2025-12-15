@@ -70,9 +70,10 @@ export default function Page({
                 type="article"
                 author={post.author.name}
                 publishedTime={jsonLdDateFormat(post.updateDate)}
-                url={`/posts/${post.id}`}
+                url={`/post/${post.category}/${post.slug}`}
                 image={post.images.length > 0 ? post.images[0] : undefined}
                 keywords={[post.category || 'post', 'Roorkee', post.title]}
+                robots="noindex,follow"
             />
             <Row>
                 <Col className="md-8">

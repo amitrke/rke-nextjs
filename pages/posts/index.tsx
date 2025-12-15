@@ -1,14 +1,14 @@
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { GetServerSideProps } from 'next';
 
-const PostsIndex = () => {
-    const router = useRouter();
-
-    useEffect(() => {
-        router.replace('/posts/page/1');
-    }, [router]);
-
-    return null;
+export const getServerSideProps: GetServerSideProps = async () => {
+    return {
+        redirect: {
+            destination: '/posts/page/1',
+            permanent: true,
+        },
+    };
 };
 
-export default PostsIndex;
+export default function PostsIndex() {
+    return null;
+}

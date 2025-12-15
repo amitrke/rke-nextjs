@@ -5,6 +5,7 @@ module.exports = {
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
   },
+  turbopack: {},
   images: {
     remotePatterns: [
       {
@@ -34,5 +35,15 @@ module.exports = {
     config.resolve.fallback = { fs: false };
 
     return config;
+  },
+
+  async redirects() {
+    return [
+      {
+        source: '/users/:userid/profile',
+        destination: '/user/:userid',
+        permanent: true,
+      },
+    ];
   },
 }

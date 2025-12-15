@@ -10,7 +10,11 @@ type EventsPageProps = {
 export default function EventsPage({ events }: EventsPageProps) {
     return (
         <div className="container">
-            <HeadTag title="Upcoming Events" />
+            <HeadTag
+                title="Upcoming Events | Roorkee.org"
+                description="Upcoming community events in and around Roorkee."
+                url="/events"
+            />
             <h1>Upcoming Events</h1>
             <EventList events={events} />
         </div>

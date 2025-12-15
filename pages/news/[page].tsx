@@ -15,9 +15,19 @@ type NewsPageProps = {
 };
 
 export default function NewsPage({ news, page, totalPages }: NewsPageProps) {
+    const canonicalPath = `/news/${page}`;
+    const prevPath = page > 1 ? `/news/${page - 1}` : undefined;
+    const nextPath = page < totalPages ? `/news/${page + 1}` : undefined;
+
     return (
         <div className="container">
-            <HeadTag title={`News - Page ${page}`} />
+            <HeadTag
+                title={`News - Page ${page} | Roorkee.org`}
+                description="Latest Roorkee news and updates from around the region."
+                url={canonicalPath}
+                prevUrl={prevPath}
+                nextUrl={nextPath}
+            />
             <h1>News</h1>
             <NewsList news={news} />
             <Pagination currentPage={page} totalPages={totalPages} basePath="/news" />
