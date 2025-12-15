@@ -4,39 +4,54 @@ export type HeadTagType = {
     title: string,
     description?: string
     allowRobots?: boolean
+    robots?: string
     image?: string
     url?: string
     type?: 'website' | 'article'
     author?: string
     publishedTime?: string
     keywords?: string[]
+    prevUrl?: string
+    nextUrl?: string
 }
 
 export default function HeadTag ({
     title,
     description,
     allowRobots = true,
+    robots,
     image,
     url,
     type = 'website',
     author,
     publishedTime,
-    keywords
+    keywords,
+    prevUrl,
+    nextUrl,
 }: HeadTagType) {
     const siteName = "Roorkee.org";
     const defaultDescription = "Roorkee.org: Town Information, Community Hub for Roorkee residents";
     const finalDescription = description || defaultDescription;
-    const baseUrl = "https://www.roorkee.org";
-    const finalUrl = url ? `${baseUrl}${url}` : baseUrl;
-    const defaultImage = `${baseUrl}/og-image.png`;
-    const finalImage = image || defaultImage;
+    const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.roorkee.org").replace(/\/+$/, "");
+
+    const toAbsoluteUrl = (value?: string) => {
+        if (!value) return baseUrl;
+        if (/^https?:\/\//i.test(value)) return value.replace(/\/+$/, "");
+        const path = value.startsWith("/") ? value : `/${value}`;
+        return `${baseUrl}${path}`.replace(/\/+$/, "");
+    };
+
+    const finalUrl = toAbsoluteUrl(url);
+    const defaultImage = `${baseUrl}/no-image.png`;
+    const finalImage = toAbsoluteUrl(image || defaultImage);
+    const robotsContent = robots ?? (allowRobots ? "index,follow" : "noindex,nofollow");
 
     return (
         <Head>
             {/* Basic Meta Tags */}
             <title>{title}</title>
             <meta name="description" content={finalDescription} />
-            <meta name="robots" content={allowRobots ? "all" : "noindex"} />
+            <meta name="robots" content={robotsContent} />
             {keywords && keywords.length > 0 && (
                 <meta name="keywords" content={keywords.join(", ")} />
             )}
@@ -62,9 +77,14 @@ export default function HeadTag ({
             <meta name="twitter:title" content={title} key="twitter:title" />
             <meta name="twitter:description" content={finalDescription} key="twitter:description" />
             <meta name="twitter:image" content={finalImage} key="twitter:image" />
+            <meta name="twitter:url" content={finalUrl} key="twitter:url" />
 
             {/* Canonical URL */}
             <link rel="canonical" href={finalUrl} />
+
+            {/* Pagination */}
+            {prevUrl && <link rel="prev" href={toAbsoluteUrl(prevUrl)} />}
+            {nextUrl && <link rel="next" href={toAbsoluteUrl(nextUrl)} />}
         </Head>
     )
 }

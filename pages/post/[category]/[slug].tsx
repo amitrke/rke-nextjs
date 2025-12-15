@@ -68,6 +68,7 @@ export const getStaticProps = (async (context) => {
 export default function Page({
     post,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.roorkee.org').replace(/\/+$/, '');
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'Article',
@@ -76,7 +77,7 @@ export default function Page({
         "author": [{
             "@type": "Person",
             "name": post.author.name,
-            "url": `/user/${post.author.id}`
+            "url": `${siteUrl}/user/${post.author.id}`
         }],
         'image': post.displayImages.map(x => x.url),
         "speakable": {
@@ -108,7 +109,7 @@ export default function Page({
             <nav aria-label="breadcrumb" className="mb-3">
                 <ol className="breadcrumb">
                     <li className="breadcrumb-item"><Link href="/">Home</Link></li>
-                    <li className="breadcrumb-item"><Link href={`/post/${post.category}`}>{post.category}</Link></li>
+                    <li className="breadcrumb-item"><Link href="/posts/page/1">{post.category}</Link></li>
                     <li className="breadcrumb-item active" aria-current="page">{post.title}</li>
                 </ol>
             </nav>
@@ -118,7 +119,7 @@ export default function Page({
                     <article>
                         {/* Category Badge */}
                         <div className="mb-3">
-                            <Link href={`/post/${post.category}`} className="text-decoration-none">
+                            <Link href="/posts/page/1" className="text-decoration-none">
                                 <Badge bg="primary" className="text-uppercase">{post.category}</Badge>
                             </Link>
                         </div>
@@ -175,7 +176,7 @@ export default function Page({
                                 <h5 className="fw-bold mb-3">Share This Post</h5>
                                 <div className="d-grid gap-2">
                                     <a
-                                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`https://roorkee.org/post/${post.category}/${post.slug}`)}`}
+                                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`https://www.roorkee.org/post/${post.category}/${post.slug}`)}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="btn btn-outline-primary btn-sm"
@@ -183,7 +184,7 @@ export default function Page({
                                         Share on Twitter
                                     </a>
                                     <a
-                                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://roorkee.org/post/${post.category}/${post.slug}`)}`}
+                                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://www.roorkee.org/post/${post.category}/${post.slug}`)}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="btn btn-outline-primary btn-sm"

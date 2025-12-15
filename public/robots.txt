@@ -1,7 +1,7 @@
-# Block all crawlers for /accounts
 User-agent: *
-Disallow: /account
-
-# Allow all crawlers
-User-agent: *
+Disallow: /account/
+Disallow: /api/
+Disallow: /_next/
 Allow: /
+
+Sitemap: https://www.roorkee.org/sitemap.xml

@@ -16,13 +16,18 @@ type PostPageProps = {
 
 const PostsPage = ({ posts, totalCount, page }: PostPageProps) => {
     const totalPages = Math.ceil(totalCount / 12);
+    const canonicalPath = `/posts/page/${page}`;
+    const prevPath = page > 1 ? `/posts/page/${page - 1}` : undefined;
+    const nextPath = page < totalPages ? `/posts/page/${page + 1}` : undefined;
 
     return (
         <>
             <HeadTag
                 title="Community Posts | Roorkee.org"
                 description="Browse posts from the Roorkee community. Share stories, experiences, and memories about life in Roorkee."
-                url="/posts"
+                url={canonicalPath}
+                prevUrl={prevPath}
+                nextUrl={nextPath}
             />
             <div className="container">
                 <div className={styles.header}>

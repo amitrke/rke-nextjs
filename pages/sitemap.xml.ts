@@ -2,50 +2,68 @@ import { where } from "firebase/firestore";
 import { queryOnce } from "../firebase/firestore";
 import { PostType } from "../firebase/types";
 import { AlbumType } from "./account/editAlbum";
-import { User } from "../firebase/types";
 
-const hostname = 'https://www.roorkee.org';
+const DEFAULT_SITE_URL = 'https://www.roorkee.org';
 
-function generateSiteMap(posts: PostType[], albums: AlbumType[], users: User[]) {
+function toIsoDate(timestamp?: number) {
+        if (!timestamp) return undefined;
+        try {
+                return new Date(timestamp).toISOString();
+        } catch {
+                return undefined;
+        }
+}
+
+function generateSiteMap(siteUrl: string, posts: PostType[], albums: AlbumType[]) {
     return `<?xml version="1.0" encoding="UTF-8"?>
    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+         <url>
+             <loc>${siteUrl}/</loc>
+         </url>
      <url>
-       <loc>https://www.roorkee.org/disclaimer</loc>
+             <loc>${siteUrl}/disclaimer</loc>
      </url>
      <url>
-       <loc>https://www.roorkee.org/privacy</loc>
+             <loc>${siteUrl}/privacy</loc>
      </url>
      <url>
-       <loc>https://www.roorkee.org/contact</loc>
+             <loc>${siteUrl}/contact</loc>
      </url>
      <url>
-       <loc>https://www.roorkee.org/weather/roorkee-in</loc>
+             <loc>${siteUrl}/weather/roorkee-in</loc>
      </url>
+         <url>
+             <loc>${siteUrl}/posts/page/1</loc>
+         </url>
+         <url>
+             <loc>${siteUrl}/news/1</loc>
+         </url>
+         <url>
+             <loc>${siteUrl}/albums</loc>
+         </url>
+         <url>
+             <loc>${siteUrl}/events</loc>
+         </url>
      ${posts
-            .map(({ category, slug }) => {
+                        .map(({ category, slug, updateDate }) => {
+                                const lastmod = toIsoDate(updateDate);
                 return `
             <url>
-                <loc>${hostname}/post/${category}/${slug}</loc>
+                                <loc>${siteUrl}/post/${category}/${slug}</loc>
+                                ${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}
             </url>
             `;
             })
             .join('')}
          ${albums
-            .map(({ id }) => {
+                        .map(({ id, updateDate }) => {
+                                const lastmod = toIsoDate(updateDate);
                 return `
             <url>
-                <loc>${`${hostname}/album/${id}`}</loc>
+                                <loc>${siteUrl}/album/${id}</loc>
+                                ${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}
             </url>
             `;
-            })
-            .join('')}
-            ${users
-            .map(({ id }) => {
-                return `
-                <url>
-                    <loc>${`${hostname}/user/${id}`}</loc>
-                </url>
-                `;
             })
             .join('')}
    </urlset>
@@ -57,6 +75,7 @@ function SiteMap() {
 }
 
 export async function getServerSideProps({ res }) {
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || DEFAULT_SITE_URL).replace(/\/+$/, '');
     const postsPromise = queryOnce<PostType>(
         {
             path: `posts`, queryConstraints: [
@@ -73,16 +92,13 @@ export async function getServerSideProps({ res }) {
         }
     )
 
-    const usersPromise = queryOnce<User>(
-        { path: `users` }
-    )
-
-    const [posts, albums, users] = await Promise.all([postsPromise, albumsPromise, usersPromise]);
+    const [posts, albums] = await Promise.all([postsPromise, albumsPromise]);
 
     // We generate the XML sitemap with the posts data
-    const sitemap = generateSiteMap(posts, albums, users);
+    const sitemap = generateSiteMap(siteUrl, posts, albums);
 
     res.setHeader('Content-Type', 'text/xml');
+    res.statusCode = 200;
     // we send the XML to the browser
     res.write(sitemap);
     res.end();
