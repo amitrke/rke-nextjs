@@ -42,14 +42,14 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
   }, []);
 
   useEffect(() => {
-    if (weather.current) {
+    if (weather.current?.weather?.[0]) {
       setTodayWeather({
         temp: `${uiRound(weather.current.temp, 0)}°C`,
         condition: weather.current.weather[0].main,
         icon: `https://openweathermap.org/img/wn/${weather.current.weather[0].icon}@2x.png`
       });
     }
-    if (weather.daily && weather.daily.length > 1) {
+    if (weather.daily?.[1]?.weather?.[0]) {
       setTomorrowWeather({
         temp: `${uiRound(weather.daily[1].temp.day, 0)}°C`,
         condition: weather.daily[1].weather[0].main,

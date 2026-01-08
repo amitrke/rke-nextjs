@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(yarn build)",
-      "Bash(yarn audit)"
+      "Bash(yarn audit)",
+      "Bash(yarn lint:fix:*)"
     ],
     "deny": [],
     "ask": []

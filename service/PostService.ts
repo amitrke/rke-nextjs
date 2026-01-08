@@ -252,8 +252,11 @@ export async function getPaginatedPosts(
         limit: args.limit,
         transform: async (paginatedPosts) => {
             // Fetch users for all posts
-            const userIds = [...new Set(paginatedPosts.map(post => post.userId))];
-            const users = await queryOnce<User>({ path: `users`, queryConstraints: [where("id", "in", userIds)] });
+            const userIds = [...new Set(paginatedPosts.map(post => post.userId))].filter(Boolean);
+            // Firestore "in" query requires non-empty array
+            const users = userIds.length > 0
+                ? await queryOnce<User>({ path: `users`, queryConstraints: [where("id", "in", userIds)] })
+                : [];
             const userDict = users.reduce((dict, user) => {
                 dict[user.id] = user;
                 return dict;
@@ -332,9 +335,11 @@ export async function getPostsWithDetails(
 ): Promise<PostDisplayType[]> {
     const posts = await getPosts(args)
     //Get the list of unique user ids from posts
-    const userIds = [...new Set(posts.map(post => post.userId))]
-    //Query all users
-    const users = await queryOnce<User>({ path: `users`, queryConstraints: [where("id", "in", userIds)] })
+    const userIds = [...new Set(posts.map(post => post.userId))].filter(Boolean)
+    //Query all users - Firestore "in" query requires non-empty array
+    const users = userIds.length > 0
+        ? await queryOnce<User>({ path: `users`, queryConstraints: [where("id", "in", userIds)] })
+        : []
     //Map users to a dictionary for easy lookup
     const userDict = users.reduce((dict, user) => {
         dict[user.id] = user

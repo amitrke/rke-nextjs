@@ -59,8 +59,17 @@ export const arrayAppend = async <T>(params: FirestoreAppendToArrayParams<T>): P
     return docRef;
 }
 
-export const deleteDocument = async (params: FirestoreParams) => {
-    await deleteDoc(doc(db, params.path, ...params.pathSegments));
+export const deleteDocument = async (params: FirestoreParams): Promise<{ success: boolean; error?: string }> => {
+    try {
+        if (!params.pathSegments || params.pathSegments.length === 0) {
+            return { success: false, error: 'pathSegments is required for deleteDocument' };
+        }
+        await deleteDoc(doc(db, params.path, ...params.pathSegments));
+        return { success: true };
+    } catch (error) {
+        console.error('Failed to delete document:', error);
+        return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    }
 }
 
 export const queryOnce = async<T>(params: FirestoreParams): Promise<Array<FirestoreDocument<T>>> => {

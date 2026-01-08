@@ -1,8 +1,12 @@
 import Image from "next/image";
+import { ImageSize, getImageBucketUrl } from "./imageUtils";
+
+// Re-export for backwards compatibility
+export { getImageBucketUrl };
 
 export type ImageDownloadParams = {
     file: string;
-    size?: "s" | "m" | "l";
+    size?: ImageSize;
     userId: string;
 }
 export type ShowImageParams = ImageDownloadParams & {
@@ -19,37 +23,11 @@ export type ImageDisplayType = {
     height?: number;
 }
 
-const imageSizeMap = {
-    s: {
-        w: 200,
-        h: 200
-    },
-    m: {
-        w: 680,
-        h: 680
-    },
-    l: {
-        w: 1920,
-        h: 1080
-    }
-}
-
 export type ImageDownloadURLResponse = {
     key: string;
     url: string;
     size: string;
     error?: string;
-}
-
-const fileNameToNameWithDimensions = (fileName: string, size: string = 'm') => {
-    const filenameParts = fileName.split(".");
-    const fileExtention = filenameParts.pop();
-    return `${filenameParts[0]}_${imageSizeMap[size]['w']}x${imageSizeMap[size]['h']}.${fileExtention}`;
-}
-
-export const getImageBucketUrl = (fileName: string, size: string, userId: string) => {
-    const fileNameWithDimensions = fileNameToNameWithDimensions(fileName, size);
-    return `https://storage.googleapis.com/rkeorg.appspot.com/users/${userId}/images/${fileNameWithDimensions}`
 }
 
 const ShowImage2 = (props: ShowImageParams) => {

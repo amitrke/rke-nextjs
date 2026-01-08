@@ -53,10 +53,15 @@ const EditPost = () => {
   }, [user]);
 
   const loadPost = async (postId: string) => {
-    const post = await getDocument<PostType>({ path: `posts`, pathSegments: [postId] })
-    if (post) {
-      if (!post.id) post.id = postId;
-      setPost(post);
+    try {
+      const post = await getDocument<PostType>({ path: `posts`, pathSegments: [postId] });
+      if (post) {
+        if (!post.id) post.id = postId;
+        setPost(post);
+      }
+    } catch (error) {
+      console.error('Failed to load post:', error);
+      toastCallback({ header: "Error", body: "Failed to load post. Please try again." });
     }
   }
 

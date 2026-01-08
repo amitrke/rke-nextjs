@@ -1,8 +1,13 @@
 import TopNavigationBar from './nav/TopNavigationBar'
 import styles from '../styles/Home.module.css'
 import Link from 'next/link'
+import { ReactNode } from 'react'
 
-export default function Layout({ children }) {
+type LayoutProps = {
+  children: ReactNode;
+}
+
+export default function Layout({ children }: LayoutProps) {
   return (
     <>
       <div className={styles.container}>
