@@ -5,8 +5,19 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import Layout from '../components/layout'
 import { SSRProvider } from '@react-aria/ssr';
 import Script from 'next/script';
+import { AppProps } from 'next/app';
+import { NextComponentType, NextPageContext } from 'next';
 
-function MyApp({ Component, pageProps }) {
+type CustomComponentType = NextComponentType<NextPageContext, unknown, object> & {
+  noLayout?: boolean;
+  noSSR?: boolean;
+};
+
+type CustomAppProps = AppProps & {
+  Component: CustomComponentType;
+};
+
+function MyApp({ Component, pageProps }: CustomAppProps) {
   if (Component.noLayout) {
     return (
       <>

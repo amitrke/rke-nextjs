@@ -1,10 +1,14 @@
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Image } from "react-bootstrap";
+import { ImageSize, imageSizeMap, fileNameToNameWithDimensions, getImageBucketUrl } from "./imageUtils";
+
+// Re-export for backwards compatibility
+export { imageSizeMap, fileNameToNameWithDimensions, getImageBucketUrl };
 
 export type ImageDownloadParams = {
     file?: string;
-    size?: "s" | "m" | "l";
+    size?: ImageSize;
     userId?: string;
 }
 export type ShowImageParams = ImageDownloadParams & {
@@ -12,37 +16,11 @@ export type ShowImageParams = ImageDownloadParams & {
     classes?: string;
 }
 
-const imageSizeMap = {
-    s: {
-        w: 200,
-        h: 200
-    },
-    m: {
-        w: 680,
-        h: 680
-    },
-    l: {
-        w: 1920,
-        h: 1080
-    }
-}
-
 export type ImageDownloadURLResponse = {
     key: string;
     url: string;
     size: string;
     error?: string;
-}
-
-const fileNameToNameWithDimensions = (fileName: string, size: string = 'm') => {
-    const filenameParts = fileName.split(".");
-    const fileExtention = filenameParts.pop();
-    return `${filenameParts[0]}_${imageSizeMap[size]['w']}x${imageSizeMap[size]['h']}.${fileExtention}`;
-}
-
-export const getImageBucketUrl = (fileName: string, size: string, userId: string) => {
-    const fileNameWithDimensions = fileNameToNameWithDimensions(fileName, size);
-    return `https://storage.googleapis.com/rkeorg.appspot.com/users/${userId}/images/${fileNameWithDimensions}`
 }
 
 export async function getImageDownloadURLV2(params: ImageDownloadParams): Promise<ImageDownloadURLResponse> {
@@ -98,17 +76,20 @@ const ShowImage = (props: ShowImageParams) => {
     }
     
     const [imageUrl, setImageUrl] = useState<string>();
-    const getUrl = async () => {
-        if (props.imageUrl) {
-            setImageUrl(props.imageUrl)
-            return;
-        }
-        if (props.file) {
-            const url = await getImageDownloadURL({ ...props })
-            setImageUrl(url)
-        }
-    }
-    getUrl();
+
+    useEffect(() => {
+        const getUrl = async () => {
+            if (props.imageUrl) {
+                setImageUrl(props.imageUrl);
+                return;
+            }
+            if (props.file) {
+                const url = await getImageDownloadURL({ ...props });
+                setImageUrl(url);
+            }
+        };
+        getUrl();
+    }, [props.imageUrl, props.file, props.size, props.userId]);
 
     return (
         <ShowImageRaw imageUrl={imageUrl} size={size} classes={classes} />

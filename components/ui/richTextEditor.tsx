@@ -21,10 +21,16 @@ const RichTextEditor = (props: RichTextEditorProps) => {
 
   useEffect(() => {
     if (props.initState.length > 1) {
-      const contentAsJson = JSON.parse(props.initState)
-      const rawContent = convertFromRaw(contentAsJson)
-      const editorState = EditorState.createWithContent(rawContent);
-      setEditorState(editorState)
+      try {
+        const contentAsJson = JSON.parse(props.initState);
+        const rawContent = convertFromRaw(contentAsJson);
+        const editorState = EditorState.createWithContent(rawContent);
+        setEditorState(editorState);
+      } catch (error) {
+        console.error('Failed to parse editor state:', error);
+        // Reset to empty state if parsing fails
+        setEditorState(EditorState.createEmpty());
+      }
     }
   }, [props.initState])
 

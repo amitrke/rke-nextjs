@@ -14,6 +14,10 @@ export const setUserCookie = (user: User): void => {
         // firebase id tokens expire in one hour
         // set cookie expiry to match
         expires: 1 / 24,
+        // Security: only send cookie over HTTPS in production
+        secure: process.env.NODE_ENV === 'production',
+        // Security: prevent CSRF by restricting cross-site cookie sending
+        sameSite: 'strict',
     });
 };
 
