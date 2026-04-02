@@ -49,8 +49,12 @@ export const getStaticProps = (async (context) => {
         return Promise.all(
             [...postDoc.images].map(async (key) => {
                 const url = getImageBucketUrl(key, 'm', postDoc.userId);
-                const { width, height } = await probeRemoteImage(url);
-                return { key, url, width, height };
+                try {
+                    const { width, height } = await probeRemoteImage(url);
+                    return { key, url, width, height };
+                } catch {
+                    return { key, url, width: 680, height: 680 };
+                }
             })
         );
     })();

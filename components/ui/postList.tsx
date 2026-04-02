@@ -1,6 +1,6 @@
 import { PostDisplayType } from '../../firebase/types';
 import Link from 'next/link';
-import { Button, Card, Row, Col } from 'react-bootstrap';
+import { Badge, Button, Card, Row, Col } from 'react-bootstrap';
 import { ShowModalParams } from './showModal';
 import { deleteDocument } from '../../firebase/firestore';
 
@@ -8,9 +8,23 @@ type PostListProps = {
     posts: PostDisplayType[];
     confirmModalCB: (params: ShowModalParams) => void;
     layout: 'cards' | 'list';
+    queueStatusMap?: { [id: string]: string };
 };
 
-export default function PostList({ posts, confirmModalCB, layout }: PostListProps) {
+const PostStatusBadge = ({ post, queueStatus }: { post: PostDisplayType; queueStatus?: string }) => {
+    if (post.approved === true) {
+        return <Badge bg="success" className="ms-2">Published</Badge>;
+    }
+    if (post.public && queueStatus === 'rejected') {
+        return <Badge bg="danger" className="ms-2">Rejected</Badge>;
+    }
+    if (post.public) {
+        return <Badge bg="warning" text="dark" className="ms-2">Pending Review</Badge>;
+    }
+    return <Badge bg="secondary" className="ms-2">Draft</Badge>;
+};
+
+export default function PostList({ posts, confirmModalCB, layout, queueStatusMap }: PostListProps) {
 
     const deletePost = async (id: string) => {
         try {
@@ -38,11 +52,12 @@ export default function PostList({ posts, confirmModalCB, layout }: PostListProp
                                     <Button variant="link">Read More</Button>
                                 </Link>
                             </Card.Body>
-                            <Card.Footer>
+                            <Card.Footer className="d-flex align-items-center flex-wrap gap-2">
                                 <Button variant="outline-danger" size="sm" onClick={() => confirmModalCB({ show: true, yesCallback: () => deletePost(post.id) })}>Delete</Button>
-                                <Link href={`/account/editpost?id=${post.id}`} passHref className='ps-2'>
+                                <Link href={`/account/editpost?id=${post.id}`} passHref>
                                     <Button variant="outline-primary" size="sm">Edit</Button>
                                 </Link>
+                                <PostStatusBadge post={post} queueStatus={queueStatusMap?.[post.id]} />
                             </Card.Footer>
                         </Card>
                     </Col>

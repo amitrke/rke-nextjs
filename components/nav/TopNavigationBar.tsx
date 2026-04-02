@@ -1,6 +1,7 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import Link from "next/link";
 import { useUser } from "../../firebase/useUser";
+import { useAdminStatus } from "../../firebase/useAdminStatus";
 
 export default function TopNavigationBar() {
     return (
@@ -25,14 +26,22 @@ export default function TopNavigationBar() {
 }
 
 function UserInfo() {
-    const { user } = useUser()
+    const { user } = useUser();
+    const { isAdmin } = useAdminStatus();
     if (user) {
         return (
-            <Nav.Link as={Link} href="/myaccount">My Account</Nav.Link>
-        )
+            <Nav>
+                <Nav.Link as={Link} href="/myaccount">My Account</Nav.Link>
+                {isAdmin && (
+                    <Nav.Link as={Link} href="/account/moderation">Moderation</Nav.Link>
+                )}
+            </Nav>
+        );
     } else {
         return (
-            <Nav.Link as={Link} href="/auth">Login</Nav.Link>
-        )
+            <Nav>
+                <Nav.Link as={Link} href="/auth">Login</Nav.Link>
+            </Nav>
+        );
     }
 }

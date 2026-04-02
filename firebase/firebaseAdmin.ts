@@ -1,4 +1,6 @@
 import { initializeApp, cert, App, getApp } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 
 const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY
 
@@ -22,30 +24,16 @@ const initApp = (): App => {
     }
 }
 
-export default initApp;
-
-
-/*
-export const verifyIdToken = (token) => {
-    const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY
-
-    if (!admin.apps.length) {
-        admin.initializeApp({
-            credential: admin.credential.cert({
-                projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-                // https://stackoverflow.com/a/41044630/1332513
-                privateKey: firebasePrivateKey.replace(/\\n/g, '\n'),
-            }),
-            databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-        })
-    }
-
-    return admin
-        .auth()
-        .verifyIdToken(token)
-        .catch((error) => {
-            throw error
-        })
+export const verifyIdToken = async (token: string) => {
+    const app = initApp();
+    return getAuth(app).verifyIdToken(token);
 }
-*/
+
+export const getIsAdmin = async (userId: string): Promise<boolean> => {
+    const app = initApp();
+    const db = getFirestore(app);
+    const doc = await db.doc(`admins/${userId}`).get();
+    return doc.exists;
+}
+
+export default initApp;

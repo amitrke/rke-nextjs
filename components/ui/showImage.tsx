@@ -25,10 +25,11 @@ export type ImageDownloadURLResponse = {
 
 export async function getImageDownloadURLV2(params: ImageDownloadParams): Promise<ImageDownloadURLResponse> {
     const storage = getStorage();
-    const filenameParts = params.file.split(".");
-    const fileExtention = filenameParts.pop();
+    const lastDot = params.file.lastIndexOf('.');
+    const baseName = lastDot !== -1 ? params.file.slice(0, lastDot) : params.file;
+    const fileExtention = lastDot !== -1 ? params.file.slice(lastDot + 1) : '';
     const size = params.size ? params.size : "m";
-    const fileName = `${filenameParts[0]}_${imageSizeMap[size]['w']}x${imageSizeMap[size]['h']}.${fileExtention}`;
+    const fileName = `${baseName}_${imageSizeMap[size]['w']}x${imageSizeMap[size]['h']}.${fileExtention}`;
     try {
         const downloadUrl = await getDownloadURL(ref(storage, fileName));
         if (downloadUrl) {
@@ -50,10 +51,11 @@ export async function getImageDownloadURLV2(params: ImageDownloadParams): Promis
  */
 export async function getImageDownloadURL(params: ImageDownloadParams): Promise<string> {
     const storage = getStorage();
-    const filenameParts = params.file.split(".");
-    const fileExtention = filenameParts.pop();
+    const lastDot = params.file.lastIndexOf('.');
+    const baseName = lastDot !== -1 ? params.file.slice(0, lastDot) : params.file;
+    const fileExtention = lastDot !== -1 ? params.file.slice(lastDot + 1) : '';
     const size = params.size ? params.size : "m";
-    const fileName = `${filenameParts[0]}_${imageSizeMap[size]['w']}x${imageSizeMap[size]['h']}.${fileExtention}`;
+    const fileName = `${baseName}_${imageSizeMap[size]['w']}x${imageSizeMap[size]['h']}.${fileExtention}`;
     try {
         const downloadUrl = await getDownloadURL(ref(storage, fileName));
         if (downloadUrl) {

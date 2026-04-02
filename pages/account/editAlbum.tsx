@@ -7,6 +7,8 @@ import ShowImage from "../../components/ui/showImage";
 import ToastMsg, { ToastMsgProps } from "../../components/ui/toastMsg";
 import { arrayAppend, getDocument, write } from "../../firebase/firestore";
 import { useUser } from "../../firebase/useUser";
+import { useAdminStatus } from "../../firebase/useAdminStatus";
+import { getFirebaseAuth } from "../../firebase/initFirebase";
 
 export type AlbumType = {
     id: string;
@@ -15,6 +17,7 @@ export type AlbumType = {
     updateDate: number;
     images: string[];
     public: boolean;
+    approved?: boolean;
     userId: string;
 }
 
@@ -22,6 +25,7 @@ const EditAlbum = () => {
     const router = useRouter()
     const { id } = router.query
     const { user } = useUser()
+    const { isAdmin } = useAdminStatus()
 
     const [toasts, setToasts] = useState<ToastMsgProps[]>([]);
     const [albumId, setAlbumId] = useState<string>('')
@@ -53,16 +57,42 @@ const EditAlbum = () => {
     }, [user]);
 
     const onSave = async () => {
+        let savedId = albumId;
         if (albumId === '' && album.id === '') {
             console.log(`Create new album`);
             const doc = await write({ path: `albums`, data: album });
+            savedId = doc.id;
             setAlbumId(doc.id);
-            console.log(`doc id=${doc.id}, path=${doc.path}`)
+            console.log(`doc id=${doc.id}, path=${doc.path}`);
         } else {
-            const doc = await write({ path: `albums`, existingDocId: albumId, data: album });
-            console.log(`Updated document id=${doc.id}`)
+            await write({ path: `albums`, existingDocId: albumId, data: album });
+            console.log(`Updated document id=${albumId}`);
         }
-        toastCallback({body: 'Album Updated!', header: "Album"});
+
+        // If user wants this public and is not an admin, submit for moderation
+        if (album.public && !isAdmin && savedId) {
+            try {
+                const auth = getFirebaseAuth();
+                const idToken = await auth.currentUser?.getIdToken();
+                const response = await fetch('/api/submitForReview', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${idToken}`,
+                    },
+                    body: JSON.stringify({ itemId: savedId, itemType: 'album' }),
+                });
+                if (response.ok) {
+                    toastCallback({ body: 'Album submitted for review. It will be visible once approved.', header: 'Submitted' });
+                } else {
+                    toastCallback({ body: 'Album saved. Submission for review encountered an issue — please try again.', header: 'Album' });
+                }
+            } catch {
+                toastCallback({ body: 'Album saved. Could not submit for review — please try again.', header: 'Album' });
+            }
+        } else {
+            toastCallback({ body: 'Album Updated!', header: 'Album' });
+        }
     }
 
     const toastCallback = async (props: ToastMsgProps) => {
