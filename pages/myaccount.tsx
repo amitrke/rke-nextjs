@@ -283,8 +283,13 @@ const MyAccount = () => {
                 <Card key={notif.id} className="border-0 shadow-sm">
                   <Card.Body className="d-flex justify-content-between align-items-start">
                     <div>
-                      <div className="fw-semibold mb-1">{notif.title}</div>
-                      <div className="text-muted small">{notif.body}</div>
+                      <div className="fw-semibold mb-1">
+                        {notif.type === 'approved' ? 'Content Approved' : 'Content Rejected'}
+                        {' — '}{notif.itemTitle}
+                      </div>
+                      {notif.rejectionReason && (
+                        <div className="text-muted small">Reason: {notif.rejectionReason}</div>
+                      )}
                     </div>
                     <Button variant="outline-secondary" size="sm" className="ms-3 flex-shrink-0" onClick={() => markAsRead(notif.id)}>
                       Dismiss
