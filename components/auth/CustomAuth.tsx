@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, type JSX } from 'react';
 import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
