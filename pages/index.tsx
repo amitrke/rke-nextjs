@@ -129,15 +129,15 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
             {posts.length > 0 ? (
                 <div className={styles.cardGrid4}>
                     {posts.map((post) => (
-                        <div className={styles.card} key={post.id}>
+                  <Link href={`/post/${post.category}/${post.slug}`} className={styles.card} key={post.id}>
                             <div className={styles.cardImage} style={{backgroundImage: `url(${post.images && post.images.length > 0 ? post.images[0] : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                             <div className={styles.cardContent}>
                                 <h3>{post.title}</h3>
                                 <p>By {post.author.name}</p>
                                 <p>{post.intro && post.intro.length > 120 ? `${post.intro.substring(0, 120)}...` : post.intro}</p>
-                                <Link href={`/post/${post.category}/${post.slug}`}>Read More</Link>
+                      <span className={styles.cardCta}>Read More</span>
                             </div>
-                        </div>
+                  </Link>
                     ))}
                 </div>
             ) : (
@@ -253,7 +253,7 @@ export default IndexDev;
 export async function getStaticProps() {
   const resp = await getDocument({ path: 'appconfig', pathSegments: ['homepage'] });
   const postDisplay = await getPostsWithDetails();
-  const news = await getNews({ limit: 8 });
+  const news = await getNews({ limit: 8, preferredApiSource: 'newsdata.io' });
   const events = await getEvents({ limit: 4 });
   const allAlbums = await getAlbums({ limit: 12 });
   const albums = allAlbums.filter(a => a.images && a.images.length > 0).slice(0, 6);
