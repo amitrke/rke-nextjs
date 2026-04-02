@@ -40,6 +40,8 @@ export type NewsArticle = {
     country: string[],
     category: string[],
     language: string,
+    apiSource?: string,
+    source?: string,
     createdAt: number,
     formattedPubDate?: string,
     expireAt?: number,
@@ -239,7 +241,14 @@ export async function getPaginatedNews(
         ],
         page: args.page,
         limit: args.limit,
-        preProcess: dedupeBySimilarTitle,
+        preProcess: (items) => {
+            const deduped = dedupeBySimilarTitle(items);
+            return deduped.sort((a, b) => {
+                const aTime = new Date(a.publishedAt || 0).getTime();
+                const bTime = new Date(b.publishedAt || 0).getTime();
+                return bTime - aTime;
+            });
+        },
         transform: (items) => items.map(article => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { expireAt, ...rest } = article;
@@ -294,7 +303,7 @@ export async function getPaginatedPosts(
 }
 
 export async function getNews(
-    args: { limit: number } = { limit: 8 }
+    args: { limit: number, preferredApiSource?: string } = { limit: 8 }
 ): Promise<NewsArticle[]> {
     // Fetch more than needed to account for deduplication losses
     const fetchLimit = args.limit * 4;
@@ -308,10 +317,22 @@ export async function getNews(
         }
     );
     
-    // Remove near-duplicate titles while keeping the newest
-    const deduped = dedupeBySimilarTitle(news).slice(0, args.limit);
+    // Remove near-duplicate titles while keeping the newest.
+    const deduped = dedupeBySimilarTitle(news);
+
+    // Prioritize a specific provider for homepage display while keeping fallback content.
+    const prioritized = args.preferredApiSource
+        ? deduped.sort((a, b) => {
+            const aRank = a.apiSource === args.preferredApiSource ? 0 : 1;
+            const bRank = b.apiSource === args.preferredApiSource ? 0 : 1;
+            if (aRank !== bRank) return aRank - bRank;
+            return (b.expireAt || 0) - (a.expireAt || 0);
+        })
+        : deduped;
+
+    const selected = prioritized.slice(0, args.limit);
     
-    return deduped.map(article => {
+    return selected.map(article => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { expireAt, ...rest } = article;
         return {
