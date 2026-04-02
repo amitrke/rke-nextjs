@@ -1,4 +1,4 @@
-import { Button, Card } from "react-bootstrap";
+import { Badge, Button, Card } from "react-bootstrap";
 import Link from 'next/link';
 import { useUser } from "../../firebase/useUser";
 import { deleteDocument } from "../../firebase/firestore";
@@ -10,7 +10,21 @@ export type DisplayAlbumParams = {
     album: AlbumType
     confirmModalCB?: (props: ShowModalParams) => void
     mainImageUrl: string
+    queueStatus?: string
 }
+
+const AlbumStatusBadge = ({ album, queueStatus }: { album: AlbumType; queueStatus?: string }) => {
+    if (album.approved === true) {
+        return <Badge bg="success">Published</Badge>;
+    }
+    if (album.public && queueStatus === 'rejected') {
+        return <Badge bg="danger">Rejected</Badge>;
+    }
+    if (album.public) {
+        return <Badge bg="warning" text="dark">Pending Review</Badge>;
+    }
+    return <Badge bg="secondary">Draft</Badge>;
+};
 
 const AlbumListItem = (params: DisplayAlbumParams) => {
     const { user } = useUser();
@@ -43,7 +57,10 @@ const AlbumListItem = (params: DisplayAlbumParams) => {
             {user && user.id === params.album.userId && (
                 <Card.Body className={styles.actions}>
                     <Button variant="primary" size="sm" href={'/account/editAlbum?id=' + params.album.id}>Edit</Button>{' '}
-                    <Button variant="secondary" size="sm" onClick={onDeleteClick}>Delete</Button>
+                    <Button variant="secondary" size="sm" onClick={onDeleteClick}>Delete</Button>{' '}
+                    {params.confirmModalCB && (
+                        <AlbumStatusBadge album={params.album} queueStatus={params.queueStatus} />
+                    )}
                 </Card.Body>
             )}
         </Card>

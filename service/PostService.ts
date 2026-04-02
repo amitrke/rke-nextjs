@@ -1,7 +1,7 @@
 import { limit, orderBy, QueryConstraint, where } from "firebase/firestore"
 import { FirestoreDocument, queryOnce } from "../firebase/firestore"
 import { AlbumType } from "../pages/account/editAlbum"
-import { PostType } from "../firebase/types";
+import { PostType, ModerationQueueItem } from "../firebase/types";
 import { PostDisplayType } from "../firebase/types";
 import { User } from "../firebase/types"
 import { getImageDownloadURLV2 } from "../components/ui/showImage"
@@ -169,11 +169,25 @@ async function getPaginatedCollection<T, R>(
     return { items: transformedItems, totalCount };
 }
 
+export async function getPendingQueueItems(
+    type: 'post' | 'album'
+): Promise<ModerationQueueItem[]> {
+    return queryOnce<ModerationQueueItem>({
+        path: 'moderationQueue',
+        queryConstraints: [
+            where('itemType', '==', type),
+            where('status', '==', 'pending'),
+            orderBy('submittedAt', 'desc'),
+        ],
+    });
+}
+
 export async function getAlbums(
     args: { limit: number } = { limit: 6 }
 ): Promise<AlbumType[]> {
     const queryConstraints = [
         where("public", "==", true),
+        where("approved", "==", true),
         orderBy("updateDate", "desc"),
         limit(args.limit)
     ];
@@ -246,6 +260,7 @@ export async function getPaginatedPosts(
         path: 'posts',
         queryConstraints: [
             where("public", "==", true),
+            where("approved", "==", true),
             orderBy("updateDate", "desc"),
         ],
         page: args.page,
@@ -311,6 +326,9 @@ export async function getPosts(
     const queryConstraints = []
     if (args.public !== undefined) {
         queryConstraints.push(where("public", "==", args.public))
+        if (args.public === true) {
+            queryConstraints.push(where("approved", "==", true))
+        }
     }
     if (args.userId) {
         queryConstraints.push(where("userId", "==", args.userId))
@@ -362,6 +380,7 @@ export async function getPostBySlug(category: string, slug: string): Promise<Pos
                 where("category", "==", category),
                 where("slug", "==", slug),
                 where("public", "==", true),
+                where("approved", "==", true),
                 limit(1)
             ]
         }

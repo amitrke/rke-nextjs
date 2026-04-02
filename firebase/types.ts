@@ -6,9 +6,37 @@ export type PostType = {
   updateDate: number;
   images: string[];
   public: boolean;
+  approved?: boolean;
   userId: string;
   category: string;
   slug: string;
+}
+
+export type ModerationStatus = 'pending' | 'approved' | 'rejected';
+
+export type ModerationQueueItem = {
+  itemId: string;
+  itemType: 'post' | 'album';
+  userId: string;
+  status: ModerationStatus;
+  submittedAt: number;
+  reviewedAt: number | null;
+  reviewedBy: string | null;
+  rejectionReason: string | null;
+  title: string;
+  authorName: string;
+}
+
+export type NotificationType = {
+  id?: string;
+  userId: string;
+  type: 'approved' | 'rejected';
+  itemId: string;
+  itemTitle: string;
+  itemType: 'post' | 'album';
+  rejectionReason: string | null;
+  createdAt: number;
+  read: boolean;
 }
 
 export type User = {

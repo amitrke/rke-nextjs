@@ -5,9 +5,9 @@ import PostList from '../components/ui/postList'
 import { useEffect, useState } from 'react'
 import AlbumList from '../components/ui/albumList'
 import { getPostsWithDetails } from '../service/PostService'
-import { PostDisplayType } from '../firebase/types';
+import { PostDisplayType, ModerationQueueItem, NotificationType } from '../firebase/types';
 import { AlbumType } from '../pages/account/editAlbum'
-import { subscribeToCollectionUpdates } from '../firebase/firestore'
+import { subscribeToCollectionUpdates, write } from '../firebase/firestore'
 import { where } from 'firebase/firestore'
 import { getImageBucketUrl } from '../components/ui/showImage2'
 import ShowModal, { ShowModalParams } from '../components/ui/showModal'
@@ -22,6 +22,8 @@ const MyAccount = () => {
   const [modalTrigger, setModalTrigger] = useState(new Date());
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const [isLoadingAlbums, setIsLoadingAlbums] = useState(true);
+  const [queueStatusMap, setQueueStatusMap] = useState<{ [id: string]: string }>({});
+  const [notifications, setNotifications] = useState<NotificationType[]>([]);
 
   const confirmModalCB = (params: ShowModalParams) => {
     setModalTrigger(new Date());
@@ -55,9 +57,33 @@ const MyAccount = () => {
           setIsLoadingAlbums(false);
         },
         queryConstraints: [where("userId", "==", user.id)]
-      })
+      });
+
+      subscribeToCollectionUpdates<ModerationQueueItem>({
+        path: 'moderationQueue',
+        updateCB: (items) => {
+          const map: { [id: string]: string } = {};
+          items.forEach(i => { map[i.itemId] = i.status; });
+          setQueueStatusMap(map);
+        },
+        queryConstraints: [where("userId", "==", user.id)]
+      });
+
+      subscribeToCollectionUpdates<NotificationType>({
+        path: 'notifications',
+        updateCB: (notifs) => setNotifications(notifs),
+        queryConstraints: [where("userId", "==", user.id), where("read", "==", false)]
+      });
     }
   }, [user]);
+
+  const markAsRead = async (notifId: string) => {
+    await write({ path: 'notifications', existingDocId: notifId, data: { read: true } });
+  };
+
+  const markAllRead = async () => {
+    await Promise.all(notifications.map(n => write({ path: 'notifications', existingDocId: n.id, data: { read: true } })));
+  };
 
   if (!user) {
     return (
@@ -106,6 +132,9 @@ const MyAccount = () => {
                   <div className="d-flex gap-2">
                     <Badge bg="secondary" pill>{posts.length} Posts</Badge>
                     <Badge bg="secondary" pill>{albums.length} Albums</Badge>
+                    {notifications.length > 0 && (
+                      <Badge bg="danger" pill>{notifications.length} Notification{notifications.length !== 1 ? 's' : ''}</Badge>
+                    )}
                   </div>
                 </div>
               </div>
@@ -189,7 +218,7 @@ const MyAccount = () => {
               </Card.Body>
             </Card>
           ) : (
-            <PostList posts={posts} confirmModalCB={confirmModalCB} layout="cards" />
+            <PostList posts={posts} confirmModalCB={confirmModalCB} layout="cards" queueStatusMap={queueStatusMap} />
           )}
         </Tab>
 
@@ -217,7 +246,53 @@ const MyAccount = () => {
               </Card.Body>
             </Card>
           ) : (
-            <AlbumList albums={albums} bucketUrlMap={bucketUrlMap} confirmModalCB={confirmModalCB} />
+            <AlbumList albums={albums} bucketUrlMap={bucketUrlMap} confirmModalCB={confirmModalCB} queueStatusMap={queueStatusMap} />
+          )}
+        </Tab>
+        <Tab
+          eventKey="notifications"
+          title={
+            <>
+              Notifications{' '}
+              {notifications.length > 0 && (
+                <Badge bg="danger" pill>{notifications.length}</Badge>
+              )}
+            </>
+          }
+        >
+          <div className="mb-3 d-flex justify-content-between align-items-center">
+            <p className="text-muted mb-0">
+              {notifications.length === 0 ? 'No unread notifications.' : `${notifications.length} unread notification${notifications.length !== 1 ? 's' : ''}.`}
+            </p>
+            {notifications.length > 0 && (
+              <Button variant="outline-secondary" size="sm" onClick={markAllRead}>
+                Mark all as read
+              </Button>
+            )}
+          </div>
+
+          {notifications.length === 0 ? (
+            <Card className="border-0 shadow-sm">
+              <Card.Body className="text-center py-5 text-muted">
+                You&apos;re all caught up!
+              </Card.Body>
+            </Card>
+          ) : (
+            <div className="d-flex flex-column gap-3">
+              {notifications.map((notif) => (
+                <Card key={notif.id} className="border-0 shadow-sm">
+                  <Card.Body className="d-flex justify-content-between align-items-start">
+                    <div>
+                      <div className="fw-semibold mb-1">{notif.title}</div>
+                      <div className="text-muted small">{notif.body}</div>
+                    </div>
+                    <Button variant="outline-secondary" size="sm" className="ms-3 flex-shrink-0" onClick={() => markAsRead(notif.id)}>
+                      Dismiss
+                    </Button>
+                  </Card.Body>
+                </Card>
+              ))}
+            </div>
           )}
         </Tab>
       </Tabs>

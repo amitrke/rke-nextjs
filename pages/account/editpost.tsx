@@ -1,5 +1,7 @@
 import { Button, Container, Form, Row } from 'react-bootstrap'
 import { useUser } from '../../firebase/useUser'
+import { useAdminStatus } from '../../firebase/useAdminStatus'
+import { getFirebaseAuth } from '../../firebase/initFirebase'
 import dynamic from 'next/dynamic'
 import UploadFile, { UploadStatusType } from '../../components/storage/UploadFile'
 import ToastMsg, { ToastMsgProps } from '../../components/ui/toastMsg'
@@ -23,6 +25,7 @@ const EditPost = () => {
 
   const [toasts, setToasts] = useState<ToastMsgProps[]>([]);
   const { user } = useUser()
+  const { isAdmin } = useAdminStatus()
 
   const [post, setPost] = useState<PostType>({
     id: "",
@@ -85,14 +88,40 @@ const EditPost = () => {
       }
     }
 
+    let savedId = post.id;
     if (post.id) {
       await write({ path: `posts`, existingDocId: post.id, data: post });
-      console.log(`Updated document id=${post.id}`)
+      console.log(`Updated document id=${post.id}`);
     } else {
       const doc = await write({ path: `posts`, data: post });
+      savedId = doc.id;
       setPost({ ...post, id: doc.id });
-      console.log(`doc id=${doc.id}`)
+      console.log(`doc id=${doc.id}`);
     }
+
+    // If user wants this public and is not an admin, submit for moderation
+    if (post.public && !isAdmin && savedId) {
+      try {
+        const auth = getFirebaseAuth();
+        const idToken = await auth.currentUser?.getIdToken();
+        const response = await fetch('/api/submitForReview', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({ itemId: savedId, itemType: 'post' }),
+        });
+        if (response.ok) {
+          toastCallback({ header: "Submitted", body: "Your post has been submitted for review. It will be visible once approved by a moderator." });
+        } else {
+          toastCallback({ header: "Notice", body: "Post saved. Submission for review encountered an issue — please try again." });
+        }
+      } catch {
+        toastCallback({ header: "Notice", body: "Post saved. Could not submit for review — please try again." });
+      }
+    }
+
     if (spinner) spinner.classList.add('visually-hidden');
   }
 
