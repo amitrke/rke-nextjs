@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useUser } from './useUser';
+import { onAuthStateChanged } from 'firebase/auth';
+import { getFirebaseAuth } from './initFirebase';
 import { getDocument } from './firestore';
 
 type AdminStatusResult = {
@@ -8,28 +9,28 @@ type AdminStatusResult = {
 };
 
 export function useAdminStatus(): AdminStatusResult {
-    const { user } = useUser();
     const [isAdmin, setIsAdmin] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); // stays true until auth resolves
 
     useEffect(() => {
-        if (!user) {
-            setIsAdmin(false);
-            setLoading(false);
-            return;
-        }
-        setLoading(true);
-        getDocument({ path: 'admins', pathSegments: [user.id] })
-            .then((doc) => {
-                setIsAdmin(!!doc);
-            })
-            .catch(() => {
+        const auth = getFirebaseAuth();
+        const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
+            if (!firebaseUser) {
                 setIsAdmin(false);
-            })
-            .finally(() => {
                 setLoading(false);
-            });
-    }, [user]);
+                return;
+            }
+            try {
+                const doc = await getDocument({ path: 'admins', pathSegments: [firebaseUser.uid] });
+                setIsAdmin(!!doc);
+            } catch {
+                setIsAdmin(false);
+            } finally {
+                setLoading(false);
+            }
+        });
+        return () => unsub();
+    }, []);
 
     return { isAdmin, loading };
 }
