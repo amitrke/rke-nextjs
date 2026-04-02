@@ -16,7 +16,13 @@ export default [
     rules: {
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
-      "react/no-unescaped-entities": "off"
+      "react/no-unescaped-entities": "off",
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: ["firebase/compat/*", "firebase/compat"]
+        }
+      ]
     }
   },
   { ignores: ["node_modules/", ".next/"] },

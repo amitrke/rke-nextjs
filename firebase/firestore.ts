@@ -1,6 +1,5 @@
-import { arrayUnion, deleteDoc, doc, DocumentReference, getDoc, getDocs, getFirestore, onSnapshot, query, QueryConstraint, setDoc, updateDoc } from "firebase/firestore";
+import { addDoc, arrayUnion, collection, deleteDoc, doc, DocumentReference, getDoc, getDocs, getFirestore, onSnapshot, query, QueryConstraint, setDoc, updateDoc } from "firebase/firestore";
 import { initApp } from "./initFirebase";
-import { collection, addDoc } from "firebase/firestore";
 
 const app = initApp();
 const db = getFirestore(app);
@@ -36,21 +35,36 @@ export type FirestoreAppendToArrayParams<T> = FirestoreParams & {
 }
 
 export const write = async (params: FirestoreWriteParams): Promise<DocumentReference> => {
-    let docRef = params.existingDocId ? doc(db, params.path, params.existingDocId) : undefined;
+    let docRef: DocumentReference | undefined;
+
+    if (params.existingDocId && params.newDocId) {
+        throw new Error('Provide only one of existingDocId or newDocId.');
+    }
+
     if (params.existingDocId) {
+        docRef = doc(db, params.path, params.existingDocId);
         await updateDoc(docRef, params.data);
     }
     if (params.newDocId) {
-        docRef = await doc(db, params.path, params.newDocId);
+        docRef = doc(db, params.path, params.newDocId);
         await setDoc(docRef, params.data);
     }
     if (!params.existingDocId && !params.newDocId) {
         docRef = await addDoc(collection(db, params.path), params.data);
     }
+
+    if (!docRef) {
+        throw new Error('Unable to resolve Firestore document reference for write operation.');
+    }
+
     return docRef;
 }
 
 export const arrayAppend = async <T>(params: FirestoreAppendToArrayParams<T>): Promise<DocumentReference> => {
+    if (!params.existingDocId) {
+        throw new Error('existingDocId is required for arrayAppend.');
+    }
+
     const docRef = doc(db, params.path, params.existingDocId);
 
     await updateDoc(docRef, {
@@ -73,16 +87,16 @@ export const deleteDocument = async (params: FirestoreParams): Promise<{ success
 }
 
 export const queryOnce = async<T>(params: FirestoreParams): Promise<Array<FirestoreDocument<T>>> => {
-    if (!params.queryConstraints) params.queryConstraints = []
-    const q = query(collection(db, params.path), ...params.queryConstraints);
+    const queryConstraints = params.queryConstraints || [];
+    const q = query(collection(db, params.path), ...queryConstraints);
     const querySnapshot = await getDocs(q);
     const resp: Array<FirestoreDocument<T>> = [];
-    querySnapshot.forEach((doc) => {
-        const data = doc.data() as T;
+    querySnapshot.forEach((snapshotDoc) => {
+        const data = snapshotDoc.data() as T;
         const firestoreDoc: FirestoreDocument<T> = {
             ...data,
-            id: doc.id,
-            path: doc.ref.path
+            id: snapshotDoc.id,
+            path: snapshotDoc.ref.path
         };
         resp.push(firestoreDoc);
     });
@@ -90,15 +104,15 @@ export const queryOnce = async<T>(params: FirestoreParams): Promise<Array<Firest
 }
 
 export const subscribeToCollectionUpdates = <T>(params: FirestoreSubscribe<T>) => {
-    if (!params.queryConstraints) params.queryConstraints = []
-    const q = query(collection(db, params.path), ...params.queryConstraints);
+    const queryConstraints = params.queryConstraints || [];
+    const q = query(collection(db, params.path), ...queryConstraints);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const items: FirestoreDocument<T>[] = [];
-        querySnapshot.forEach((doc) => {
-            const data = doc.data() as T;
+        querySnapshot.forEach((snapshotDoc) => {
+            const data = snapshotDoc.data() as T;
             const firestoreDoc: FirestoreDocument<T> = {
                 ...data,
-                id: doc.id
+                id: snapshotDoc.id
             };
             items.push(firestoreDoc);
         });
@@ -108,6 +122,10 @@ export const subscribeToCollectionUpdates = <T>(params: FirestoreSubscribe<T>) =
 }
 
 export const getDocument = async<T>(params: FirestoreParams): Promise<T | undefined> => {
+    if (!params.pathSegments || params.pathSegments.length === 0) {
+        throw new Error('pathSegments is required for getDocument.');
+    }
+
     const docSnap = await getDoc(doc(db, params.path, params.pathSegments[0]));
     if (docSnap.exists()) {
         return docSnap.data() as T;
