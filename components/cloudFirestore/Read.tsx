@@ -3,6 +3,8 @@ import { getFirebaseFirestore } from '../../firebase/initFirebase';
 import { useUser } from '../../firebase/useUser';
 import Button from 'react-bootstrap/Button';
 
+import type { JSX } from "react";
+
 const ReadDataFromCloudFirestore = (): JSX.Element => {
     const { user } = useUser();
     const readData = () => {

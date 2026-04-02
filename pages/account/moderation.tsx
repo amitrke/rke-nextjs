@@ -8,7 +8,7 @@ import { getFirebaseAuth } from '../../firebase/initFirebase';
 import { getPendingQueueItems } from '../../service/PostService';
 import { ModerationQueueItem } from '../../firebase/types';
 import { uiDateFormat } from '../../components/ui/uiUtils';
-import { getFirestore, collection, where, getDocs, writeBatch } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, writeBatch } from 'firebase/firestore';
 import { initApp } from '../../firebase/initFirebase';
 
 const ModerationPage = () => {
