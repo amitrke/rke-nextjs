@@ -12,9 +12,11 @@ import { where } from 'firebase/firestore'
 import { getImageBucketUrl } from '../components/ui/showImage2'
 import ShowModal, { ShowModalParams } from '../components/ui/showModal'
 import Head from 'next/head'
+import { useAdminStatus } from '../firebase/useAdminStatus'
 
 const MyAccount = () => {
   const { user, logout } = useUser()
+  const { isAdmin } = useAdminStatus()
   const [posts, setPosts] = useState<PostDisplayType[]>([]);
   const [albums, setAlbums] = useState<AlbumType[]>([]);
   const [bucketUrlMap, setBucketUrlMap] = useState<{ [key: string]: string }>({});
@@ -139,7 +141,12 @@ const MyAccount = () => {
                 </div>
               </div>
             </Col>
-            <Col md={4} className="text-md-end">
+            <Col md={4} className="text-md-end d-flex flex-column gap-2 align-items-end">
+              {isAdmin && (
+                <Button variant="outline-warning" href="/account/moderation">
+                  Moderation Panel
+                </Button>
+              )}
               <Button variant="outline-danger" onClick={logout}>
                 Logout
               </Button>
