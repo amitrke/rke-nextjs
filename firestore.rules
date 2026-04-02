@@ -1,4 +1,5 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -16,25 +17,10 @@ service cloud.firestore {
     }
 
     // admins: any authenticated user may read (needed for useAdminStatus hook);
-    // writes are blocked from clients — only Admin SDK (bypasses rules) may write.
+    // writes are blocked from clients — only Admin SDK may write.
     match /admins/{userId} {
       allow read: if isAuthenticated();
       allow write: if false;
-    }
-
-    // moderationQueue: admins may read; all writes come from API routes via Admin SDK.
-    match /moderationQueue/{itemId} {
-      allow read: if isAdmin();
-      allow write: if false;
-    }
-
-    // notifications: owner may read and mark their own as read; only Admin SDK creates/deletes.
-    match /notifications/{notifId} {
-      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow update: if isAuthenticated()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
-      allow create, delete: if false;
     }
 
     // posts: public reads; owners may create/update but cannot touch the 'approved' field.
@@ -61,10 +47,52 @@ service cloud.firestore {
       allow delete: if isOwner(resource.data.userId) || isAdmin();
     }
 
+    // moderationQueue: admins may read; all writes come from API routes via Admin SDK.
+    match /moderationQueue/{itemId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // notifications: owner may read and mark their own as read; only Admin SDK creates/deletes.
+    match /notifications/{notifId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+      allow create, delete: if false;
+    }
+
+    // messages: sender may read/write; recipient may read.
+    match /messages/{messageId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.fromUserId ||
+        request.auth.uid == resource.data.toUserId
+      );
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && request.auth.uid == resource.data.fromUserId;
+    }
+
     // users: public reads; each user may write their own profile doc.
     match /users/{userId} {
       allow read: if true;
       allow write: if isOwner(userId);
+    }
+
+    // appconfig: public read, no client writes.
+    match /appconfig/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // categories: public read; authenticated users may create subcategory docs.
+    match /categories/{category} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      match /{document=**} {
+        allow read: if true;
+        allow create: if isAuthenticated();
+        allow update, delete: if isOwner(resource.data.userId);
+      }
     }
 
     // news: written only by backend Firebase Functions.
@@ -77,6 +105,12 @@ service cloud.firestore {
     match /events/{eventId} {
       allow read: if true;
       allow write: if isAdmin();
+    }
+
+    // weather: public read, written by backend only.
+    match /weather/{docId} {
+      allow read: if true;
+      allow write: if false;
     }
 
     // Deny everything else by default.

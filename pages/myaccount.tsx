@@ -1,11 +1,12 @@
 import { useUser } from '../firebase/useUser'
 import Button from 'react-bootstrap/Button'
-import { Tab, Tabs, Container, Row, Col, Card, Spinner, Badge } from 'react-bootstrap'
+import { Tab, Tabs, Container, Row, Col, Card, Spinner, Badge, Form, Modal } from 'react-bootstrap'
 import PostList from '../components/ui/postList'
 import { useEffect, useState } from 'react'
 import AlbumList from '../components/ui/albumList'
-import { getPostsWithDetails } from '../service/PostService'
+import { getPostsWithDetails, getPendingQueueItems } from '../service/PostService'
 import { PostDisplayType, ModerationQueueItem, NotificationType } from '../firebase/types';
+import { uiDateFormat } from '../components/ui/uiUtils';
 import { AlbumType } from '../pages/account/editAlbum'
 import { subscribeToCollectionUpdates, write } from '../firebase/firestore'
 import { where } from 'firebase/firestore'
@@ -26,6 +27,15 @@ const MyAccount = () => {
   const [isLoadingAlbums, setIsLoadingAlbums] = useState(true);
   const [queueStatusMap, setQueueStatusMap] = useState<{ [id: string]: string }>({});
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
+
+  // Admin moderation state
+  const [pendingPosts, setPendingPosts] = useState<ModerationQueueItem[]>([]);
+  const [pendingAlbums, setPendingAlbums] = useState<ModerationQueueItem[]>([]);
+  const [loadingPendingPosts, setLoadingPendingPosts] = useState(false);
+  const [loadingPendingAlbums, setLoadingPendingAlbums] = useState(false);
+  const [moderationActionLoading, setModerationActionLoading] = useState<string | null>(null);
+  const [rejectModal, setRejectModal] = useState<{ show: boolean; item: ModerationQueueItem | null }>({ show: false, item: null });
+  const [rejectReason, setRejectReason] = useState('');
 
   const confirmModalCB = (params: ShowModalParams) => {
     setModalTrigger(new Date());
@@ -78,6 +88,88 @@ const MyAccount = () => {
       });
     }
   }, [user]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      fetchPendingItems();
+    }
+  }, [isAdmin]);
+
+  const fetchPendingItems = async () => {
+    setLoadingPendingPosts(true);
+    setLoadingPendingAlbums(true);
+    try {
+      const [posts, albums] = await Promise.all([
+        getPendingQueueItems('post'),
+        getPendingQueueItems('album'),
+      ]);
+      setPendingPosts(posts);
+      setPendingAlbums(albums);
+    } finally {
+      setLoadingPendingPosts(false);
+      setLoadingPendingAlbums(false);
+    }
+  };
+
+  const getIdToken = async (): Promise<string> => {
+    const { getFirebaseAuth } = await import('../firebase/initFirebase');
+    const auth = getFirebaseAuth();
+    return auth.currentUser?.getIdToken() ?? '';
+  };
+
+  const callReviewApi = async (itemId: string, itemType: 'post' | 'album', action: 'approve' | 'reject', rejectionReason?: string) => {
+    const idToken = await getIdToken();
+    const response = await fetch('/api/reviewContent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+      body: JSON.stringify({ itemId, itemType, action, rejectionReason }),
+    });
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Review action failed');
+    }
+  };
+
+  const handleApprove = async (item: ModerationQueueItem) => {
+    setModerationActionLoading(item.itemId);
+    try {
+      await callReviewApi(item.itemId, item.itemType, 'approve');
+      if (item.itemType === 'post') {
+        setPendingPosts((prev) => prev.filter((p) => p.itemId !== item.itemId));
+      } else {
+        setPendingAlbums((prev) => prev.filter((a) => a.itemId !== item.itemId));
+      }
+    } catch (e) {
+      console.error('Approve failed:', e);
+    } finally {
+      setModerationActionLoading(null);
+    }
+  };
+
+  const openRejectModal = (item: ModerationQueueItem) => {
+    setRejectReason('');
+    setRejectModal({ show: true, item });
+  };
+
+  const handleRejectConfirm = async () => {
+    const item = rejectModal.item;
+    if (!item) return;
+    setRejectModal({ show: false, item: null });
+    setModerationActionLoading(item.itemId);
+    try {
+      await callReviewApi(item.itemId, item.itemType, 'reject', rejectReason || undefined);
+      if (item.itemType === 'post') {
+        setPendingPosts((prev) => prev.filter((p) => p.itemId !== item.itemId));
+      } else {
+        setPendingAlbums((prev) => prev.filter((a) => a.itemId !== item.itemId));
+      }
+    } catch (e) {
+      console.error('Reject failed:', e);
+    } finally {
+      setModerationActionLoading(null);
+      setRejectReason('');
+    }
+  };
 
   const markAsRead = async (notifId: string) => {
     await write({ path: 'notifications', existingDocId: notifId, data: { read: true } });
@@ -307,7 +399,127 @@ const MyAccount = () => {
             </div>
           )}
         </Tab>
+
+        {isAdmin && (
+          <Tab
+            eventKey="moderation"
+            title={
+              <>
+                Moderation{' '}
+                {(pendingPosts.length + pendingAlbums.length) > 0 && (
+                  <Badge bg="warning" text="dark" pill>{pendingPosts.length + pendingAlbums.length}</Badge>
+                )}
+              </>
+            }
+          >
+            <div className="mb-3 d-flex justify-content-between align-items-center">
+              <p className="text-muted mb-0">Review and approve or reject pending submissions.</p>
+              <Button variant="outline-secondary" size="sm" onClick={fetchPendingItems}>
+                Refresh
+              </Button>
+            </div>
+
+            <Tabs defaultActiveKey="mod-posts" className="mb-4">
+              <Tab eventKey="mod-posts" title={`Posts (${pendingPosts.length})`}>
+                {loadingPendingPosts ? (
+                  <div className="text-center py-5">
+                    <Spinner animation="border" variant="primary" />
+                  </div>
+                ) : pendingPosts.length === 0 ? (
+                  <Card className="border-0 shadow-sm">
+                    <Card.Body className="text-center py-5 text-muted">No pending posts awaiting review.</Card.Body>
+                  </Card>
+                ) : (
+                  <Row>
+                    {pendingPosts.map((item) => (
+                      <Col md={6} lg={4} key={item.itemId} className="mb-4">
+                        <Card className="h-100 shadow-sm">
+                          <Card.Body>
+                            <Card.Title className="fs-6">{item.title || '(Untitled)'}</Card.Title>
+                            <Card.Subtitle className="text-muted mb-2 small">By {item.authorName}</Card.Subtitle>
+                            <div className="small text-muted">Submitted: {uiDateFormat(item.submittedAt)}</div>
+                          </Card.Body>
+                          <Card.Footer className="d-flex gap-2">
+                            <Button variant="success" size="sm" disabled={moderationActionLoading === item.itemId} onClick={() => handleApprove(item)}>
+                              {moderationActionLoading === item.itemId ? <Spinner as="span" animation="border" size="sm" /> : 'Approve'}
+                            </Button>
+                            <Button variant="outline-danger" size="sm" disabled={moderationActionLoading === item.itemId} onClick={() => openRejectModal(item)}>
+                              Reject
+                            </Button>
+                            <Button variant="link" size="sm" href={`/account/editpost?id=${item.itemId}`} target="_blank" rel="noopener noreferrer">
+                              Preview
+                            </Button>
+                          </Card.Footer>
+                        </Card>
+                      </Col>
+                    ))}
+                  </Row>
+                )}
+              </Tab>
+              <Tab eventKey="mod-albums" title={`Albums (${pendingAlbums.length})`}>
+                {loadingPendingAlbums ? (
+                  <div className="text-center py-5">
+                    <Spinner animation="border" variant="primary" />
+                  </div>
+                ) : pendingAlbums.length === 0 ? (
+                  <Card className="border-0 shadow-sm">
+                    <Card.Body className="text-center py-5 text-muted">No pending albums awaiting review.</Card.Body>
+                  </Card>
+                ) : (
+                  <Row>
+                    {pendingAlbums.map((item) => (
+                      <Col md={6} lg={4} key={item.itemId} className="mb-4">
+                        <Card className="h-100 shadow-sm">
+                          <Card.Body>
+                            <Card.Title className="fs-6">{item.title || '(Untitled)'}</Card.Title>
+                            <Card.Subtitle className="text-muted mb-2 small">By {item.authorName}</Card.Subtitle>
+                            <div className="small text-muted">Submitted: {uiDateFormat(item.submittedAt)}</div>
+                          </Card.Body>
+                          <Card.Footer className="d-flex gap-2">
+                            <Button variant="success" size="sm" disabled={moderationActionLoading === item.itemId} onClick={() => handleApprove(item)}>
+                              {moderationActionLoading === item.itemId ? <Spinner as="span" animation="border" size="sm" /> : 'Approve'}
+                            </Button>
+                            <Button variant="outline-danger" size="sm" disabled={moderationActionLoading === item.itemId} onClick={() => openRejectModal(item)}>
+                              Reject
+                            </Button>
+                            <Button variant="link" size="sm" href={`/account/editAlbum?id=${item.itemId}`} target="_blank" rel="noopener noreferrer">
+                              Preview
+                            </Button>
+                          </Card.Footer>
+                        </Card>
+                      </Col>
+                    ))}
+                  </Row>
+                )}
+              </Tab>
+            </Tabs>
+          </Tab>
+        )}
       </Tabs>
+
+      {/* Reject confirmation modal */}
+      <Modal show={rejectModal.show} onHide={() => setRejectModal({ show: false, item: null })} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Reject Submission</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="text-muted small mb-2">Rejecting: <strong>{rejectModal.item?.title}</strong></p>
+          <Form.Group>
+            <Form.Label>Reason (optional)</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              placeholder="Provide a reason for rejection..."
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-secondary" onClick={() => setRejectModal({ show: false, item: null })}>Cancel</Button>
+          <Button variant="danger" onClick={handleRejectConfirm}>Confirm Reject</Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   )
 }
