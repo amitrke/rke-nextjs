@@ -234,7 +234,7 @@ export async function getPaginatedNews(
     const result = await getPaginatedCollection<NewsArticle, NewsArticle>({
         path: 'news',
         queryConstraints: [
-            where("apiSource", "==", "newsdata.io"),
+            // where("apiSource", "==", "newsdata.io"), // uncomment to filter by source
             orderBy("expireAt", "desc"),
         ],
         page: args.page,
@@ -296,10 +296,11 @@ export async function getPaginatedPosts(
 export async function getNews(
     args: { limit: number } = { limit: 8 }
 ): Promise<NewsArticle[]> {
+    // Fetch more than needed to account for deduplication losses
+    const fetchLimit = args.limit * 4;
     const queryConstraints = [
-        where("apiSource", "==", "newsdata.io"),
         orderBy("expireAt", "desc"),
-        limit(args.limit)
+        limit(fetchLimit)
     ];
     const news = await queryOnce<NewsArticle>(
         {
@@ -308,7 +309,7 @@ export async function getNews(
     );
     
     // Remove near-duplicate titles while keeping the newest
-    const deduped = dedupeBySimilarTitle(news);
+    const deduped = dedupeBySimilarTitle(news).slice(0, args.limit);
     
     return deduped.map(article => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

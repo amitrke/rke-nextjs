@@ -5,6 +5,7 @@ import { ref, uploadBytesResumable } from 'firebase/storage'
 import { getFirebaseStorage } from '../../firebase/initFirebase'
 import { useUser } from '../../firebase/useUser'
 import { ToastMsgProps } from '../ui/toastMsg'
+import { sanitizeFilename } from '../ui/imageUtils'
 
 export type UploadStatusType = {
     status: boolean;
@@ -36,7 +37,8 @@ const UploadFile = (props: UploadFileParam) => {
 
         // create a storage ref
         const storage = getFirebaseStorage();
-        const storageRef = ref(storage, `users/${user.id}/upload/${file.name}`)
+        const safeFilename = sanitizeFilename(file.name);
+        const storageRef = ref(storage, `users/${user.id}/upload/${safeFilename}`)
 
         // upload file
         const uploadTask = uploadBytesResumable(storageRef, file)
@@ -50,12 +52,12 @@ const UploadFile = (props: UploadFileParam) => {
             async (err) => {
                 // error
                 console.error(err);
-                await props.statusCallback({filename: file.name, status: false})
+                await props.statusCallback({filename: safeFilename, status: false})
                 props.toastCallback({body: err.message, header: "Image Upload"});
             },
             async () => {
                 // complete
-                await props.statusCallback({filename: file.name, status: true})
+                await props.statusCallback({filename: safeFilename, status: true})
                 props.toastCallback({body: 'Uploaded to firebase storage successfully!', header: "Image Upload"});
             }
         )
