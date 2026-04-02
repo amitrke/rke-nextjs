@@ -30,16 +30,18 @@ function UserInfo() {
     const { isAdmin } = useAdminStatus();
     if (user) {
         return (
-            <>
+            <Nav>
                 <Nav.Link as={Link} href="/myaccount">My Account</Nav.Link>
                 {isAdmin && (
                     <Nav.Link as={Link} href="/account/moderation">Moderation</Nav.Link>
                 )}
-            </>
+            </Nav>
         );
     } else {
         return (
-            <Nav.Link as={Link} href="/auth">Login</Nav.Link>
+            <Nav>
+                <Nav.Link as={Link} href="/auth">Login</Nav.Link>
+            </Nav>
         );
     }
 }
