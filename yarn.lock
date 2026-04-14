@@ -7,27 +7,25 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
-"@asamuzakjp/css-color@^5.0.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@asamuzakjp/css-color/-/css-color-5.1.1.tgz#518b7dc62c1789408110ce37fc99ce4abb117868"
-  integrity sha512-iGWN8E45Ws0XWx3D44Q1t6vX2LqhCKcwfmwBYCDsFrYFS6m4q/Ks61L2veETaLv+ckDC6+dTETJoaAAb7VjLiw==
+"@asamuzakjp/css-color@^5.1.5":
+  version "5.1.10"
+  resolved "https://registry.yarnpkg.com/@asamuzakjp/css-color/-/css-color-5.1.10.tgz#adbe1ce7fd785f2c6c2fc3af2fbc54342cf07154"
+  integrity sha512-02OhhkKtgNRuicQ/nF3TRnGsxL9wp0r3Y7VlKWyOHHGmGyvXv03y+PnymU8FKFJMTjIr1Bk8U2g1HWSLrpAHww==
   dependencies:
     "@csstools/css-calc" "^3.1.1"
     "@csstools/css-color-parser" "^4.0.2"
     "@csstools/css-parser-algorithms" "^4.0.0"
     "@csstools/css-tokenizer" "^4.0.0"
-    lru-cache "^11.2.7"
 
-"@asamuzakjp/dom-selector@^7.0.3":
-  version "7.0.4"
-  resolved "https://registry.yarnpkg.com/@asamuzakjp/dom-selector/-/dom-selector-7.0.4.tgz#744ad572c70b00cc8e92e76d539b14afb7bd99b1"
-  integrity sha512-jXR6x4AcT3eIrS2fSNAwJpwirOkGcd+E7F7CP3zjdTqz9B/2huHOL8YJZBgekKwLML+u7qB/6P1LXQuMScsx0w==
+"@asamuzakjp/dom-selector@^7.0.6":
+  version "7.0.9"
+  resolved "https://registry.yarnpkg.com/@asamuzakjp/dom-selector/-/dom-selector-7.0.9.tgz#6d672a18a4572a4f02de49b20793b3c99958e68f"
+  integrity sha512-r3ElRr7y8ucyN2KdICwGsmj19RoN13CLCa/pvGydghWK6ZzeKQ+TcDjVdtEZz2ElpndM5jXw//B9CEee0mWnVg==
   dependencies:
     "@asamuzakjp/nwsapi" "^2.3.9"
     bidi-js "^1.0.3"
     css-tree "^3.2.1"
     is-potential-custom-element-name "^1.0.1"
-    lru-cache "^11.2.7"
 
 "@asamuzakjp/nwsapi@^2.3.9":
   version "2.3.9"
@@ -2419,14 +2417,7 @@ dom-helpers@^5.0.1, dom-helpers@^5.2.0, dom-helpers@^5.2.1:
     "@babel/runtime" "^7.8.7"
     csstype "^3.0.2"
 
-dompurify@*:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.3.1.tgz#c7e1ddebfe3301eacd6c0c12a4af284936dbbb86"
-  integrity sha512-qkdCKzLNtrgPFP1Vo+98FRzJnBRGe4ffyCea9IwHB1fyxPOeNTHpLKYGd4Uk9xvNoH0ZoOjwZxNptyMwqrId1Q==
-  optionalDependencies:
-    "@types/trusted-types" "^2.0.7"
-
-dompurify@^3.3.3:
+dompurify@*, dompurify@^3.3.3:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.3.3.tgz#680cae8af3e61320ddf3666a3bc843f7b291b2b6"
   integrity sha512-Oj6pzI2+RqBfFG+qOaOLbFXLQ90ARpcGG6UePL82bJLtdsa6CYJD7nmiU8MW9nQNOtCHV3lZ/Bzq1X0QYbBZCA==
@@ -4104,13 +4095,13 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
-isomorphic-dompurify@^3.7.1:
-  version "3.7.1"
-  resolved "https://registry.yarnpkg.com/isomorphic-dompurify/-/isomorphic-dompurify-3.7.1.tgz#03a32d8f16f859f7dfd28243e37158ba0f5ab6f9"
-  integrity sha512-ChhzwwCm7k8h8ANiq1Vc7geCWeHGaAPusgXU5N4mu7Y2wChgn2JHvbUe6aH/XQOUG3+KV+GmqSq95MntW/V1ng==
+isomorphic-dompurify@^3.8.0:
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/isomorphic-dompurify/-/isomorphic-dompurify-3.8.0.tgz#a7751c3802449508636dbb403ca447cd937dd305"
+  integrity sha512-W2u6DS4nsbEU2m+Pb8xuLBJIDHTA30DRD+d9TczkXyLbea0Whmqn3g+pq8iNkUYdFP2qxp/PeqTXC0gIkfCTKA==
   dependencies:
     dompurify "^3.3.3"
-    jsdom "^29.0.1"
+    jsdom "^29.0.2"
 
 iterator.prototype@^1.1.4:
   version "1.1.5"
@@ -4139,13 +4130,13 @@ js-cookie@^3.0.5:
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
 
-jsdom@^29.0.1:
-  version "29.0.1"
-  resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-29.0.1.tgz#b2db17191533dd5ba1e0d4c61fe9fa2289e87be9"
-  integrity sha512-z6JOK5gRO7aMybVq/y/MlIpKh8JIi68FBKMUtKkK2KH/wMSRlCxQ682d08LB9fYXplyY/UXG8P4XXTScmdjApg==
+jsdom@^29.0.2:
+  version "29.0.2"
+  resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-29.0.2.tgz#1fc2cf4175da8de29fa94bea7ca931a194729fc3"
+  integrity sha512-9VnGEBosc/ZpwyOsJBCQ/3I5p7Q5ngOY14a9bf5btenAORmZfDse1ZEheMiWcJ3h81+Fv7HmJFdS0szo/waF2w==
   dependencies:
-    "@asamuzakjp/css-color" "^5.0.1"
-    "@asamuzakjp/dom-selector" "^7.0.3"
+    "@asamuzakjp/css-color" "^5.1.5"
+    "@asamuzakjp/dom-selector" "^7.0.6"
     "@bramus/specificity" "^2.4.2"
     "@csstools/css-syntax-patches-for-csstree" "^1.1.1"
     "@exodus/bytes" "^1.15.0"
