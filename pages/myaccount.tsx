@@ -14,6 +14,15 @@ import { getImageBucketUrl } from '../components/ui/showImage2'
 import ShowModal, { ShowModalParams } from '../components/ui/showModal'
 import Head from 'next/head'
 import { useAdminStatus } from '../firebase/useAdminStatus'
+import {
+  EmailAuthProvider,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  TwitterAuthProvider,
+  reauthenticateWithCredential,
+  reauthenticateWithPopup,
+} from 'firebase/auth';
+import { getFirebaseAuth } from '../firebase/initFirebase';
 
 const MyAccount = () => {
   const { user, logout } = useUser()
@@ -36,6 +45,11 @@ const MyAccount = () => {
   const [moderationActionLoading, setModerationActionLoading] = useState<string | null>(null);
   const [rejectModal, setRejectModal] = useState<{ show: boolean; item: ModerationQueueItem | null }>({ show: false, item: null });
   const [rejectReason, setRejectReason] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError] = useState('');
+  const [deleteInProgress, setDeleteInProgress] = useState(false);
 
   const confirmModalCB = (params: ShowModalParams) => {
     setModalTrigger(new Date());
@@ -179,6 +193,92 @@ const MyAccount = () => {
     await Promise.all(notifications.map(n => write({ path: 'notifications', existingDocId: n.id, data: { read: true } })));
   };
 
+  const getPrimaryProviderId = (): string => {
+    const auth = getFirebaseAuth();
+    const provider = auth.currentUser?.providerData.find((x) => x.providerId && x.providerId !== 'firebase');
+    return provider?.providerId || 'password';
+  };
+
+  const reauthenticateCurrentUser = async () => {
+    const auth = getFirebaseAuth();
+    const currentUser = auth.currentUser;
+    if (!currentUser || !currentUser.email) {
+      throw new Error('No authenticated user found. Please login again.');
+    }
+
+    const providerId = getPrimaryProviderId();
+    if (providerId === 'password') {
+      if (!deletePassword) {
+        throw new Error('Please enter your password to confirm account deletion.');
+      }
+      const credential = EmailAuthProvider.credential(currentUser.email, deletePassword);
+      await reauthenticateWithCredential(currentUser, credential);
+      return;
+    }
+
+    if (providerId === 'google.com') {
+      await reauthenticateWithPopup(currentUser, new GoogleAuthProvider());
+      return;
+    }
+
+    if (providerId === 'github.com') {
+      await reauthenticateWithPopup(currentUser, new GithubAuthProvider());
+      return;
+    }
+
+    if (providerId === 'twitter.com') {
+      await reauthenticateWithPopup(currentUser, new TwitterAuthProvider());
+      return;
+    }
+
+    throw new Error('Unsupported login provider for re-authentication. Please login again and retry.');
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText.trim().toUpperCase() !== 'DELETE') {
+      setDeleteError('Type DELETE to confirm account deletion.');
+      return;
+    }
+
+    setDeleteError('');
+    setDeleteInProgress(true);
+
+    try {
+      await reauthenticateCurrentUser();
+
+      const auth = getFirebaseAuth();
+      const idToken = await auth.currentUser?.getIdToken();
+      const response = await fetch('/api/deleteAccount', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
+        },
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete account. Please try again.');
+      }
+
+      setDeleteModalOpen(false);
+      setDeleteConfirmText('');
+      setDeletePassword('');
+      try {
+        await logout();
+      } finally {
+        if (typeof window !== 'undefined') {
+          window.location.href = '/auth';
+        }
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to delete account. Please try again.';
+      setDeleteError(message);
+    } finally {
+      setDeleteInProgress(false);
+    }
+  };
+
   if (!user) {
     return (
       <Container className="py-5">
@@ -289,6 +389,16 @@ const MyAccount = () => {
                   Add Photo Album
                 </Button>
               </div>
+
+              <hr className="my-4" />
+              <h5 className="text-danger mb-2">Danger Zone</h5>
+              <p className="text-muted mb-3">
+                Delete your account and all associated content (posts, albums, messages, and uploaded images).
+                This action cannot be undone.
+              </p>
+              <Button variant="outline-danger" onClick={() => setDeleteModalOpen(true)}>
+                Delete My Account
+              </Button>
             </Card.Body>
           </Card>
         </Tab>
@@ -518,6 +628,66 @@ const MyAccount = () => {
         <Modal.Footer>
           <Button variant="outline-secondary" onClick={() => setRejectModal({ show: false, item: null })}>Cancel</Button>
           <Button variant="danger" onClick={handleRejectConfirm}>Confirm Reject</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Self-service account deletion modal */}
+      <Modal show={deleteModalOpen} onHide={() => !deleteInProgress && setDeleteModalOpen(false)} centered>
+        <Modal.Header closeButton={!deleteInProgress}>
+          <Modal.Title>Delete Account</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="text-muted">
+            This permanently deletes your account and your content from this platform.
+          </p>
+          <p className="text-muted mb-3">
+            To confirm, type <strong>DELETE</strong> below.
+          </p>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Confirmation</Form.Label>
+            <Form.Control
+              type="text"
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              placeholder="Type DELETE"
+              disabled={deleteInProgress}
+            />
+          </Form.Group>
+
+          {getPrimaryProviderId() === 'password' && (
+            <Form.Group className="mb-3">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                placeholder="Enter your password"
+                disabled={deleteInProgress}
+              />
+              <Form.Text className="text-muted">
+                Password is required to confirm this sensitive action.
+              </Form.Text>
+            </Form.Group>
+          )}
+
+          {deleteError && <div className="text-danger small">{deleteError}</div>}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="outline-secondary"
+            onClick={() => setDeleteModalOpen(false)}
+            disabled={deleteInProgress}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            onClick={handleDeleteAccount}
+            disabled={deleteInProgress}
+          >
+            {deleteInProgress ? 'Deleting...' : 'Permanently Delete Account'}
+          </Button>
         </Modal.Footer>
       </Modal>
     </Container>
