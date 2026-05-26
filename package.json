@@ -39,7 +39,7 @@
     "@types/draft-js": "^0.11.20",
     "@types/react-draft-wysiwyg": "^1.13.9",
     "@typescript-eslint/eslint-plugin": "^8.59.1",
-    "@typescript-eslint/parser": "^8.59.1",
+    "@typescript-eslint/parser": "^8.59.4",
     "eslint": "10.4.0",
     "eslint-config-next": "16.2.6",
     "eslint-plugin-react": "^7.37.5",
