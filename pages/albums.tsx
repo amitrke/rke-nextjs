@@ -49,7 +49,13 @@ export default function Page({
 }
 
 export async function getStaticProps() {
-    const dbList = await queryOnce<AlbumType>({ path: `albums`, queryConstraints: [where("public", "==", true)] })
+    const dbList = await queryOnce<AlbumType>({
+        path: `albums`,
+        queryConstraints: [
+            where("public", "==", true),
+            where("approved", "==", true)
+        ]
+    })
     const bucketUrlMap = {}
     dbList.forEach(x => {
         const url = getImageBucketUrl(x.images[0], 's', x.userId);

@@ -47,6 +47,7 @@ export const getStaticProps = (async (context) => {
         {
             path: `albums`, queryConstraints: [
                 where("public", "==", true),
+                where("approved", "==", true),
                 where("userId", "==", userId),
                 orderBy("updateDate", "desc")
             ]

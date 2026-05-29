@@ -19,7 +19,13 @@ type AlbumPropType = {
 }
 
 export async function getStaticPaths() {
-    const topPosts = await queryOnce<AlbumType>({ path: `albums`, queryConstraints: [where("public", "==", true)] })
+    const topPosts = await queryOnce<AlbumType>({
+        path: `albums`,
+        queryConstraints: [
+            where("public", "==", true),
+            where("approved", "==", true)
+        ]
+    })
     const paths = topPosts.map(post => ({ params: { aid: post.id } }))
     return {
         paths,
@@ -32,6 +38,12 @@ export const getStaticProps = (async (context) => {
     const albumDoc = await getDocument<AlbumType>({ path: `albums`, pathSegments: [aid] })
 
     if (!albumDoc) {
+        return {
+            notFound: true,
+        };
+    }
+
+    if (albumDoc.public !== true || albumDoc.approved !== true) {
         return {
             notFound: true,
         };

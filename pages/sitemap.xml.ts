@@ -29,6 +29,9 @@ function generateSiteMap(siteUrl: string, posts: PostType[], albums: AlbumType[]
      <url>
              <loc>${siteUrl}/contact</loc>
      </url>
+         <url>
+             <loc>${siteUrl}/account-deletion</loc>
+         </url>
      <url>
              <loc>${siteUrl}/weather/roorkee-in</loc>
      </url>
@@ -87,7 +90,8 @@ export async function getServerSideProps({ res }) {
     const albumsPromise = queryOnce<AlbumType>(
         {
             path: `albums`, queryConstraints: [
-                where("public", "==", true)
+                where("public", "==", true),
+                where("approved", "==", true)
             ]
         }
     )
