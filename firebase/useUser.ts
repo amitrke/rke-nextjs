@@ -29,20 +29,43 @@ const useUser = () => {
             })
     }
 
+    const SYNC_KEY = (userId: string) => `profileSync_${userId}`;
+    const todayStr = () => new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+
     const updateUserPublicInfo = async (user: User) => {
-        const dbUser = await getDocument({ path: `users`, pathSegments: [user.id] });
-        const existingName = (dbUser as { name?: string } | null)?.name || '';
-        const userInfo = {
-            name: user.name || existingName,
-            profilePic: user.profilePic || (dbUser as { profilePic?: string } | null)?.profilePic || "",
-            updateDate: (new Date()).getTime(),
-            email: user.email,
-            id: user.id
-        };
+        // Fast path: already synced today — no Firestore read or write needed.
+        if (typeof window !== 'undefined') {
+            if (localStorage.getItem(SYNC_KEY(user.id)) === todayStr()) return;
+        }
+
+        const dbUser = await getDocument<{ name?: string; profilePic?: string; updateDate?: number }>({ path: `users`, pathSegments: [user.id] });
+        const ts = (new Date()).getTime();
+
         if (dbUser) {
-            await write({ path: `users`, existingDocId: user.id, data: userInfo });
+            const patch: Record<string, unknown> = {
+                updateDate: ts,
+                email: user.email,
+                id: user.id,
+            };
+            if (!dbUser.name && user.name) patch.name = user.name;
+            if (!dbUser.profilePic && user.profilePic) patch.profilePic = user.profilePic;
+            await write({ path: `users`, existingDocId: user.id, data: patch });
         } else {
-            await write({ path: `users`, newDocId: user.id, data: userInfo});
+            // First time – seed everything the provider gives us
+            await write({
+                path: `users`, newDocId: user.id, data: {
+                    name: user.name || '',
+                    profilePic: user.profilePic || '',
+                    updateDate: ts,
+                    email: user.email,
+                    id: user.id,
+                }
+            });
+        }
+
+        // Mark as synced for today in localStorage
+        if (typeof window !== 'undefined') {
+            localStorage.setItem(SYNC_KEY(user.id), todayStr());
         }
     }
 
