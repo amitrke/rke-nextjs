@@ -4,8 +4,6 @@ import {
     createUserWithEmailAndPassword,
     signInWithPopup,
     GoogleAuthProvider,
-    TwitterAuthProvider,
-    GithubAuthProvider,
     updateProfile,
     User as FirebaseUser
 } from 'firebase/auth';
@@ -15,7 +13,7 @@ import { mapUserData } from '../../firebase/mapUserData';
 import { useRouter } from 'next/router';
 import { Button, Form, Alert, Card, Tabs, Tab } from '../ui/tw';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGoogle, faTwitter, faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 
 const CustomAuth = (): JSX.Element => {
     const [email, setEmail] = useState('');
@@ -73,28 +71,17 @@ const CustomAuth = (): JSX.Element => {
         }
     };
 
-    const handleSocialSignIn = async (providerType: 'google' | 'twitter' | 'github') => {
+    const handleSocialSignIn = async () => {
         setError('');
         setLoading(true);
 
         try {
-            let provider;
-            switch (providerType) {
-                case 'google':
-                    provider = new GoogleAuthProvider();
-                    break;
-                case 'twitter':
-                    provider = new TwitterAuthProvider();
-                    break;
-                case 'github':
-                    provider = new GithubAuthProvider();
-                    break;
-            }
+            const provider = new GoogleAuthProvider();
 
             const result = await signInWithPopup(auth, provider);
             handleAuthSuccess(result.user);
         } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : `Failed to sign in with ${providerType}`;
+            const errorMessage = err instanceof Error ? err.message : 'Failed to sign in with Google';
             setError(errorMessage);
         } finally {
             setLoading(false);
@@ -201,29 +188,11 @@ const CustomAuth = (): JSX.Element => {
                 <div className="grid gap-2">
                     <Button
                         variant="outline-danger"
-                        onClick={() => handleSocialSignIn('google')}
+                        onClick={handleSocialSignIn}
                         disabled={loading}
                     >
                         <FontAwesomeIcon icon={faGoogle} className="mr-2" />
                         Continue with Google
-                    </Button>
-
-                    <Button
-                        variant="outline-info"
-                        onClick={() => handleSocialSignIn('twitter')}
-                        disabled={loading}
-                    >
-                        <FontAwesomeIcon icon={faTwitter} className="mr-2" />
-                        Continue with Twitter
-                    </Button>
-
-                    <Button
-                        variant="outline-dark"
-                        onClick={() => handleSocialSignIn('github')}
-                        disabled={loading}
-                    >
-                        <FontAwesomeIcon icon={faGithub} className="mr-2" />
-                        Continue with GitHub
                     </Button>
                 </div>
             </Card.Body>
