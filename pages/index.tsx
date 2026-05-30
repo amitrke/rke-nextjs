@@ -87,7 +87,7 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
         ]) }}
       />
 
-      <main className={styles.container}>
+      <main className="mx-auto w-full max-w-7xl px-4">
         <section className={styles.hero}>
           <div className={styles.heroText}>
             <h1>Welcome to Roorkee</h1>

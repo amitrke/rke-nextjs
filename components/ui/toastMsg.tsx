@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Toast from 'react-bootstrap/Toast';
+import { Toast } from './tw';
 
 export type ToastMsgProps = {
     header: string;
@@ -17,7 +17,7 @@ const ToastMsg = (props: ToastMsgProps) => {
     return (
         <Toast show={show} onClose={onClose}>
             <Toast.Header>
-                {/* <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" /> */}
+                {/* <img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" /> */}
                 <strong className="me-auto">{props.header}</strong>
                 <small>1 min ago</small>
             </Toast.Header>

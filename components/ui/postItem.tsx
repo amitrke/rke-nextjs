@@ -1,4 +1,4 @@
-import { Button, Card } from "react-bootstrap";
+import { Button, Card } from "./tw";
 import { deleteDocument } from "../../firebase/firestore";
 import { PostType } from "../../firebase/types";
 import { ShowModalParams } from "./showModal";
@@ -31,7 +31,7 @@ const PostItem = (params: DisplayPostParams) => {
                 <Button variant="secondary" onClick={onDeleteClick}>Delete</Button>
             </Card.Body>
             <Card.Footer>
-                <small className="text-muted">Public: {params.post.public.toString()}</small>
+                <small className="text-slate-500">Public: {params.post.public.toString()}</small>
             </Card.Footer>
         </Card>
     )

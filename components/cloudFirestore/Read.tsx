@@ -1,7 +1,7 @@
 import { doc, onSnapshot } from 'firebase/firestore';
 import { getFirebaseFirestore } from '../../firebase/initFirebase';
 import { useUser } from '../../firebase/useUser';
-import Button from 'react-bootstrap/Button';
+import { Button } from '../ui/tw';
 
 import type { JSX } from "react";
 

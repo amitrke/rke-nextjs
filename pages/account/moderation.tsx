@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Button, Badge, Card, Col, Container, Form, Modal, Row, Spinner, Tab, Tabs } from 'react-bootstrap';
+import { Button, Badge, Card, Col, Container, Form, Modal, Row, Spinner, Tab, Tabs } from '../../components/ui/tw';
 import Head from 'next/head';
 import { useAdminStatus } from '../../firebase/useAdminStatus';
 import { useUser } from '../../firebase/useUser';
@@ -164,7 +164,7 @@ const ModerationPage = () => {
     const renderQueueItems = (items: ModerationQueueItem[], loading: boolean, type: 'post' | 'album') => {
         if (loading) {
             return (
-                <div className="text-center py-5">
+                <div className="py-5 text-center">
                     <Spinner animation="border" variant="primary" />
                 </div>
             );
@@ -172,7 +172,7 @@ const ModerationPage = () => {
         if (items.length === 0) {
             return (
                 <Card className="border-0 shadow-sm">
-                    <Card.Body className="text-center py-5 text-muted">
+                    <Card.Body className="py-5 text-center text-slate-500">
                         No pending {type}s awaiting review.
                     </Card.Body>
                 </Card>
@@ -182,15 +182,15 @@ const ModerationPage = () => {
             <Row>
                 {items.map((item) => (
                     <Col md={6} lg={4} key={item.itemId} className="mb-4">
-                        <Card className="h-100 shadow-sm">
+                        <Card className="h-full shadow-sm">
                             <Card.Body>
-                                <Card.Title className="fs-6">{item.title || '(Untitled)'}</Card.Title>
-                                <Card.Subtitle className="text-muted mb-2 small">By {item.authorName}</Card.Subtitle>
-                                <div className="small text-muted">
+                                <Card.Title className="text-base">{item.title || '(Untitled)'}</Card.Title>
+                                <Card.Subtitle className="mb-2 text-xs text-slate-500">By {item.authorName}</Card.Subtitle>
+                                <div className="text-xs text-slate-500">
                                     Submitted: {uiDateFormat(item.submittedAt)}
                                 </div>
                             </Card.Body>
-                            <Card.Footer className="d-flex gap-2">
+                            <Card.Footer className="flex gap-2">
                                 <Button
                                     variant="success"
                                     size="sm"
@@ -233,10 +233,10 @@ const ModerationPage = () => {
                 <meta name="robots" content="noindex, nofollow" />
             </Head>
 
-            <div className="d-flex justify-content-between align-items-center mb-4">
+            <div className="mb-4 flex items-center justify-between">
                 <div>
                     <h2 className="mb-0">Content Moderation</h2>
-                    <p className="text-muted small mb-0">Review and approve or reject pending submissions.</p>
+                    <p className="mb-0 text-xs text-slate-500">Review and approve or reject pending submissions.</p>
                 </div>
                 <Button
                     variant="outline-secondary"
@@ -277,12 +277,12 @@ const ModerationPage = () => {
             </Tabs>
 
             {/* Legacy Migration */}
-            <Card className="mt-5 border-warning">
-                <Card.Header className="bg-warning bg-opacity-10">
+            <Card className="mt-5 border-amber-300">
+                <Card.Header className="bg-amber-50">
                     <strong>One-Time Migration</strong>
                 </Card.Header>
                 <Card.Body>
-                    <p className="text-muted small mb-3">
+                    <p className="mb-3 text-xs text-slate-500">
                         Run this once after deploying the moderation system to approve all pre-existing public posts and albums.
                         This sets <code>approved: true</code> on all items that have <code>public: true</code> but no <code>approved</code> field yet.
                     </p>
@@ -292,7 +292,7 @@ const ModerationPage = () => {
                         disabled={migratingLegacy}
                     >
                         {migratingLegacy ? (
-                            <><Spinner as="span" animation="border" size="sm" className="me-2" />Migrating…</>
+                            <><Spinner as="span" animation="border" size="sm" className="mr-2" />Migrating…</>
                         ) : 'Approve All Legacy Content'}
                     </Button>
                 </Card.Body>

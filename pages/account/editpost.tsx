@@ -1,4 +1,4 @@
-import { Button, Container, Form, Row } from 'react-bootstrap'
+import { Button, Container, Form, Row, Spinner } from '../../components/ui/tw'
 import { useUser } from '../../firebase/useUser'
 import { useAdminStatus } from '../../firebase/useAdminStatus'
 import { getFirebaseAuth } from '../../firebase/initFirebase'
@@ -9,7 +9,6 @@ import { BaseSyntheticEvent, useEffect, useState } from 'react'
 import { arrayAppend, getDocument, write } from '../../firebase/firestore'
 import { useRouter } from 'next/router'
 import ShowImage from '../../components/ui/showImage'
-import Spinner from 'react-bootstrap/Spinner';
 import * as Slugify from 'slugify'
 import { getPostBySlug } from '../../service/PostService'
 
@@ -75,7 +74,7 @@ const EditPost = () => {
   const onSave = async (element: BaseSyntheticEvent) => {
     const button: HTMLElement = element.currentTarget;
     const spinner = button.querySelector('.spinner-border');
-    if (spinner) spinner.classList.remove('visually-hidden');
+    if (spinner) spinner.classList.remove('hidden');
     const slug = Slugify.default(post.title, { lower: true, strict: true });
     setPost({ ...post, slug });
     
@@ -83,7 +82,7 @@ const EditPost = () => {
       const postSearch = await getPostBySlug(post.category, slug);
       if (postSearch && postSearch.id !== post.id) {
         toastCallback({ header: "Error", body: "Post with same title already exists" });
-        if (spinner) spinner.classList.add('visually-hidden');
+        if (spinner) spinner.classList.add('hidden');
         return;
       }
     }
@@ -122,7 +121,7 @@ const EditPost = () => {
       }
     }
 
-    if (spinner) spinner.classList.add('visually-hidden');
+    if (spinner) spinner.classList.add('hidden');
   }
 
   const onFileUpload = async (props: UploadStatusType) => {
@@ -139,8 +138,8 @@ const EditPost = () => {
         <ToastMsg key={x.body} header={x.header} body={x.body} />
       )}
       <Container fluid>
-        <Row className={!user ? 'hidden' : 'justify-content-center'}>
-          <div className="col-md-8">
+        <Row className={!user ? 'hidden' : 'justify-center'}>
+          <div className="w-full md:basis-2/3 md:max-w-[66.666667%]">
             <h2>Create or Edit a Post</h2>
             <Form>
               <Form.Group controlId="editForm.title" className="mb-3">
@@ -176,7 +175,7 @@ const EditPost = () => {
                 onEdStateChange={(edState) => { setPost({ ...post, edState }) }}
                 initState={post.edState}
               />
-              <div className="d-flex justify-content-between align-items-center mt-4">
+              <div className="mt-4 flex items-center justify-between">
                 <Button variant="primary" onClick={(element) => onSave(element)}>
                   <Spinner
                     as="span"
@@ -184,7 +183,7 @@ const EditPost = () => {
                     size="sm"
                     role="status"
                     aria-hidden="true"
-                    className="visually-hidden"
+                    className="hidden"
                   />
                   <span>Save</span>
                 </Button>

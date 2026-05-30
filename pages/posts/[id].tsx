@@ -2,7 +2,7 @@ import ShowImage from "../../components/ui/showImage";
 import { getDocument } from "../../firebase/firestore";
 import { PostType } from "../../firebase/types";
 import DOMPurify from 'isomorphic-dompurify';
-import { Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row } from "../../components/ui/tw";
 import { jsonLdDateFormat, uiDateFormat } from "../../components/ui/uiUtils";
 import Link from "next/link";
 import HeadTag from "../../components/ui/headTag";
@@ -76,7 +76,7 @@ export default function Page({
                 robots="noindex,follow"
             />
             <Row>
-                <Col className="md-8">
+                <Col md={8}>
                     <h1>{post.title}</h1>
                     <PostUserInfo user={post.author} postDate={post.updateDate} />
                     <p>{post.intro}</p>
@@ -86,22 +86,22 @@ export default function Page({
                     <hr />
                     <div dangerouslySetInnerHTML={createMarkup(post.edState)}></div>
                 </Col>
-                <Col className="g-5" md={4}>
-                    <div className="p-4 mb-3 bg-light rounded">
-                        <h4 className="fst-italic">About the website</h4>
+                <Col className="gap-5" md={4}>
+                    <div className="mb-3 rounded bg-slate-100 p-4">
+                        <h4 className="italic">About the website</h4>
                         <p className="mb-0">Born in 2001, this website is a personal project to bring people of this town together, not affiliated to government / corporation.</p>
                     </div>
                     <div className="p-4">
-                        <h4 className="fst-italic">Recent Posts</h4>
-                        <ol className="list-unstyled mb-0">
+                        <h4 className="italic">Recent Posts</h4>
+                        <ol className="mb-0 list-none pl-0">
                             <li><Link href="/posts/m3BbY0r1SfDprLkyUJc6">IIT Roorkee</Link></li>
                             <li><a href="#">February 2021</a></li>
                         </ol>
                     </div>
 
                     <div className="p-4">
-                        <h4 className="fst-italic">Elsewhere</h4>
-                        <ol className="list-unstyled">
+                        <h4 className="italic">Elsewhere</h4>
+                        <ol className="list-none pl-0">
                             <li><a href="#">GitHub</a></li>
                             <li><a href="#">Twitter</a></li>
                             <li><a href="#">Facebook</a></li>

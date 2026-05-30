@@ -13,7 +13,7 @@ import { getFirebaseAuth } from '../../firebase/initFirebase';
 import { setUserCookie } from '../../firebase/userCookies';
 import { mapUserData } from '../../firebase/mapUserData';
 import { useRouter } from 'next/router';
-import { Button, Form, Alert, Card, Tabs, Tab } from 'react-bootstrap';
+import { Button, Form, Alert, Card, Tabs, Tab } from '../ui/tw';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle, faTwitter, faGithub } from '@fortawesome/free-brands-svg-icons';
 
@@ -198,13 +198,13 @@ const CustomAuth = (): JSX.Element => {
 
                 <hr className="my-4" />
 
-                <div className="d-grid gap-2">
+                <div className="grid gap-2">
                     <Button
                         variant="outline-danger"
                         onClick={() => handleSocialSignIn('google')}
                         disabled={loading}
                     >
-                        <FontAwesomeIcon icon={faGoogle} className="me-2" />
+                        <FontAwesomeIcon icon={faGoogle} className="mr-2" />
                         Continue with Google
                     </Button>
 
@@ -213,7 +213,7 @@ const CustomAuth = (): JSX.Element => {
                         onClick={() => handleSocialSignIn('twitter')}
                         disabled={loading}
                     >
-                        <FontAwesomeIcon icon={faTwitter} className="me-2" />
+                        <FontAwesomeIcon icon={faTwitter} className="mr-2" />
                         Continue with Twitter
                     </Button>
 
@@ -222,7 +222,7 @@ const CustomAuth = (): JSX.Element => {
                         onClick={() => handleSocialSignIn('github')}
                         disabled={loading}
                     >
-                        <FontAwesomeIcon icon={faGithub} className="me-2" />
+                        <FontAwesomeIcon icon={faGithub} className="mr-2" />
                         Continue with GitHub
                     </Button>
                 </div>

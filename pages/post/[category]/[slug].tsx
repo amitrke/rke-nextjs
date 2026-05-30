@@ -1,7 +1,7 @@
 import draftToHtml from 'draftjs-to-html';
 import DOMPurify from 'isomorphic-dompurify';
 import { GetStaticProps, InferGetStaticPropsType } from "next";
-import { Col, Container, Row, Badge, Card } from "react-bootstrap";
+import { Col, Container, Row, Badge, Card } from "../../../components/ui/tw";
 import HeadTag from "../../../components/ui/headTag";
 import PostUserInfo from "../../../components/ui/postUserInfo";
 import RecentPostsBox from "../../../components/ui/recentPostsBox";
@@ -174,31 +174,33 @@ export default function Page({
 
             {/* Breadcrumb */}
             <nav aria-label="breadcrumb" className="mb-3">
-                <ol className="breadcrumb">
-                    <li className="breadcrumb-item"><Link href="/">Home</Link></li>
-                    <li className="breadcrumb-item"><Link href="/posts/page/1">{post.category}</Link></li>
-                    <li className="breadcrumb-item active" aria-current="page">{post.title}</li>
+                <ol className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                    <li><Link href="/" className="hover:text-blue-700">Home</Link></li>
+                    <li>/</li>
+                    <li><Link href="/posts/page/1" className="hover:text-blue-700">{post.category}</Link></li>
+                    <li>/</li>
+                    <li className="text-slate-900" aria-current="page">{post.title}</li>
                 </ol>
             </nav>
 
-            <Row className="g-4">
+            <Row className="gap-y-4">
                 <Col lg={8}>
                     <article>
                         {/* Category Badge */}
                         <div className="mb-3">
-                            <Link href="/posts/page/1" className="text-decoration-none">
+                            <Link href="/posts/page/1" className="no-underline">
                                 <Badge bg="primary" className="text-uppercase">{post.category}</Badge>
                             </Link>
                         </div>
 
                         {/* Title */}
-                        <h1 className="display-4 fw-bold mb-3">{post.title}</h1>
+                        <h1 className="mb-3 text-4xl font-bold leading-tight md:text-5xl">{post.title}</h1>
 
                         {/* Author and Date */}
                         <PostUserInfo user={post.author} postDate={post.updateDate} />
 
                         {/* Introduction */}
-                        <p className="lead my-4 text-muted">{post.intro}</p>
+                        <p className="my-4 text-lg text-slate-500">{post.intro}</p>
 
                         {/* Featured Images */}
                         {post.displayImages.length > 0 && (
@@ -240,13 +242,13 @@ export default function Page({
                         {/* Share Section */}
                         <Card className="border-0 shadow-sm">
                             <Card.Body className="p-4">
-                                <h5 className="fw-bold mb-3">Share This Post</h5>
-                                <div className="d-grid gap-2">
+                                <h5 className="mb-3 text-lg font-bold">Share This Post</h5>
+                                <div className="grid gap-2">
                                     <a
                                         href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`https://www.roorkee.org/post/${post.category}/${post.slug}`)}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="btn btn-outline-primary btn-sm"
+                                        className="inline-flex items-center justify-center rounded-md border border-blue-500 px-2.5 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-50"
                                     >
                                         Share on Twitter
                                     </a>
@@ -254,7 +256,7 @@ export default function Page({
                                         href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://www.roorkee.org/post/${post.category}/${post.slug}`)}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="btn btn-outline-primary btn-sm"
+                                        className="inline-flex items-center justify-center rounded-md border border-blue-500 px-2.5 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-50"
                                     >
                                         Share on Facebook
                                     </a>

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Button, Modal } from './tw';
 
 export type ShowModalParams = {
     yesCallback: (params?: Record<string, unknown>) => Promise<void>
