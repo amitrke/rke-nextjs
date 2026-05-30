@@ -1,6 +1,5 @@
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { Card, Col, Container, Image, Row, Spinner } from "../../components/ui/tw";
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
+import { Card, Col, Container, Image, Row } from "../../components/ui/tw";
 import { getDocument } from '../../firebase/firestore';
 import { uiRound, uiDateFormat } from '../../components/ui/uiUtils';
 import Head from 'next/head';
@@ -171,51 +170,8 @@ function DailyWeatherWidget(props: Weather) {
     )
 }
 
-export default function Weather() {
-    const router = useRouter();
-    const { id } = router.query;
-    const [weather, setWeather] = useState<Weather | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [lastUpdated, setLastUpdated] = useState<string>("");
-
-    useEffect(() => {
-        if (!id) return;
-
-        const fetchWeather = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                const weatherData = await getDocument<Weather>({
-                    path: `weather`,
-                    pathSegments: [id as string]
-                });
-                setWeather(weatherData);
-                setLastUpdated(uiDateFormat((new Date()).getTime()));
-            } catch (err) {
-                setError("Failed to load weather data. Please try again later.");
-                console.error("Error fetching weather:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchWeather();
-    }, [id]);
-
-    if (loading) {
-        return (
-            <Container fluid className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#C1CFEA' }}>
-                <Head>
-                    <title>Weather - Roorkee</title>
-                    <meta name="robots" content="noindex, nofollow" />
-                </Head>
-                <Spinner animation="border" variant="primary" />
-            </Container>
-        );
-    }
-
-    if (error || !weather) {
+export default function Weather({ weather, lastUpdated }: InferGetStaticPropsType<typeof getStaticProps>) {
+    if (!weather) {
         return (
             <Container fluid className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#C1CFEA' }}>
                 <Head>
@@ -223,7 +179,7 @@ export default function Weather() {
                     <meta name="robots" content="noindex, nofollow" />
                 </Head>
                 <div className="text-center">
-                    <h4 className="text-rose-600">{error || "Weather data not found"}</h4>
+                    <h4 className="text-rose-600">Weather data not found</h4>
                 </div>
             </Container>
         );
@@ -249,3 +205,21 @@ export default function Weather() {
         </Container>
     )
 }
+
+export const getStaticPaths: GetStaticPaths = async () => {
+    return {
+        paths: [{ params: { id: 'roorkee-in' } }],
+        fallback: false,
+    };
+};
+
+export const getStaticProps: GetStaticProps<{ weather: Weather | null; lastUpdated: string }> = async () => {
+    const weather = await getDocument<Weather>({ path: 'weather', pathSegments: ['roorkee-in'] });
+    return {
+        props: {
+            weather: weather ?? null,
+            lastUpdated: uiDateFormat(Date.now()),
+        },
+        revalidate: 3600, // regenerate page every hour
+    };
+};
