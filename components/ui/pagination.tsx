@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Button, ButtonGroup } from 'react-bootstrap';
+import { Button, ButtonGroup } from './tw';
 
 type PaginationProps = {
     currentPage: number;
@@ -48,7 +48,7 @@ export default function Pagination({ currentPage, totalPages, basePath }: Pagina
     const pageNumbers = getPageNumbers();
 
     return (
-        <div className="d-flex justify-content-center my-4">
+        <div className="my-4 flex justify-center">
             <ButtonGroup>
                 <Link href={currentPage > 1 ? `${basePath}/${currentPage - 1}`: `${basePath}/${currentPage}`} passHref>
                     <Button variant="secondary" disabled={currentPage <= 1}>

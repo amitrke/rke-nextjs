@@ -20,7 +20,7 @@ export default function Page({
                 description="Browse photo albums from the Roorkee community. Explore memories, places, and moments captured by residents."
                 url="/albums"
             />
-            <div className="container-xl">
+            <div className="mx-auto w-full max-w-7xl px-4">
                 <div className={styles.header}>
                     <h1>Photo Albums</h1>
                     <p className={styles.description}>

@@ -1,4 +1,4 @@
-import { Image } from "react-bootstrap"
+import { Image } from "./tw"
 import Link from "next/link"
 import { User } from "../../firebase/types"
 import { uiDateFormat } from "./uiUtils"
@@ -10,31 +10,31 @@ export type PostUserInfoType = {
 
 export default function PostUserInfo({ user, postDate }: PostUserInfoType) {
     return (
-        <div className="d-flex align-items-center py-3 border-top border-bottom">
+        <div className="flex items-center border-y border-slate-200 py-3">
             {user.profilePic ? (
                 <Image
                     src={user.profilePic}
                     alt={user.name}
                     roundedCircle
-                    className="me-3"
+                    className="mr-3"
                     width="48"
                     height="48"
                 />
             ) : (
                 <div
-                    className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
+                    className="mr-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white"
                     style={{ width: '48px', height: '48px', fontSize: '20px', fontWeight: 'bold' }}
                 >
                     {user.name?.charAt(0).toUpperCase()}
                 </div>
             )}
             <div>
-                <div className="fw-semibold">
-                    <Link href={`/user/${user.id}`} className="text-decoration-none text-dark">
+                <div className="font-semibold">
+                    <Link href={`/user/${user.id}`} className="text-slate-900 no-underline hover:text-blue-700">
                         {user.name}
                     </Link>
                 </div>
-                <div className="text-muted small">
+                <div className="text-sm text-slate-500">
                     Posted on {uiDateFormat(postDate)}
                 </div>
             </div>

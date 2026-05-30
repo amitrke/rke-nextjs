@@ -3,10 +3,10 @@ import CustomAuth from '../components/auth/CustomAuth'
 
 const Auth = () => {
     return (
-        <div className="container py-5">
-            <div>
+        <div className="mx-auto w-full max-w-4xl px-4 py-5">
+            <div className="mx-auto max-w-xl">
                 <CustomAuth />
-                <p className="text-center mt-3"><Link href="/">Go Home</Link></p>
+                <p className="mt-3 text-center"><Link href="/">Go Home</Link></p>
             </div>
         </div>
     )

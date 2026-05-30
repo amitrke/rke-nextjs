@@ -33,7 +33,7 @@ export default function EventsPage({ events }: EventsPageProps) {
         },
     }));
     return (
-        <div className="container-xl">
+        <div className="mx-auto w-full max-w-7xl px-4">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(eventsJsonLd) }}

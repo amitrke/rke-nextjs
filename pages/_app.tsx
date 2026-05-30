@@ -1,9 +1,8 @@
 import '../styles/globals.css'
 import '../styles/main.scss'
-import 'bootstrap/dist/css/bootstrap.min.css'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import Layout from '../components/layout'
-import { SSRProvider } from '@react-aria/ssr';
+import GoogleOneTapSignIn from '../components/auth/GoogleOneTapSignIn';
 import Script from 'next/script';
 import { AppProps } from 'next/app';
 import { NextComponentType, NextPageContext } from 'next';
@@ -22,6 +21,7 @@ function MyApp({ Component, pageProps }: CustomAppProps) {
     return (
       <>
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-KVDNNXYM2C" />
+        <GoogleOneTapSignIn />
         <Script id="google-analytics">
           {`
           window.dataLayer = window.dataLayer || [];
@@ -38,6 +38,7 @@ function MyApp({ Component, pageProps }: CustomAppProps) {
     return (
       <>
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-KVDNNXYM2C" />
+        <GoogleOneTapSignIn />
         <Script id="google-analytics">
           {`
           window.dataLayer = window.dataLayer || [];
@@ -57,6 +58,7 @@ function MyApp({ Component, pageProps }: CustomAppProps) {
     return (
       <>
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-KVDNNXYM2C" />
+        <GoogleOneTapSignIn />
         <Script id="google-analytics">
           {`
           window.dataLayer = window.dataLayer || [];
@@ -66,11 +68,9 @@ function MyApp({ Component, pageProps }: CustomAppProps) {
           gtag('config', 'G-KVDNNXYM2C');
         `}
         </Script>
-        <SSRProvider>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </SSRProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </>
 
     )

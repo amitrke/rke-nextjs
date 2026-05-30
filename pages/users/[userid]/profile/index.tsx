@@ -1,7 +1,7 @@
 import { orderBy, where } from "firebase/firestore";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import Link from "next/link";
-import { Col, Container, Image, Row } from "react-bootstrap";
+import { Col, Container, Image, Row } from "../../../../components/ui/tw";
 import HeadTag from "../../../../components/ui/headTag";
 import RecentPostsBox from "../../../../components/ui/recentPostsBox";
 import { uiDateFormat } from "../../../../components/ui/uiUtils";
@@ -80,10 +80,10 @@ export default function Page({
         <Container>
             <HeadTag title={`User - ${props.user.name}.`} />
             <Row>
-                <Col className="md-8">
-                    <div className="d-flex align-items-center">
-                        <Image src={props.user.profilePic} alt="" roundedCircle className="me-2 shadow" width="64" height="64" />
-                        <div style={{ paddingTop: '15px' }}>
+                <Col md={8}>
+                    <div className="flex items-center">
+                        <Image src={props.user.profilePic} alt="" roundedCircle className="mr-2 shadow" width="64" height="64" />
+                        <div className="pt-4">
                             <h1>{props.user.name}</h1>
                         </div>
                     </div>
@@ -113,16 +113,16 @@ export default function Page({
                         })}
                     </ul>
                 </Col>
-                <Col className="g-5" md={4}>
-                    <div className="p-4 mb-3 bg-light rounded">
-                        <h4 className="fst-italic">About the website</h4>
+                <Col className="gap-5" md={4}>
+                    <div className="mb-3 rounded bg-slate-100 p-4">
+                        <h4 className="italic">About the website</h4>
                         <p className="mb-0">Born in 2001, this website is a personal project to bring people of this town together, not affiliated to government / corporation.</p>
                     </div>
                     <RecentPostsBox posts={props.recentPosts} />
 
                     <div className="p-4">
-                        <h4 className="fst-italic">Elsewhere</h4>
-                        <ol className="list-unstyled">
+                        <h4 className="italic">Elsewhere</h4>
+                        <ol className="list-none pl-0">
                             <li><a href="#">GitHub</a></li>
                             <li><a href="#">Twitter</a></li>
                             <li><a href="#">Facebook</a></li>

@@ -1,6 +1,6 @@
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { useState, useEffect } from "react";
-import { Image } from "react-bootstrap";
+import { Image } from "./tw";
 import { ImageSize, imageSizeMap, fileNameToNameWithDimensions, getImageBucketUrl } from "./imageUtils";
 
 // Re-export for backwards compatibility
