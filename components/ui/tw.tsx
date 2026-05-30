@@ -1,8 +1,9 @@
-import { ReactElement, ReactNode, createContext, useContext, useMemo, useState } from 'react';
+import { CSSProperties, ReactElement, ReactNode, createContext, useContext, useMemo, useState } from 'react';
 
 type CommonProps = {
   className?: string;
   children?: ReactNode;
+  style?: CSSProperties;
 };
 
 const cn = (...classes: Array<string | false | null | undefined>) => classes.filter(Boolean).join(' ');
@@ -284,7 +285,7 @@ export function Tab(_props: TabProps) {
   return null;
 }
 
-export function Tabs({ defaultActiveKey, activeKey, onSelect, className, children, fill }: CommonProps & { defaultActiveKey?: string; activeKey?: string; onSelect?: (k: string | null) => void; fill?: boolean }) {
+export function Tabs({ defaultActiveKey, activeKey, onSelect, className, children, fill, id }: CommonProps & { defaultActiveKey?: string; activeKey?: string; onSelect?: (k: string | null) => void; fill?: boolean; id?: string }) {
   const tabs = (Array.isArray(children) ? children : [children]).filter(Boolean) as ReactElement<TabProps>[];
   const initial = activeKey ?? defaultActiveKey ?? tabs[0]?.props?.eventKey;
   const [internalKey, setInternalKey] = useState<string | undefined>(initial);
@@ -293,7 +294,7 @@ export function Tabs({ defaultActiveKey, activeKey, onSelect, className, childre
   const current = useMemo(() => tabs.find((tab) => tab.props.eventKey === selected) ?? tabs[0], [tabs, selected]);
 
   return (
-    <div className={className}>
+    <div id={id} className={className}>
       <div className={cn('mb-4 flex flex-wrap gap-2 border-b border-slate-200 pb-2', fill && 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3')}>
         {tabs.map((tab) => {
           const isActive = tab.props.eventKey === current?.props.eventKey;
@@ -320,7 +321,7 @@ export function Tabs({ defaultActiveKey, activeKey, onSelect, className, childre
   );
 }
 
-type FormComponent = ((props: React.FormHTMLAttributes<HTMLFormElement>) => ReactElement) & {
+type FormComponent = ((props: React.FormHTMLAttributes<HTMLFormElement> & { validated?: boolean }) => ReactElement) & {
   Group: (props: CommonProps & { controlId?: string }) => ReactElement;
   Label: (props: React.LabelHTMLAttributes<HTMLLabelElement>) => ReactElement;
   Control: ((props: any) => ReactElement) & { Feedback: (props: CommonProps) => ReactElement };
@@ -335,13 +336,14 @@ export const Form: FormComponent = ((props: React.FormHTMLAttributes<HTMLFormEle
 }) as FormComponent;
 Form.Group = ({ className, children, controlId }: CommonProps & { controlId?: string }) => <div id={controlId} className={cn('mb-3', className)}>{children}</div>;
 Form.Label = (props: React.LabelHTMLAttributes<HTMLLabelElement>) => <label {...props} className={cn('mb-1 block text-sm font-medium text-slate-700', props.className)} />;
-Form.Control = ({ as, className, ...props }: any) => {
+const FormControl = (({ as, className, ...props }: any) => {
   if (as === 'textarea') {
     return <textarea {...props} className={cn('w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200', className)} />;
   }
   return <input {...props} className={cn('w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200', className)} />;
-};
-Form.Control.Feedback = ({ className, children }: CommonProps) => <p className={cn('mt-1 text-xs text-emerald-700', className)}>{children}</p>;
+}) as FormComponent['Control'];
+FormControl.Feedback = ({ className, children }: CommonProps) => <p className={cn('mt-1 text-xs text-emerald-700', className)}>{children}</p>;
+Form.Control = FormControl;
 Form.Select = (props: React.SelectHTMLAttributes<HTMLSelectElement>) => <select {...props} className={cn('w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200', props.className)} />;
 Form.Text = ({ className, children }: CommonProps) => <p className={cn('mt-1 text-xs text-slate-500', className)}>{children}</p>;
 Form.Check = ({ type = 'checkbox', label, checked, onChange, className }: { type?: string; label?: ReactNode; checked?: boolean; onChange?: (e: any) => void; className?: string }) => (
@@ -351,7 +353,7 @@ Form.Check = ({ type = 'checkbox', label, checked, onChange, className }: { type
   </label>
 );
 
-export function Spinner({ className, as = 'div' }: { className?: string; as?: string; animation?: string; variant?: string; size?: string; role?: string; 'aria-hidden'?: boolean }) {
+export function Spinner({ className, as = 'div' }: { className?: string; as?: string; animation?: string; variant?: string; size?: string; role?: string; 'aria-hidden'?: boolean | string }) {
   const Component: any = as;
   return <Component className={cn('spinner-border inline-block h-5 w-5 animate-spin rounded-full border-2 border-slate-300 border-t-transparent', className)} />;
 }
