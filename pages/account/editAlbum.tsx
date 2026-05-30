@@ -1,7 +1,7 @@
 import { where } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Form, Row } from "../../components/ui/tw";
 import UploadFile, { UploadStatusType } from "../../components/storage/UploadFile";
 import ShowImage from "../../components/ui/showImage";
 import ToastMsg, { ToastMsgProps } from "../../components/ui/toastMsg";
@@ -115,7 +115,7 @@ const EditAlbum = () => {
 
     return (
         <Container>
-            <Row className="justify-content-center">
+            <Row className="justify-center">
                 <Col md={8}>
                     <h2 className="mb-4">Create or Edit an Album</h2>
                     {[...toasts].map((x) =>
@@ -134,7 +134,7 @@ const EditAlbum = () => {
                             <Form.Label>Upload Pictures</Form.Label>
                             <UploadFile toastCallback={toastCallback} disabled={albumId === ''} statusCallback={onFileUpload} />
                         </Form.Group>
-                        <div className="d-flex justify-content-between align-items-center mb-4">
+                        <div className="mb-4 flex items-center justify-between">
                             <Button variant="primary" onClick={onSave}>
                                 Save
                             </Button>

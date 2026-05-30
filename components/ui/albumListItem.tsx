@@ -1,4 +1,4 @@
-import { Badge, Button, Card } from "react-bootstrap";
+import { Badge, Button, Card } from "./tw";
 import Link from 'next/link';
 import { useUser } from "../../firebase/useUser";
 import { deleteDocument } from "../../firebase/firestore";

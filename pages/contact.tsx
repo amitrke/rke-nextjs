@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import { Button, Container, Form } from "../components/ui/tw";
 import { write } from "../firebase/firestore";
 import { MessageType } from "../firebase/types";
 import { useUser } from "../firebase/useUser";
@@ -53,7 +53,7 @@ export default function Contact() {
                         <option value="Dev">Contribute to the website as a developer</option>
                         <option value="Defect">Report an issue with website</option>
                     </Form.Select>
-                    <Form.Text className="text-muted">
+                    <Form.Text className="text-slate-500">
                         Select the reason why you want to contact the website team.
                     </Form.Text>
                 </Form.Group>

@@ -21,7 +21,7 @@ export default function NewsPage({ news, page, totalPages }: NewsPageProps) {
     const nextPath = page < totalPages ? `/news/${page + 1}` : undefined;
 
     return (
-        <div className="container-xl">
+        <div className="mx-auto w-full max-w-7xl px-4">
             <HeadTag
                 title={`News - Page ${page} | Roorkee.org`}
                 description="Latest Roorkee news and updates from around the region."

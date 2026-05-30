@@ -1,6 +1,5 @@
 import { useUser } from '../firebase/useUser'
-import Button from 'react-bootstrap/Button'
-import { Tab, Tabs, Container, Row, Col, Card, Spinner, Badge, Form, Modal } from 'react-bootstrap'
+import { Button, Tab, Tabs, Container, Row, Col, Card, Spinner, Badge, Form, Modal } from '../components/ui/tw'
 import PostList from '../components/ui/postList'
 import { useEffect, useState } from 'react'
 import AlbumList from '../components/ui/albumList'
@@ -27,6 +26,9 @@ import { getFirebaseAuth } from '../firebase/initFirebase';
 const MyAccount = () => {
   const { user, logout } = useUser()
   const { isAdmin } = useAdminStatus()
+  const hasProfileName = Boolean(user?.name?.trim());
+  const displayName = user?.name?.trim() || user?.email?.split('@')[0] || 'Member';
+  const displayInitial = displayName.charAt(0).toUpperCase();
   const [posts, setPosts] = useState<PostDisplayType[]>([]);
   const [albums, setAlbums] = useState<AlbumType[]>([]);
   const [bucketUrlMap, setBucketUrlMap] = useState<{ [key: string]: string }>({});
@@ -286,12 +288,12 @@ const MyAccount = () => {
           <title>My Account - Roorkee.org</title>
           <meta name="robots" content="noindex, nofollow" />
         </Head>
-        <Row className="justify-content-center">
+        <Row className="justify-center">
           <Col md={6} lg={4}>
             <Card className="text-center shadow-sm">
               <Card.Body className="p-5">
                 <h3 className="mb-3">Please Login</h3>
-                <p className="text-muted mb-4">You need to be logged in to access your account.</p>
+                <p className="mb-4 text-slate-500">You need to be logged in to access your account.</p>
                 <Button href="/auth" variant="primary">Go to Login</Button>
               </Card.Body>
             </Card>
@@ -304,26 +306,29 @@ const MyAccount = () => {
   return (
     <Container className="py-4">
       <Head>
-        <title>My Account - {user.name} - Roorkee.org</title>
+        <title>My Account - {displayName} - Roorkee.org</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
 
       <ShowModal show={modalParams.show} changeTrigger={modalTrigger} yesCallback={modalParams.yesCallback} />
 
       {/* Profile Header */}
-      <Card className="mb-4 shadow-sm border-0">
+      <Card className="mb-4 border-0 shadow-sm">
         <Card.Body className="p-4">
-          <Row className="align-items-center">
+          <Row className="items-center">
             <Col md={8}>
-              <div className="d-flex align-items-center mb-3 mb-md-0">
-                <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+              <div className="mb-3 flex items-center md:mb-0">
+                <div className="mr-3 flex items-center justify-center rounded-full bg-blue-600 text-white"
                   style={{ width: '80px', height: '80px', fontSize: '32px', fontWeight: 'bold' }}>
-                  {user.name?.charAt(0).toUpperCase()}
+                  {displayInitial}
                 </div>
                 <div>
-                  <h2 className="mb-1">{user.name}</h2>
-                  <p className="text-muted mb-2">{user.email}</p>
-                  <div className="d-flex gap-2">
+                  <h2 className="mb-1">{displayName}</h2>
+                  <p className="mb-2 text-slate-500">{user.email}</p>
+                  {!hasProfileName && (
+                    <p className="mb-2 text-xs text-slate-500">Display name not set. Using your email alias for now.</p>
+                  )}
+                  <div className="flex gap-2">
                     <Badge bg="secondary" pill>{posts.length} Posts</Badge>
                     <Badge bg="secondary" pill>{albums.length} Albums</Badge>
                     {notifications.length > 0 && (
@@ -333,7 +338,7 @@ const MyAccount = () => {
                 </div>
               </div>
             </Col>
-            <Col md={4} className="text-md-end d-flex flex-column gap-2 align-items-end">
+            <Col md={4} className="flex flex-col items-end gap-2 md:text-right">
               {isAdmin && (
                 <Button variant="outline-warning" href="/account/moderation">
                   Moderation Panel
@@ -356,32 +361,32 @@ const MyAccount = () => {
               <Row>
                 <Col md={6}>
                   <div className="mb-3">
-                    <label className="text-muted small">Name</label>
-                    <p className="fw-semibold">{user.name}</p>
+                    <label className="text-xs text-slate-500">Name</label>
+                    <p className="font-semibold">{displayName}</p>
                   </div>
                 </Col>
                 <Col md={6}>
                   <div className="mb-3">
-                    <label className="text-muted small">Email</label>
-                    <p className="fw-semibold">{user.email}</p>
+                    <label className="text-xs text-slate-500">Email</label>
+                    <p className="font-semibold">{user.email}</p>
                   </div>
                 </Col>
                 <Col md={6}>
                   <div className="mb-3">
-                    <label className="text-muted small">Total Posts</label>
-                    <p className="fw-semibold">{posts.length}</p>
+                    <label className="text-xs text-slate-500">Total Posts</label>
+                    <p className="font-semibold">{posts.length}</p>
                   </div>
                 </Col>
                 <Col md={6}>
                   <div className="mb-3">
-                    <label className="text-muted small">Total Albums</label>
-                    <p className="fw-semibold">{albums.length}</p>
+                    <label className="text-xs text-slate-500">Total Albums</label>
+                    <p className="font-semibold">{albums.length}</p>
                   </div>
                 </Col>
               </Row>
               <hr />
               <h5 className="mb-3">Quick Actions</h5>
-              <div className="d-flex gap-2 flex-wrap">
+              <div className="flex flex-wrap gap-2">
                 <Button href="/account/editpost" variant="primary">
                   Create New Post
                 </Button>
@@ -391,8 +396,8 @@ const MyAccount = () => {
               </div>
 
               <hr className="my-4" />
-              <h5 className="text-danger mb-2">Danger Zone</h5>
-              <p className="text-muted mb-3">
+              <h5 className="mb-2 text-rose-600">Danger Zone</h5>
+              <p className="mb-3 text-slate-500">
                 Delete your account and all associated content (posts, albums, messages, and uploaded images).
                 This action cannot be undone.
               </p>
@@ -404,23 +409,23 @@ const MyAccount = () => {
         </Tab>
 
         <Tab eventKey="posts" title={`Posts (${posts.length})`}>
-          <div className="mb-3 d-flex justify-content-between align-items-center">
-            <p className="text-muted mb-0">Manage your posts - edit or delete them.</p>
+          <div className="mb-3 flex items-center justify-between">
+            <p className="mb-0 text-slate-500">Manage your posts - edit or delete them.</p>
             <Button href="/account/editpost" variant="primary" size="sm">
               + New Post
             </Button>
           </div>
 
           {isLoadingPosts ? (
-            <div className="text-center py-5">
+            <div className="py-5 text-center">
               <Spinner animation="border" variant="primary" />
-              <p className="text-muted mt-3">Loading posts...</p>
+              <p className="mt-3 text-slate-500">Loading posts...</p>
             </div>
           ) : posts.length === 0 ? (
             <Card className="border-0 shadow-sm">
-              <Card.Body className="text-center py-5">
-                <h5 className="text-muted mb-3">No posts yet</h5>
-                <p className="text-muted mb-4">Start sharing your stories with the community!</p>
+              <Card.Body className="py-5 text-center">
+                <h5 className="mb-3 text-slate-500">No posts yet</h5>
+                <p className="mb-4 text-slate-500">Start sharing your stories with the community!</p>
                 <Button href="/account/editpost" variant="primary">
                   Create Your First Post
                 </Button>
@@ -432,23 +437,23 @@ const MyAccount = () => {
         </Tab>
 
         <Tab eventKey="albums" title={`Albums (${albums.length})`}>
-          <div className="mb-3 d-flex justify-content-between align-items-center">
-            <p className="text-muted mb-0">Manage your photo albums.</p>
+          <div className="mb-3 flex items-center justify-between">
+            <p className="mb-0 text-slate-500">Manage your photo albums.</p>
             <Button href="/account/editAlbum" variant="primary" size="sm">
               + New Album
             </Button>
           </div>
 
           {isLoadingAlbums ? (
-            <div className="text-center py-5">
+            <div className="py-5 text-center">
               <Spinner animation="border" variant="primary" />
-              <p className="text-muted mt-3">Loading albums...</p>
+              <p className="mt-3 text-slate-500">Loading albums...</p>
             </div>
           ) : albums.length === 0 ? (
             <Card className="border-0 shadow-sm">
-              <Card.Body className="text-center py-5">
-                <h5 className="text-muted mb-3">No albums yet</h5>
-                <p className="text-muted mb-4">Create your first photo album to share memories!</p>
+              <Card.Body className="py-5 text-center">
+                <h5 className="mb-3 text-slate-500">No albums yet</h5>
+                <p className="mb-4 text-slate-500">Create your first photo album to share memories!</p>
                 <Button href="/account/editAlbum" variant="primary">
                   Create Your First Album
                 </Button>
@@ -469,8 +474,8 @@ const MyAccount = () => {
             </>
           }
         >
-          <div className="mb-3 d-flex justify-content-between align-items-center">
-            <p className="text-muted mb-0">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="mb-0 text-slate-500">
               {notifications.length === 0 ? 'No unread notifications.' : `${notifications.length} unread notification${notifications.length !== 1 ? 's' : ''}.`}
             </p>
             {notifications.length > 0 && (
@@ -482,25 +487,25 @@ const MyAccount = () => {
 
           {notifications.length === 0 ? (
             <Card className="border-0 shadow-sm">
-              <Card.Body className="text-center py-5 text-muted">
+              <Card.Body className="py-5 text-center text-slate-500">
                 You&apos;re all caught up!
               </Card.Body>
             </Card>
           ) : (
-            <div className="d-flex flex-column gap-3">
+            <div className="flex flex-col gap-3">
               {notifications.map((notif) => (
                 <Card key={notif.id} className="border-0 shadow-sm">
-                  <Card.Body className="d-flex justify-content-between align-items-start">
+                  <Card.Body className="flex items-start justify-between">
                     <div>
-                      <div className="fw-semibold mb-1">
+                      <div className="mb-1 font-semibold">
                         {notif.type === 'approved' ? 'Content Approved' : 'Content Rejected'}
                         {' — '}{notif.itemTitle}
                       </div>
                       {notif.rejectionReason && (
-                        <div className="text-muted small">Reason: {notif.rejectionReason}</div>
+                        <div className="text-xs text-slate-500">Reason: {notif.rejectionReason}</div>
                       )}
                     </div>
-                    <Button variant="outline-secondary" size="sm" className="ms-3 flex-shrink-0" onClick={() => markAsRead(notif.id)}>
+                    <Button variant="outline-secondary" size="sm" className="ml-3 shrink-0" onClick={() => markAsRead(notif.id)}>
                       Dismiss
                     </Button>
                   </Card.Body>
@@ -522,8 +527,8 @@ const MyAccount = () => {
               </>
             }
           >
-            <div className="mb-3 d-flex justify-content-between align-items-center">
-              <p className="text-muted mb-0">Review and approve or reject pending submissions.</p>
+            <div className="mb-3 flex items-center justify-between">
+              <p className="mb-0 text-slate-500">Review and approve or reject pending submissions.</p>
               <Button variant="outline-secondary" size="sm" onClick={fetchPendingItems}>
                 Refresh
               </Button>
@@ -532,24 +537,24 @@ const MyAccount = () => {
             <Tabs defaultActiveKey="mod-posts" className="mb-4">
               <Tab eventKey="mod-posts" title={`Posts (${pendingPosts.length})`}>
                 {loadingPendingPosts ? (
-                  <div className="text-center py-5">
+                  <div className="py-5 text-center">
                     <Spinner animation="border" variant="primary" />
                   </div>
                 ) : pendingPosts.length === 0 ? (
                   <Card className="border-0 shadow-sm">
-                    <Card.Body className="text-center py-5 text-muted">No pending posts awaiting review.</Card.Body>
+                    <Card.Body className="py-5 text-center text-slate-500">No pending posts awaiting review.</Card.Body>
                   </Card>
                 ) : (
                   <Row>
                     {pendingPosts.map((item) => (
                       <Col md={6} lg={4} key={item.itemId} className="mb-4">
-                        <Card className="h-100 shadow-sm">
+                        <Card className="h-full shadow-sm">
                           <Card.Body>
-                            <Card.Title className="fs-6">{item.title || '(Untitled)'}</Card.Title>
-                            <Card.Subtitle className="text-muted mb-2 small">By {item.authorName}</Card.Subtitle>
-                            <div className="small text-muted">Submitted: {uiDateFormat(item.submittedAt)}</div>
+                            <Card.Title className="text-base">{item.title || '(Untitled)'}</Card.Title>
+                            <Card.Subtitle className="mb-2 text-xs text-slate-500">By {item.authorName}</Card.Subtitle>
+                            <div className="text-xs text-slate-500">Submitted: {uiDateFormat(item.submittedAt)}</div>
                           </Card.Body>
-                          <Card.Footer className="d-flex gap-2">
+                          <Card.Footer className="flex gap-2">
                             <Button variant="success" size="sm" disabled={moderationActionLoading === item.itemId} onClick={() => handleApprove(item)}>
                               {moderationActionLoading === item.itemId ? <Spinner as="span" animation="border" size="sm" /> : 'Approve'}
                             </Button>
@@ -568,24 +573,24 @@ const MyAccount = () => {
               </Tab>
               <Tab eventKey="mod-albums" title={`Albums (${pendingAlbums.length})`}>
                 {loadingPendingAlbums ? (
-                  <div className="text-center py-5">
+                  <div className="py-5 text-center">
                     <Spinner animation="border" variant="primary" />
                   </div>
                 ) : pendingAlbums.length === 0 ? (
                   <Card className="border-0 shadow-sm">
-                    <Card.Body className="text-center py-5 text-muted">No pending albums awaiting review.</Card.Body>
+                    <Card.Body className="py-5 text-center text-slate-500">No pending albums awaiting review.</Card.Body>
                   </Card>
                 ) : (
                   <Row>
                     {pendingAlbums.map((item) => (
                       <Col md={6} lg={4} key={item.itemId} className="mb-4">
-                        <Card className="h-100 shadow-sm">
+                        <Card className="h-full shadow-sm">
                           <Card.Body>
-                            <Card.Title className="fs-6">{item.title || '(Untitled)'}</Card.Title>
-                            <Card.Subtitle className="text-muted mb-2 small">By {item.authorName}</Card.Subtitle>
-                            <div className="small text-muted">Submitted: {uiDateFormat(item.submittedAt)}</div>
+                            <Card.Title className="text-base">{item.title || '(Untitled)'}</Card.Title>
+                            <Card.Subtitle className="mb-2 text-xs text-slate-500">By {item.authorName}</Card.Subtitle>
+                            <div className="text-xs text-slate-500">Submitted: {uiDateFormat(item.submittedAt)}</div>
                           </Card.Body>
-                          <Card.Footer className="d-flex gap-2">
+                          <Card.Footer className="flex gap-2">
                             <Button variant="success" size="sm" disabled={moderationActionLoading === item.itemId} onClick={() => handleApprove(item)}>
                               {moderationActionLoading === item.itemId ? <Spinner as="span" animation="border" size="sm" /> : 'Approve'}
                             </Button>
@@ -613,7 +618,7 @@ const MyAccount = () => {
           <Modal.Title>Reject Submission</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p className="text-muted small mb-2">Rejecting: <strong>{rejectModal.item?.title}</strong></p>
+          <p className="mb-2 text-xs text-slate-500">Rejecting: <strong>{rejectModal.item?.title}</strong></p>
           <Form.Group>
             <Form.Label>Reason (optional)</Form.Label>
             <Form.Control
@@ -637,10 +642,10 @@ const MyAccount = () => {
           <Modal.Title>Delete Account</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p className="text-muted">
+          <p className="text-slate-500">
             This permanently deletes your account and your content from this platform.
           </p>
-          <p className="text-muted mb-3">
+          <p className="mb-3 text-slate-500">
             To confirm, type <strong>DELETE</strong> below.
           </p>
 
@@ -665,13 +670,13 @@ const MyAccount = () => {
                 placeholder="Enter your password"
                 disabled={deleteInProgress}
               />
-              <Form.Text className="text-muted">
+              <Form.Text className="text-slate-500">
                 Password is required to confirm this sensitive action.
               </Form.Text>
             </Form.Group>
           )}
 
-          {deleteError && <div className="text-danger small">{deleteError}</div>}
+          {deleteError && <div className="text-xs text-rose-600">{deleteError}</div>}
         </Modal.Body>
         <Modal.Footer>
           <Button

@@ -1,18 +1,5 @@
-/* General */
-.container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
 /* Large desktop (xl: ≥1400px) */
 @media (min-width: 1400px) {
-    .container {
-        max-width: 1600px;
-        padding: 30px;
-    }
-
     .heroText h1 {
         font-size: 60px;
     }
@@ -56,11 +43,6 @@
 
 /* 2K / ultrawide (≥1920px) */
 @media (min-width: 1920px) {
-    .container {
-        max-width: 1800px;
-        padding: 40px;
-    }
-
     .heroText h1 {
         font-size: 72px;
     }
@@ -547,11 +529,6 @@
 
 /* Tablet / collapsed-navbar breakpoint (lg: <992px) */
 @media (max-width: 992px) {
-    /* Container */
-    .container {
-        padding: 15px;
-    }
-
     /* Hero Section */
     .hero {
         flex-direction: column;

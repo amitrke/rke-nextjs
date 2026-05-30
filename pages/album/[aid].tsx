@@ -2,7 +2,7 @@ import { where } from 'firebase/firestore'
 import { GetStaticProps, InferGetStaticPropsType } from 'next'
 import Link from 'next/link'
 import { useState } from 'react'
-import { Button, Container, Image, Modal } from 'react-bootstrap'
+import { Button, Container, Image, Modal } from '../../components/ui/tw'
 import HeadTag from '../../components/ui/headTag'
 import PostUserInfo from '../../components/ui/postUserInfo'
 import { getImageBucketUrl } from '../../components/ui/showImage'
@@ -90,12 +90,22 @@ export default function Page({
     albumProp: { album, user, images }
 }: InferGetStaticPropsType<typeof getStaticProps>) {
     const [show, setShow] = useState(false);
-    const [showImage, setShowImage] = useState('');
+    const [currentIndex, setCurrentIndex] = useState(0);
     const handleClose = () => setShow(false);
-    const handleShow = (item: string) => {
-        setShowImage(item);
+    const handleShow = (index: number) => {
+        setCurrentIndex(index);
         setShow(true);
     }
+
+    const goPrev = () => {
+        setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    }
+
+    const goNext = () => {
+        setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    }
+
+    const currentImage = images[currentIndex]?.l ?? '';
 
     return (
         <>
@@ -113,16 +123,31 @@ export default function Page({
                     <Button variant="light" className={styles.closeButton} onClick={handleClose}>
                         ✕
                     </Button>
-                    <Image src={showImage} alt="" className={styles.fullImage} />
+                    {images.length > 1 && (
+                        <>
+                            <Button variant="light" className={styles.navButtonLeft} onClick={goPrev} aria-label="Previous photo">
+                                ‹
+                            </Button>
+                            <Button variant="light" className={styles.navButtonRight} onClick={goNext} aria-label="Next photo">
+                                ›
+                            </Button>
+                        </>
+                    )}
+                    <Image src={currentImage} alt={`Photo ${currentIndex + 1}`} className={styles.fullImage} />
+                    <div className={styles.imageCounter}>
+                        {currentIndex + 1} / {images.length}
+                    </div>
                 </Modal.Body>
             </Modal>
             <Container>
                 {/* Breadcrumb */}
                 <nav aria-label="breadcrumb" className="mb-3 mt-3">
-                    <ol className="breadcrumb">
-                        <li className="breadcrumb-item"><Link href="/">Home</Link></li>
-                        <li className="breadcrumb-item"><Link href="/albums">Albums</Link></li>
-                        <li className="breadcrumb-item active" aria-current="page">{album.name}</li>
+                    <ol className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                        <li><Link href="/" className="hover:text-blue-700">Home</Link></li>
+                        <li>/</li>
+                        <li><Link href="/albums" className="hover:text-blue-700">Albums</Link></li>
+                        <li>/</li>
+                        <li className="text-slate-700" aria-current="page">{album.name}</li>
                     </ol>
                 </nav>
                 <div className={styles.header}>
@@ -141,13 +166,26 @@ export default function Page({
                         <div
                             key={key}
                             className={styles.imageCard}
-                            onClick={() => handleShow(item.l)}
+                            onClick={() => handleShow(key)}
                         >
                             <div className={styles.imageWrapper}>
                                 <Image src={item.m} alt={`Photo ${key + 1}`} className={styles.image} />
                                 <div className={styles.imageOverlay}>
-                                    <Button variant="light" size="sm" className={styles.viewButton}>
-                                        View Full Size
+                                    <div className={styles.previewCopy}>
+                                        <span className={styles.previewTitle}>Open photo</span>
+                                        <span className={styles.previewHint}>Tap to view full size</span>
+                                    </div>
+                                    <Button
+                                        variant="light"
+                                        size="sm"
+                                        className={styles.viewButton}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleShow(key);
+                                        }}
+                                        aria-label={`Open photo ${key + 1} in full size`}
+                                    >
+                                        View photo ↗
                                     </Button>
                                 </div>
                             </div>

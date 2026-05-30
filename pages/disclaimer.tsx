@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { Container } from "react-bootstrap";
+import { Container } from "../components/ui/tw";
 
 export default function Disclaimer() {
     return (
