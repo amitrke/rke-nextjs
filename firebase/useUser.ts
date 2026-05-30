@@ -21,6 +21,10 @@ const useUser = () => {
         const auth = getFirebaseAuth();
         return signOut(auth)
             .then(() => {
+                if (typeof window !== 'undefined') {
+                    localStorage.removeItem('googleOneTapDismissUntil');
+                    sessionStorage.removeItem('googleOneTapShownSession');
+                }
                 // Sign-out successful.
                 router.push('/auth')
             })
