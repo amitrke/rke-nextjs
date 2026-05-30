@@ -129,53 +129,25 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
                 <Link href="/posts" className={styles.viewAllLink}>View All →</Link>
             </div>
             {posts.length > 0 ? (
-                <div className={styles.cardGrid4}>
-                    {posts.map((post) => (
+              <div className={styles.cardGrid4}>
+                {posts.map((post) => (
                   <Link href={`/post/${post.category}/${post.slug}`} className={styles.card} key={post.id}>
-                            <div className={styles.cardImage} style={{backgroundImage: `url(${post.images && post.images.length > 0 ? post.images[0] : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                            <div className={styles.cardContent}>
-                                <h3>{post.title}</h3>
-                                <p>By {post.author.name}</p>
-                                <p>{post.intro && post.intro.length > 120 ? `${post.intro.substring(0, 120)}...` : post.intro}</p>
+                    <div className={styles.cardImage} style={{backgroundImage: `url(${post.images && post.images.length > 0 ? post.images[0] : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center'}}></div>
+                    <div className={styles.cardContent}>
+                      <span className={styles.categoryBadge}>{post.category}</span>
+                      <h3>{post.title}</h3>
+                      <p className={styles.cardMeta}>By {post.author.name} &middot; {post.formattedUpdateDate}</p>
+                      <p>{post.intro && post.intro.length > 120 ? `${post.intro.substring(0, 120)}...` : post.intro}</p>
                       <span className={styles.cardCta}>Read More</span>
-                            </div>
+                    </div>
                   </Link>
-                    ))}
-                </div>
+                ))}
+              </div>
             ) : (
                 <EmptyState
                     title="No Posts Yet"
                     message="Be the first to share your story with the community!"
                     icon="📝"
-                />
-            )}
-        </section>
-
-        {/* News Section */}
-        <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-                <h2 className={styles.sectionTitle}>Latest News</h2>
-                <Link href="/news" className={styles.viewAllLink}>View All →</Link>
-            </div>
-            {news.length > 0 ? (
-                <div className={styles.cardGrid4}>
-                    {news.map((item) => (
-                        <div className={styles.card} key={item.id}>
-                            <div className={styles.cardImage} style={{backgroundImage: `url(${item.image_url ? item.image_url : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-                            <div className={styles.cardContent}>
-                                <h3>{item.title}</h3>
-                                <p>{item.formattedPubDate}</p>
-                                <p>{item.description && item.description.length > 120 ? `${item.description.substring(0, 120)}...` : item.description}</p>
-                                <Link href={item.url}>Read More</Link>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <EmptyState
-                    title="No News Available"
-                    message="Check back soon for the latest news about Roorkee!"
-                    icon="📰"
                 />
             )}
         </section>
@@ -206,6 +178,35 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
                     title="No Upcoming Events"
                     message="Stay tuned for exciting community events coming soon!"
                     icon="📅"
+                />
+            )}
+        </section>
+
+        {/* News Section */}
+        <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>Latest News</h2>
+                <Link href="/news" className={styles.viewAllLink}>View All →</Link>
+            </div>
+            {news.length > 0 ? (
+                <div className={styles.cardGrid4}>
+                    {news.map((item) => (
+                        <div className={styles.card} key={item.id}>
+                            <div className={styles.cardImage} style={{backgroundImage: `url(${item.image_url ? item.image_url : '/no-image.png'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                            <div className={styles.cardContent}>
+                                <h3>{item.title}</h3>
+                                <p>{item.formattedPubDate}</p>
+                                <p>{item.description && item.description.length > 120 ? `${item.description.substring(0, 120)}...` : item.description}</p>
+                                <a href={item.url} target="_blank" rel="noopener noreferrer" className={styles.cardCta}>Read More ↗</a>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <EmptyState
+                    title="No News Available"
+                    message="Check back soon for the latest news about Roorkee!"
+                    icon="📰"
                 />
             )}
         </section>

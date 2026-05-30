@@ -1,5 +1,6 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import Link from "next/link";
+import Image from "next/image";
 import { useUser } from "../../firebase/useUser";
 import { useAdminStatus } from "../../firebase/useAdminStatus";
 
@@ -7,7 +8,10 @@ export default function TopNavigationBar() {
     return (
         <Navbar bg="light" expand="lg" fixed="top">
             <Container fluid>
-                <Navbar.Brand href="/">Roorkee.org</Navbar.Brand>
+                <Navbar.Brand href="/" className="d-flex align-items-center gap-2">
+                    <Image src="/icon.png" alt="Roorkee.org logo" width={32} height={32} style={{ borderRadius: 6 }} />
+                    Roorkee.org
+                </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
