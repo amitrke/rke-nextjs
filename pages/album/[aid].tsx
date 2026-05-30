@@ -1,5 +1,6 @@
 import { where } from 'firebase/firestore'
 import { GetStaticProps, InferGetStaticPropsType } from 'next'
+import Link from 'next/link'
 import { useState } from 'react'
 import { Button, Container, Image, Modal } from 'react-bootstrap'
 import HeadTag from '../../components/ui/headTag'
@@ -19,7 +20,13 @@ type AlbumPropType = {
 }
 
 export async function getStaticPaths() {
-    const topPosts = await queryOnce<AlbumType>({ path: `albums`, queryConstraints: [where("public", "==", true)] })
+    const topPosts = await queryOnce<AlbumType>({
+        path: `albums`,
+        queryConstraints: [
+            where("public", "==", true),
+            where("approved", "==", true)
+        ]
+    })
     const paths = topPosts.map(post => ({ params: { aid: post.id } }))
     return {
         paths,
@@ -32,6 +39,12 @@ export const getStaticProps = (async (context) => {
     const albumDoc = await getDocument<AlbumType>({ path: `albums`, pathSegments: [aid] })
 
     if (!albumDoc) {
+        return {
+            notFound: true,
+        };
+    }
+
+    if (albumDoc.public !== true || albumDoc.approved !== true) {
         return {
             notFound: true,
         };
@@ -104,6 +117,14 @@ export default function Page({
                 </Modal.Body>
             </Modal>
             <Container>
+                {/* Breadcrumb */}
+                <nav aria-label="breadcrumb" className="mb-3 mt-3">
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item"><Link href="/">Home</Link></li>
+                        <li className="breadcrumb-item"><Link href="/albums">Albums</Link></li>
+                        <li className="breadcrumb-item active" aria-current="page">{album.name}</li>
+                    </ol>
+                </nav>
                 <div className={styles.header}>
                     <h1 className={styles.albumTitle}>{album.name}</h1>
                     <PostUserInfo user={user} postDate={album.updateDate} />

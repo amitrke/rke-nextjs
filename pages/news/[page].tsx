@@ -4,6 +4,7 @@ import HeadTag from '../../components/ui/headTag';
 import NewsList from '../../components/ui/newsList';
 import Pagination from '../../components/ui/pagination';
 import { GetStaticPaths, GetStaticProps } from 'next';
+import styles from '../../styles/PostsPage.module.css';
 
 const NEWS_PER_PAGE = 20;
 const MAX_NEWS_ITEMS = 100;
@@ -20,7 +21,7 @@ export default function NewsPage({ news, page, totalPages }: NewsPageProps) {
     const nextPath = page < totalPages ? `/news/${page + 1}` : undefined;
 
     return (
-        <div className="container">
+        <div className="container-xl">
             <HeadTag
                 title={`News - Page ${page} | Roorkee.org`}
                 description="Latest Roorkee news and updates from around the region."
@@ -28,7 +29,12 @@ export default function NewsPage({ news, page, totalPages }: NewsPageProps) {
                 prevUrl={prevPath}
                 nextUrl={nextPath}
             />
-            <h1>News</h1>
+            <div className={styles.header}>
+                <h1>Latest News</h1>
+                <p className={styles.description}>
+                    Stay up to date with news and stories from in and around Roorkee
+                </p>
+            </div>
             <NewsList news={news} />
             <Pagination currentPage={page} totalPages={totalPages} basePath="/news" />
         </div>

@@ -3,7 +3,7 @@ import { Button, Container, Form } from "react-bootstrap";
 import { write } from "../firebase/firestore";
 import { MessageType } from "../firebase/types";
 import { useUser } from "../firebase/useUser";
-import Head from "next/head";
+import HeadTag from "../components/ui/headTag";
 
 export default function Contact() {
     const [validated, setValidated] = useState(false);
@@ -38,11 +38,11 @@ export default function Contact() {
 
     return (
         <Container>
-            <Head>
-                <title>Contact Us.</title>
-                <meta property="og:title" content="Contact Us" key="title" />
-                <meta name="robots" content="all" />
-            </Head>
+            <HeadTag
+                title="Contact Us | Roorkee.org"
+                description="Get in touch with the Roorkee.org team. Report issues, contribute, or ask questions about the community."
+                url="/contact"
+            />
             <h1>Contact</h1>
             <Form validated={validated} onSubmit={handleSubmit} className={(submitted || !user) ? 'hidden' : undefined}>
                 <Form.Group className="mb-3" controlId="formReason">

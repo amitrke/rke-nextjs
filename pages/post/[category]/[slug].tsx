@@ -6,9 +6,10 @@ import HeadTag from "../../../components/ui/headTag";
 import PostUserInfo from "../../../components/ui/postUserInfo";
 import RecentPostsBox from "../../../components/ui/recentPostsBox";
 import Link from "next/link";
+import { limit, where } from 'firebase/firestore';
 
 import { jsonLdDateFormat, uiDateFormat } from "../../../components/ui/uiUtils";
-import { getDocument } from "../../../firebase/firestore";
+import { getDocument, queryOnce } from "../../../firebase/firestore";
 import { PostDisplayType, PostType, User } from "../../../firebase/types";
 import { getPostBySlug, getPosts } from "../../../service/PostService";
 import ShowImage2, { ImageDisplayType, getImageBucketUrl } from '../../../components/ui/showImage2';
@@ -42,7 +43,44 @@ export const getStaticProps = (async (context) => {
     const postDoc = await getPostBySlug(context.params.category as string, context.params.slug as string);
     const draftRaw = JSON.parse(postDoc.edState);
     const postBody = draftToHtml(draftRaw);
-    const authorPromise = getDocument<User>({ path: 'users', pathSegments: [postDoc.userId] });
+    const authorPromise: Promise<User> = (async () => {
+        const byUserIdField = await queryOnce<User>({
+            path: 'users',
+            queryConstraints: [where('id', '==', postDoc.userId), limit(1)]
+        });
+        const byDocId = await getDocument<User>({ path: 'users', pathSegments: [postDoc.userId] });
+        const resolved = byUserIdField[0] || byDocId;
+
+        if (!resolved) {
+            return {
+                id: postDoc.userId,
+                email: '',
+                name: 'Community Member',
+                profilePic: undefined,
+            };
+        }
+
+        const resolvedName = (resolved.name || '').trim();
+        const altDisplayName = ((resolved as unknown as { displayName?: string; fullName?: string }).displayName
+            || (resolved as unknown as { displayName?: string; fullName?: string }).fullName
+            || '')
+            .trim();
+        const userNameCandidate = resolvedName || altDisplayName;
+        const isIdentifierLikeName = userNameCandidate !== ''
+            && [resolved.id, postDoc.userId].includes(userNameCandidate);
+        const safeName = (!userNameCandidate || isIdentifierLikeName)
+            ? 'Community Member'
+            : userNameCandidate;
+
+        return {
+            ...resolved,
+            id: resolved.id || postDoc.userId,
+            email: resolved.email || '',
+            ...(resolved.token ? { token: resolved.token } : {}),
+            name: safeName,
+            profilePic: resolved.profilePic,
+        };
+    })();
     const recentPostsPromise = getPosts({ limit: 5, public: true });
     const imagesPromise: Promise<ImageDisplayType[]> = (async () => {
         const { probeRemoteImage } = await import('../../../lib/imageProbe');
@@ -69,7 +107,7 @@ export const getStaticProps = (async (context) => {
         recentPosts,
         displayImages: images
     }
-
+    console.log(`Generated page for post: ${postDoc.title} with author ${author.name} and ${images.length} images.`);
     return {
         props: { post },
         revalidate: 86400, // regenerate page every 24 hours 
@@ -82,11 +120,13 @@ export default function Page({
     post,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
     const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.roorkee.org').replace(/\/+$/, '');
+    const publishedDate = jsonLdDateFormat(post.updateDate);
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'Article',
         'headline': post.title,
-        'datePublished': jsonLdDateFormat(post.updateDate),
+        'datePublished': publishedDate,
+        'dateModified': publishedDate,
         "author": [{
             "@type": "Person",
             "name": post.author.name,
@@ -101,18 +141,32 @@ export default function Page({
             ]
         }
     }
+    const breadcrumbJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+            { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': siteUrl },
+            { '@type': 'ListItem', 'position': 2, 'name': post.category, 'item': `${siteUrl}/posts/page/1` },
+            { '@type': 'ListItem', 'position': 3, 'name': post.title },
+        ]
+    }
     return (
         <Container className="py-4">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+            />
             <HeadTag
                 title={post.title}
                 description={post.intro}
                 type="article"
                 author={post.author.name}
-                publishedTime={jsonLdDateFormat(post.updateDate)}
+                publishedTime={publishedDate}
+                modifiedTime={publishedDate}
                 url={`/post/${post.category}/${post.slug}`}
                 image={post.displayImages.length > 0 ? post.displayImages[0].url : undefined}
                 keywords={[post.category, 'Roorkee', post.title]}
@@ -175,7 +229,7 @@ export default function Page({
 
                 {/* Sidebar */}
                 <Col lg={4}>
-                    <div className="sticky-top" style={{ top: '20px' }}>
+                    <div className="sticky-top" style={{ top: '72px' }}>
                         {/* Recent Posts */}
                         <Card className="mb-3 border-0 shadow-sm">
                             <Card.Body className="p-4">

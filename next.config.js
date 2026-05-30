@@ -28,6 +28,11 @@ module.exports = {
         hostname: 'placehold.co',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'play.google.com',
+        pathname: '**',
+      },
     ],
     minimumCacheTTL: 1500000
   },

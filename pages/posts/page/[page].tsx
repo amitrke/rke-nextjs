@@ -29,7 +29,7 @@ const PostsPage = ({ posts, totalCount, page }: PostPageProps) => {
                 prevUrl={prevPath}
                 nextUrl={nextPath}
             />
-            <div className="container">
+            <div className="container-xl">
                 <div className={styles.header}>
                     <h1>Community Posts</h1>
                     <p className={styles.description}>

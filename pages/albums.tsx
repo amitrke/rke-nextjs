@@ -6,7 +6,6 @@ import { queryOnce } from '../firebase/firestore';
 import { AlbumType } from './account/editAlbum';
 import { where } from 'firebase/firestore';
 import { InferGetStaticPropsType } from 'next';
-import { Container } from 'react-bootstrap';
 import { getImageBucketUrl } from '../components/ui/showImage2';
 import styles from '../styles/AlbumsPage.module.css';
 
@@ -21,7 +20,7 @@ export default function Page({
                 description="Browse photo albums from the Roorkee community. Explore memories, places, and moments captured by residents."
                 url="/albums"
             />
-            <Container>
+            <div className="container-xl">
                 <div className={styles.header}>
                     <h1>Photo Albums</h1>
                     <p className={styles.description}>
@@ -43,13 +42,19 @@ export default function Page({
                         icon="📸"
                     />
                 )}
-            </Container>
+            </div>
         </>
     );
 }
 
 export async function getStaticProps() {
-    const dbList = await queryOnce<AlbumType>({ path: `albums`, queryConstraints: [where("public", "==", true)] })
+    const dbList = await queryOnce<AlbumType>({
+        path: `albums`,
+        queryConstraints: [
+            where("public", "==", true),
+            where("approved", "==", true)
+        ]
+    })
     const bucketUrlMap = {}
     dbList.forEach(x => {
         const url = getImageBucketUrl(x.images[0], 's', x.userId);
