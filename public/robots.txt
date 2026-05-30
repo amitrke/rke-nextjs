@@ -2,6 +2,8 @@ User-agent: *
 Disallow: /account/
 Disallow: /api/
 Disallow: /_next/
+Disallow: /auth
+Disallow: /myaccount
 Allow: /
 
 Sitemap: https://www.roorkee.org/sitemap.xml

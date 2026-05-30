@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import HeadTag from '../components/ui/headTag';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from '../styles/IndexDev.module.css';
@@ -60,30 +60,32 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
 
   return (
     <>
-      <Head>
-        <title>Roorkee.org: Town Information & Community Hub</title>
-        <meta name="description" content="Welcome to Roorkee.org - Your community hub for Roorkee town information, news, events, photo galleries, and local stories. Stay connected with fellow Roorkee residents." />
-        <meta name="keywords" content="Roorkee, Roorkee town, Roorkee community, IIT Roorkee, Roorkee news, Roorkee events, Roorkee photos" />
-
-        {/* Open Graph Tags */}
-        <meta property="og:title" content="Roorkee.org: Town Information & Community Hub" />
-        <meta property="og:description" content="Your community hub for Roorkee town information, news, events, and local stories" />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://www.roorkee.org" />
-        <meta property="og:site_name" content="Roorkee.org" />
-        <meta property="og:image" content="https://www.roorkee.org/og-image.png" />
-
-        {/* Twitter Card Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Roorkee.org: Town Information & Community Hub" />
-        <meta name="twitter:description" content="Your community hub for Roorkee town information, news, events, and local stories" />
-        <meta name="twitter:image" content="https://www.roorkee.org/og-image.png" />
-
-        <link rel="canonical" href="https://www.roorkee.org" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      
+      <HeadTag
+        title="Roorkee.org: Town Information & Community Hub"
+        description="Welcome to Roorkee.org - Your community hub for Roorkee town information, news, events, photo galleries, and local stories. Stay connected with fellow Roorkee residents."
+        url="/"
+        keywords={['Roorkee', 'Roorkee town', 'Roorkee community', 'IIT Roorkee', 'Roorkee news', 'Roorkee events', 'Roorkee photos']}
+        image="/og-image.png"
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            'name': 'Roorkee.org',
+            'url': 'https://www.roorkee.org',
+            'logo': 'https://www.roorkee.org/og-image.png',
+            'description': 'Community hub for Roorkee town information, news, events, and local stories',
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            'name': 'Roorkee.org',
+            'url': 'https://www.roorkee.org',
+          }
+        ]) }}
+      />
 
       <main className={styles.container}>
         <section className={styles.hero}>

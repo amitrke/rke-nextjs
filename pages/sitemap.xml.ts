@@ -19,33 +19,73 @@ function generateSiteMap(siteUrl: string, posts: PostType[], albums: AlbumType[]
    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
          <url>
              <loc>${siteUrl}/</loc>
+             <changefreq>weekly</changefreq>
+             <priority>1.0</priority>
          </url>
      <url>
              <loc>${siteUrl}/disclaimer</loc>
+             <changefreq>yearly</changefreq>
+             <priority>0.3</priority>
      </url>
      <url>
              <loc>${siteUrl}/privacy</loc>
+             <changefreq>yearly</changefreq>
+             <priority>0.3</priority>
      </url>
      <url>
              <loc>${siteUrl}/contact</loc>
+             <changefreq>yearly</changefreq>
+             <priority>0.3</priority>
      </url>
          <url>
              <loc>${siteUrl}/account-deletion</loc>
+             <changefreq>yearly</changefreq>
+             <priority>0.1</priority>
          </url>
      <url>
              <loc>${siteUrl}/weather/roorkee-in</loc>
+             <changefreq>daily</changefreq>
+             <priority>0.8</priority>
      </url>
          <url>
              <loc>${siteUrl}/posts/page/1</loc>
+             <changefreq>daily</changefreq>
+             <priority>0.8</priority>
          </url>
          <url>
              <loc>${siteUrl}/news/1</loc>
+             <changefreq>daily</changefreq>
+             <priority>0.8</priority>
+         </url>
+         <url>
+             <loc>${siteUrl}/news/2</loc>
+             <changefreq>daily</changefreq>
+             <priority>0.6</priority>
+         </url>
+         <url>
+             <loc>${siteUrl}/news/3</loc>
+             <changefreq>daily</changefreq>
+             <priority>0.6</priority>
+         </url>
+         <url>
+             <loc>${siteUrl}/news/4</loc>
+             <changefreq>daily</changefreq>
+             <priority>0.6</priority>
+         </url>
+         <url>
+             <loc>${siteUrl}/news/5</loc>
+             <changefreq>daily</changefreq>
+             <priority>0.6</priority>
          </url>
          <url>
              <loc>${siteUrl}/albums</loc>
+             <changefreq>weekly</changefreq>
+             <priority>0.8</priority>
          </url>
          <url>
              <loc>${siteUrl}/events</loc>
+             <changefreq>daily</changefreq>
+             <priority>0.8</priority>
          </url>
      ${posts
                         .map(({ category, slug, updateDate }) => {
@@ -54,6 +94,8 @@ function generateSiteMap(siteUrl: string, posts: PostType[], albums: AlbumType[]
             <url>
                                 <loc>${siteUrl}/post/${category}/${slug}</loc>
                                 ${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}
+                                <changefreq>monthly</changefreq>
+                                <priority>0.7</priority>
             </url>
             `;
             })
@@ -65,6 +107,8 @@ function generateSiteMap(siteUrl: string, posts: PostType[], albums: AlbumType[]
             <url>
                                 <loc>${siteUrl}/album/${id}</loc>
                                 ${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}
+                                <changefreq>monthly</changefreq>
+                                <priority>0.6</priority>
             </url>
             `;
             })

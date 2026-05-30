@@ -6,13 +6,17 @@ export type HeadTagType = {
     allowRobots?: boolean
     robots?: string
     image?: string
+    imageWidth?: number
+    imageHeight?: number
     url?: string
     type?: 'website' | 'article'
     author?: string
     publishedTime?: string
+    modifiedTime?: string
     keywords?: string[]
     prevUrl?: string
     nextUrl?: string
+    twitterSite?: string
 }
 
 export default function HeadTag ({
@@ -21,13 +25,17 @@ export default function HeadTag ({
     allowRobots = true,
     robots,
     image,
+    imageWidth,
+    imageHeight,
     url,
     type = 'website',
     author,
     publishedTime,
+    modifiedTime,
     keywords,
     prevUrl,
     nextUrl,
+    twitterSite,
 }: HeadTagType) {
     const siteName = "Roorkee.org";
     const defaultDescription = "Roorkee.org: Town Information, Community Hub for Roorkee residents";
@@ -65,8 +73,14 @@ export default function HeadTag ({
             <meta property="og:site_name" content={siteName} key="og:site_name" />
             <meta property="og:image" content={finalImage} key="og:image" />
             <meta property="og:image:alt" content={title} key="og:image:alt" />
+            <meta property="og:image:width" content={String(imageWidth ?? 1200)} key="og:image:width" />
+            <meta property="og:image:height" content={String(imageHeight ?? 630)} key="og:image:height" />
+            <meta property="og:locale" content="en_IN" key="og:locale" />
             {publishedTime && type === 'article' && (
                 <meta property="article:published_time" content={publishedTime} key="article:published_time" />
+            )}
+            {modifiedTime && type === 'article' && (
+                <meta property="article:modified_time" content={modifiedTime} key="article:modified_time" />
             )}
             {author && type === 'article' && (
                 <meta property="article:author" content={author} key="article:author" />
@@ -78,6 +92,7 @@ export default function HeadTag ({
             <meta name="twitter:description" content={finalDescription} key="twitter:description" />
             <meta name="twitter:image" content={finalImage} key="twitter:image" />
             <meta name="twitter:url" content={finalUrl} key="twitter:url" />
+            {twitterSite && <meta name="twitter:site" content={twitterSite} key="twitter:site" />}
 
             {/* Canonical URL */}
             <link rel="canonical" href={finalUrl} />

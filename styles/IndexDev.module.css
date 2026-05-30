@@ -1,8 +1,89 @@
 /* General */
 .container {
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+}
+
+/* Large desktop (xl: ≥1400px) */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1600px;
+        padding: 30px;
+    }
+
+    .heroText h1 {
+        font-size: 60px;
+    }
+
+    .heroText p {
+        font-size: 20px;
+    }
+
+    .sectionTitle {
+        font-size: 38px;
+    }
+
+    .cardGrid4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .cardGrid6 {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .eventGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .hero {
+        padding: 60px 30px;
+    }
+
+    .weatherContainer {
+        max-width: 480px;
+    }
+
+    .weatherWidget .temp {
+        font-size: 40px;
+    }
+
+    .weatherWidget h4 {
+        font-size: 22px;
+    }
+}
+
+/* 2K / ultrawide (≥1920px) */
+@media (min-width: 1920px) {
+    .container {
+        max-width: 1800px;
+        padding: 40px;
+    }
+
+    .heroText h1 {
+        font-size: 72px;
+    }
+
+    .heroText p {
+        font-size: 22px;
+    }
+
+    .sectionTitle {
+        font-size: 44px;
+    }
+
+    .weatherContainer {
+        max-width: 560px;
+    }
+
+    .weatherWidget .temp {
+        font-size: 48px;
+    }
+
+    .hero {
+        padding: 80px 40px;
+    }
 }
 
 /* Header */
@@ -395,8 +476,8 @@
     height: 24px;
 }
 
-/* Mobile Responsive Styles */
-@media (max-width: 768px) {
+/* Tablet / collapsed-navbar breakpoint (lg: <992px) */
+@media (max-width: 992px) {
     /* Container */
     .container {
         padding: 15px;
@@ -511,8 +592,8 @@
     }
 }
 
-@media (max-width: 480px) {
-    /* Extra small screens */
+/* Mobile (sm: <576px) */
+@media (max-width: 576px) {
     .heroText h1 {
         font-size: 28px;
     }
@@ -535,5 +616,13 @@
 
     .weatherWidget h4 {
         font-size: 14px;
+    }
+
+    .ctaSection h2 {
+        font-size: 24px;
+    }
+
+    .eventDate .day {
+        font-size: 18px;
     }
 }

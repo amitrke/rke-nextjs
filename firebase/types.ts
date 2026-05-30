@@ -42,7 +42,7 @@ export type NotificationType = {
 export type User = {
     id: string,
     email: string,
-    token: string | undefined,
+  token?: string,
     name: string,
     profilePic: string | undefined
 }
