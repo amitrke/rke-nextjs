@@ -35,7 +35,7 @@
     "@types/dompurify": "^3.2.0",
     "@types/draft-js": "^0.11.20",
     "@types/react-draft-wysiwyg": "^1.13.9",
-    "@typescript-eslint/eslint-plugin": "^8.59.1",
+    "@typescript-eslint/eslint-plugin": "^8.59.4",
     "@typescript-eslint/parser": "^8.59.4",
     "autoprefixer": "^10.5.0",
     "eslint": "10.4.0",
