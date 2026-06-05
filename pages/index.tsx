@@ -4,7 +4,7 @@ import Link from 'next/link';
 import styles from '../styles/IndexDev.module.css';
 import { getDocument } from '../firebase/firestore';
 import { getAlbums, getEvents, getNews, getPostsWithDetails } from '../service/PostService';
-import { useEffect, useState } from 'react';
+import { CSSProperties, useEffect, useState } from 'react';
 import { Weather } from './weather/[id]';
 import { uiRound } from '../components/ui/uiUtils';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -14,21 +14,44 @@ import { PostDisplayType } from '../firebase/types';
 import { Event, NewsArticle } from '../service/PostService';
 import { AlbumType } from '../pages/account/editAlbum';
 
+type HomepageConfig = {
+  heroTextDesc: string;
+  heroImage?: string;
+  heroLink?: string;
+};
+
 type IndexDevProps = {
   posts: PostDisplayType[];
   news: NewsArticle[];
   events: Event[];
   albums: AlbumType[];
-  data: {
-    heroTextDesc: string;
-  };
+  data: HomepageConfig;
 };
 
-function IndexDev({ posts = [], news = [], events = [], albums = [], data = { heroTextDesc: "Welcome to our town. Find all the information you need about our vibrant community."} }: IndexDevProps) {
+const defaultHomeData: HomepageConfig = {
+  heroTextDesc: 'Welcome to our town. Find all the information you need about our vibrant community.',
+  heroImage: '',
+  heroLink: '',
+};
+
+function IndexDev({ posts = [], news = [], events = [], albums = [], data = defaultHomeData }: IndexDevProps) {
   const [weather, setWeather] = useState({} as Weather);
   const [todayWeather, setTodayWeather] = useState({ temp: '', condition: '', icon: '' });
   const [tomorrowWeather, setTomorrowWeather] = useState({ temp: '', condition: '', icon: '' });
   const [weatherLoading, setWeatherLoading] = useState(true);
+  const heroImage = data.heroImage?.trim();
+  const heroLink = data.heroLink?.trim();
+  const hasHeroLink = Boolean(heroLink);
+  const heroIsExternalLink = Boolean(heroLink && /^https?:\/\//i.test(heroLink));
+
+  const heroStyle: CSSProperties | undefined = heroImage
+    ? {
+        backgroundImage: `linear-gradient(rgba(233, 236, 239, 0.88), rgba(233, 236, 239, 0.82)), url(${heroImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }
+    : undefined;
 
   useEffect(() => {
     setWeatherLoading(true);
@@ -88,14 +111,30 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
       />
 
       <main className="mx-auto w-full max-w-7xl px-4">
-        <section className={styles.hero}>
+        <section className={`${styles.hero} ${hasHeroLink ? styles.heroWithLink : ''}`} style={heroStyle}>
           <div className={styles.heroText}>
-            <h1>Welcome to Roorkee</h1>
-            <p>{data.heroTextDesc}</p>
-            <div className={styles.heroActions}>
-              <Link href="/posts" className={styles.ctaButton}>Explore Posts</Link>
-              <Link href="/albums" className={styles.ctaButtonSecondary}>View Gallery</Link>
-            </div>
+            {hasHeroLink ? (
+              heroIsExternalLink ? (
+                <a href={heroLink} className={styles.heroPrimaryLink}>
+                  <h1>Welcome to Roorkee</h1>
+                  <p>{data.heroTextDesc}</p>
+                </a>
+              ) : (
+                <Link href={heroLink!} className={styles.heroPrimaryLink}>
+                  <h1>Welcome to Roorkee</h1>
+                  <p>{data.heroTextDesc}</p>
+                </Link>
+              )
+            ) : (
+              <>
+                <h1>Welcome to Roorkee</h1>
+                <p>{data.heroTextDesc}</p>
+                <div className={styles.heroActions}>
+                  <Link href="/posts" className={styles.ctaButton}>Explore Posts</Link>
+                  <Link href="/albums" className={styles.ctaButtonSecondary}>View Gallery</Link>
+                </div>
+              </>
+            )}
           </div>
                       <Link href="/weather/roorkee-in" className={styles.weatherContainer}>
                       {weatherLoading ? (
@@ -254,7 +293,7 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = { he
 export default IndexDev;
 
 export async function getStaticProps() {
-  const resp = await getDocument({ path: 'appconfig', pathSegments: ['homepage'] });
+  const resp = await getDocument<HomepageConfig>({ path: 'appconfig', pathSegments: ['homepage'] });
   const postDisplay = await getPostsWithDetails();
   const news = await getNews({ limit: 8, preferredApiSource: 'newsdata.io' });
   const events = await getEvents({ limit: 4 });
@@ -263,7 +302,7 @@ export async function getStaticProps() {
 
   return {
     props: {
-      data: resp || { heroTextDesc: "Welcome to our town. Find all the information you need about our vibrant community." },
+      data: { ...defaultHomeData, ...(resp || {}) },
       posts: postDisplay,
       news,
       events,
