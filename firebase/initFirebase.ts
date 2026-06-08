@@ -27,6 +27,8 @@ let database: Database;
 let appcheck: AppCheck | null = null;
 
 export default function initFirebase(): FirebaseApp {
+    console.log("initFirebase() called");
+
     if (!getApps().length) {
         app = initializeApp(clientCredentials);
         auth = getAuth(app);
@@ -59,11 +61,27 @@ export default function initFirebase(): FirebaseApp {
             }
         }
     } else {
+        console.log("initFirebase() else block")
         app = getApp();
         auth = getAuth(app);
         firestore = getFirestore(app);
         storage = getStorage(app);
         database = getDatabase(app);
+        
+        // If we are in production and appcheck is not initialized, check if we need to initialize it
+        // This handles the case where Firebase was initialized elsewhere but appcheck wasn't 
+        if (process.env.NODE_ENV === 'production' && !appcheck) {
+            console.log("Initializing App Check for existing Firebase app in production");
+            try {
+                appcheck = initializeAppCheck(app, {
+                    provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY),
+                    isTokenAutoRefreshEnabled: true,
+                });
+                console.log("App Check initialized for existing app!");
+            } catch (error) {
+                console.error("Failed to initialize App Check for existing app:", error);
+            }
+        }
     }
 
     return app;
