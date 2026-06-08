@@ -44,10 +44,18 @@ export default function initFirebase(): FirebaseApp {
 
             // Only initialize App Check in production environments
             if (process.env.NODE_ENV === 'production') {
+                
+                console.log("Checking App Check...");
+                console.log("Site Key exists?", !!process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY);
+
                 appcheck = initializeAppCheck(app, {
                     provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY),
                     isTokenAutoRefreshEnabled: true,
                 });
+
+                console.log("App Check initialized!");
+            } else {
+                console.log('App Check is not enabled in development environments.');
             }
         }
     } else {
