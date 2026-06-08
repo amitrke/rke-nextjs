@@ -290,7 +290,7 @@ const MyAccount = () => {
         </Head>
         <Row className="justify-center">
           <Col md={6} lg={4}>
-            <Card className="text-center shadow-sm">
+            <Card className="text-center shadow-xs">
               <Card.Body className="p-5">
                 <h3 className="mb-3">Please Login</h3>
                 <p className="mb-4 text-slate-500">You need to be logged in to access your account.</p>
@@ -313,7 +313,7 @@ const MyAccount = () => {
       <ShowModal show={modalParams.show} changeTrigger={modalTrigger} yesCallback={modalParams.yesCallback} />
 
       {/* Profile Header */}
-      <Card className="mb-4 border-0 shadow-sm">
+      <Card className="mb-4 border-0 shadow-xs">
         <Card.Body className="p-4">
           <Row className="items-center">
             <Col md={8}>
@@ -355,7 +355,7 @@ const MyAccount = () => {
       {/* Tabs */}
       <Tabs defaultActiveKey="profile" id="account-tabs" className="mb-4" fill>
         <Tab eventKey="profile" title="Profile">
-          <Card className="border-0 shadow-sm">
+          <Card className="border-0 shadow-xs">
             <Card.Body className="p-4">
               <h5 className="mb-3">Profile Information</h5>
               <Row>
@@ -422,7 +422,7 @@ const MyAccount = () => {
               <p className="mt-3 text-slate-500">Loading posts...</p>
             </div>
           ) : posts.length === 0 ? (
-            <Card className="border-0 shadow-sm">
+            <Card className="border-0 shadow-xs">
               <Card.Body className="py-5 text-center">
                 <h5 className="mb-3 text-slate-500">No posts yet</h5>
                 <p className="mb-4 text-slate-500">Start sharing your stories with the community!</p>
@@ -450,7 +450,7 @@ const MyAccount = () => {
               <p className="mt-3 text-slate-500">Loading albums...</p>
             </div>
           ) : albums.length === 0 ? (
-            <Card className="border-0 shadow-sm">
+            <Card className="border-0 shadow-xs">
               <Card.Body className="py-5 text-center">
                 <h5 className="mb-3 text-slate-500">No albums yet</h5>
                 <p className="mb-4 text-slate-500">Create your first photo album to share memories!</p>
@@ -486,7 +486,7 @@ const MyAccount = () => {
           </div>
 
           {notifications.length === 0 ? (
-            <Card className="border-0 shadow-sm">
+            <Card className="border-0 shadow-xs">
               <Card.Body className="py-5 text-center text-slate-500">
                 You&apos;re all caught up!
               </Card.Body>
@@ -494,7 +494,7 @@ const MyAccount = () => {
           ) : (
             <div className="flex flex-col gap-3">
               {notifications.map((notif) => (
-                <Card key={notif.id} className="border-0 shadow-sm">
+                <Card key={notif.id} className="border-0 shadow-xs">
                   <Card.Body className="flex items-start justify-between">
                     <div>
                       <div className="mb-1 font-semibold">
@@ -541,14 +541,14 @@ const MyAccount = () => {
                     <Spinner animation="border" variant="primary" />
                   </div>
                 ) : pendingPosts.length === 0 ? (
-                  <Card className="border-0 shadow-sm">
+                  <Card className="border-0 shadow-xs">
                     <Card.Body className="py-5 text-center text-slate-500">No pending posts awaiting review.</Card.Body>
                   </Card>
                 ) : (
                   <Row>
                     {pendingPosts.map((item) => (
                       <Col md={6} lg={4} key={item.itemId} className="mb-4">
-                        <Card className="h-full shadow-sm">
+                        <Card className="h-full shadow-xs">
                           <Card.Body>
                             <Card.Title className="text-base">{item.title || '(Untitled)'}</Card.Title>
                             <Card.Subtitle className="mb-2 text-xs text-slate-500">By {item.authorName}</Card.Subtitle>
@@ -577,14 +577,14 @@ const MyAccount = () => {
                     <Spinner animation="border" variant="primary" />
                   </div>
                 ) : pendingAlbums.length === 0 ? (
-                  <Card className="border-0 shadow-sm">
+                  <Card className="border-0 shadow-xs">
                     <Card.Body className="py-5 text-center text-slate-500">No pending albums awaiting review.</Card.Body>
                   </Card>
                 ) : (
                   <Row>
                     {pendingAlbums.map((item) => (
                       <Col md={6} lg={4} key={item.itemId} className="mb-4">
-                        <Card className="h-full shadow-sm">
+                        <Card className="h-full shadow-xs">
                           <Card.Body>
                             <Card.Title className="text-base">{item.title || '(Untitled)'}</Card.Title>
                             <Card.Subtitle className="mb-2 text-xs text-slate-500">By {item.authorName}</Card.Subtitle>
