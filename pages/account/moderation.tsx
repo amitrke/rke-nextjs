@@ -171,7 +171,7 @@ const ModerationPage = () => {
         }
         if (items.length === 0) {
             return (
-                <Card className="border-0 shadow-sm">
+                <Card className="border-0 shadow-xs">
                     <Card.Body className="py-5 text-center text-slate-500">
                         No pending {type}s awaiting review.
                     </Card.Body>
@@ -182,7 +182,7 @@ const ModerationPage = () => {
             <Row>
                 {items.map((item) => (
                     <Col md={6} lg={4} key={item.itemId} className="mb-4">
-                        <Card className="h-full shadow-sm">
+                        <Card className="h-full shadow-xs">
                             <Card.Body>
                                 <Card.Title className="text-base">{item.title || '(Untitled)'}</Card.Title>
                                 <Card.Subtitle className="mb-2 text-xs text-slate-500">By {item.authorName}</Card.Subtitle>

@@ -8,7 +8,7 @@ export default function TopNavigationBar() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
+        <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-sm">
             <div className="mx-auto flex w-full max-w-7xl items-center gap-4 px-4 py-3">
                 <Link href="/" className="flex items-center gap-2 text-base font-semibold text-slate-900">
                     <Image src="/icon.png" alt="Roorkee.org logo" width={32} height={32} style={{ borderRadius: 6 }} />

@@ -233,14 +233,14 @@ export default function Page({
                 <Col lg={4}>
                     <div className="sticky-top" style={{ top: '72px' }}>
                         {/* Recent Posts */}
-                        <Card className="mb-3 border-0 shadow-sm">
+                        <Card className="mb-3 border-0 shadow-xs">
                             <Card.Body className="p-4">
                                 <RecentPostsBox posts={post.recentPosts} />
                             </Card.Body>
                         </Card>
 
                         {/* Share Section */}
-                        <Card className="border-0 shadow-sm">
+                        <Card className="border-0 shadow-xs">
                             <Card.Body className="p-4">
                                 <h5 className="mb-3 text-lg font-bold">Share This Post</h5>
                                 <div className="grid gap-2">

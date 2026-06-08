@@ -12,8 +12,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/en/) (v18 or later)
-- [pnpm](https://pnpm.io/installation)
+- [Node.js](https://nodejs.org/en/) (v22 or later)
+- [yarn](https://yarnpkg.com/getting-started/install)
 - A Firebase project.
 
 ### Installation
@@ -26,7 +26,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 2.  **Install dependencies:**
     ```bash
-    pnpm install
+    yarn install
     ```
 
 3.  **Set up environment variables:**
@@ -42,7 +42,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 4.  **Run the development server:**
     ```bash
-    pnpm dev
+    yarn dev
     ```
     Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -124,6 +124,7 @@ Use icons along with commit messages https://gist.github.com/parmentf/035de27d6e
 See https://nextjs.org/docs/upgrading
 
 ```
-pnpm add next@latest react@latest react-dom@latest eslint-config-next@latest
-pnpm up -u
+npx @tailwindcss/upgrade
+yarn add next@latest react@latest react-dom@latest eslint-config-next@latest
+yarn upgrade -u
 ```
