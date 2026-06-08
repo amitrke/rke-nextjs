@@ -70,7 +70,7 @@ export default function initFirebase(): FirebaseApp {
         
         // If we are in production and appcheck is not initialized, check if we need to initialize it
         // This handles the case where Firebase was initialized elsewhere but appcheck wasn't 
-        if (process.env.NODE_ENV === 'production' && !appcheck) {
+        if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production' && !appcheck) {
             console.log("Initializing App Check for existing Firebase app in production");
             try {
                 appcheck = initializeAppCheck(app, {
