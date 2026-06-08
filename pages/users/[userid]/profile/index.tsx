@@ -82,7 +82,7 @@ export default function Page({
             <Row>
                 <Col md={8}>
                     <div className="flex items-center">
-                        <Image src={props.user.profilePic} alt="" roundedCircle className="mr-2 shadow" width="64" height="64" />
+                        <Image src={props.user.profilePic} alt="" roundedCircle className="mr-2 shadow-sm" width="64" height="64" />
                         <div className="pt-4">
                             <h1>{props.user.name}</h1>
                         </div>
@@ -114,7 +114,7 @@ export default function Page({
                     </ul>
                 </Col>
                 <Col className="gap-5" md={4}>
-                    <div className="mb-3 rounded bg-slate-100 p-4">
+                    <div className="mb-3 rounded-sm bg-slate-100 p-4">
                         <h4 className="italic">About the website</h4>
                         <p className="mb-0">Born in 2001, this website is a personal project to bring people of this town together, not affiliated to government / corporation.</p>
                     </div>

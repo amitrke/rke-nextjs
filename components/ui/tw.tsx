@@ -13,7 +13,7 @@ export function Container({ fluid, className, children }: CommonProps & { fluid?
 }
 
 export function Row({ className, children }: CommonProps) {
-  return <div className={cn('mx-[-0.75rem] flex flex-wrap', className)}>{children}</div>;
+  return <div className={cn('-mx-3 flex flex-wrap', className)}>{children}</div>;
 }
 
 const colWidthClasses: Record<number, string> = {
@@ -198,7 +198,7 @@ export function Badge({ className, children, bg, text, pill }: CommonProps & { b
           : bg === 'secondary'
             ? 'bg-slate-200 text-slate-700'
             : 'bg-slate-200 text-slate-700';
-  return <span className={cn('inline-flex items-center px-2 py-0.5 text-xs font-semibold', pill ? 'rounded-full' : 'rounded', bgClass, className)}>{children}</span>;
+  return <span className={cn('inline-flex items-center px-2 py-0.5 text-xs font-semibold', pill ? 'rounded-full' : 'rounded-sm', bgClass, className)}>{children}</span>;
 }
 
 export function Alert({ variant, className, children }: CommonProps & { variant?: string }) {
@@ -217,7 +217,7 @@ type CardComponent = ((props: CommonProps) => ReactElement) & {
 };
 
 export const Card: CardComponent = (({ className, children }: CommonProps) => (
-  <div className={cn('rounded-xl border border-slate-200 bg-white shadow-sm', className)}>{children}</div>
+  <div className={cn('rounded-xl border border-slate-200 bg-white shadow-xs', className)}>{children}</div>
 )) as CardComponent;
 
 Card.Body = ({ className, children }: CommonProps) => <div className={cn('p-4', className)}>{children}</div>;
@@ -246,7 +246,7 @@ type ModalComponent = ((props: CommonProps & { show?: boolean; onHide?: () => vo
 export const Modal: ModalComponent = (({ show, onHide, className, children, centered, fullscreen }: CommonProps & { show?: boolean; onHide?: () => void; centered?: boolean; fullscreen?: boolean }) => {
   if (!show) return null;
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 p-4" onClick={onHide}>
+    <div className="fixed inset-0 z-70 flex items-center justify-center bg-black/50 p-4" onClick={onHide}>
       <div
         className={cn(
           'w-full rounded-xl border border-slate-200 bg-white shadow-xl',
@@ -268,7 +268,7 @@ Modal.Header = ({ className, children, closeButton }: CommonProps & { closeButto
     <div className={cn('flex items-center justify-between border-b border-slate-200 p-4', className)}>
       <div>{children}</div>
       {closeButton && (
-        <button type="button" onClick={onHide} className="rounded px-2 py-1 text-slate-500 hover:bg-slate-100" aria-label="Close">
+        <button type="button" onClick={onHide} className="rounded-sm px-2 py-1 text-slate-500 hover:bg-slate-100" aria-label="Close">
           ×
         </button>
       )}
@@ -338,17 +338,17 @@ Form.Group = ({ className, children, controlId }: CommonProps & { controlId?: st
 Form.Label = (props: React.LabelHTMLAttributes<HTMLLabelElement>) => <label {...props} className={cn('mb-1 block text-sm font-medium text-slate-700', props.className)} />;
 const FormControl = (({ as, className, ...props }: any) => {
   if (as === 'textarea') {
-    return <textarea {...props} className={cn('w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200', className)} />;
+    return <textarea {...props} className={cn('w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-hidden focus:ring-2 focus:ring-blue-200', className)} />;
   }
-  return <input {...props} className={cn('w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200', className)} />;
+  return <input {...props} className={cn('w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-hidden focus:ring-2 focus:ring-blue-200', className)} />;
 }) as FormComponent['Control'];
 FormControl.Feedback = ({ className, children }: CommonProps) => <p className={cn('mt-1 text-xs text-emerald-700', className)}>{children}</p>;
 Form.Control = FormControl;
-Form.Select = (props: React.SelectHTMLAttributes<HTMLSelectElement>) => <select {...props} className={cn('w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200', props.className)} />;
+Form.Select = (props: React.SelectHTMLAttributes<HTMLSelectElement>) => <select {...props} className={cn('w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-hidden focus:ring-2 focus:ring-blue-200', props.className)} />;
 Form.Text = ({ className, children }: CommonProps) => <p className={cn('mt-1 text-xs text-slate-500', className)}>{children}</p>;
 Form.Check = ({ type = 'checkbox', label, checked, onChange, className }: { type?: string; label?: ReactNode; checked?: boolean; onChange?: (e: any) => void; className?: string }) => (
   <label className={cn('inline-flex items-center gap-2 text-sm text-slate-700', className)}>
-    <input type={type} checked={checked} onChange={onChange} className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+    <input type={type} checked={checked} onChange={onChange} className="h-4 w-4 rounded-sm border-slate-300 text-blue-600 focus:ring-blue-500" />
     <span>{label}</span>
   </label>
 );
@@ -377,7 +377,7 @@ Toast.Header = ({ className, children }: CommonProps) => {
   return (
     <div className={cn('flex items-center justify-between border-b border-slate-200 px-3 py-2 text-sm', className)}>
       <div className="flex flex-1 items-center gap-2">{children}</div>
-      <button type="button" onClick={onHide} className="rounded px-1 text-slate-500 hover:bg-slate-100" aria-label="Close toast">
+      <button type="button" onClick={onHide} className="rounded-sm px-1 text-slate-500 hover:bg-slate-100" aria-label="Close toast">
         ×
       </button>
     </div>
