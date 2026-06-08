@@ -5,6 +5,7 @@ import { getStorage, FirebaseStorage } from "firebase/storage";
 import { getAnalytics, Analytics } from "firebase/analytics";
 import { getPerformance, FirebasePerformance } from "firebase/performance";
 import { getDatabase, Database } from "firebase/database";
+import { initializeAppCheck, ReCaptchaV3Provider, AppCheck } from "firebase/app-check";
 
 const clientCredentials = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -23,6 +24,7 @@ let storage: FirebaseStorage;
 let analytics: Analytics | null = null;
 let performance: FirebasePerformance | null = null;
 let database: Database;
+let appcheck: AppCheck | null = null;
 
 export default function initFirebase(): FirebaseApp {
     if (!getApps().length) {
@@ -38,6 +40,14 @@ export default function initFirebase(): FirebaseApp {
             if ('measurementId' in clientCredentials) {
                 analytics = getAnalytics(app);
                 performance = getPerformance(app);
+            }
+
+            // Only initialize App Check in production environments
+            if (process.env.NODE_ENV === 'production') {
+                appcheck = initializeAppCheck(app, {
+                    provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY),
+                    isTokenAutoRefreshEnabled: true,
+                });
             }
         }
     } else {
@@ -93,4 +103,8 @@ export function getFirebaseAnalytics(): Analytics | null {
 
 export function getFirebasePerformance(): FirebasePerformance | null {
     return performance;
+}
+
+export function getFirebaseAppCheck(): AppCheck | null {
+    return appcheck;
 }
