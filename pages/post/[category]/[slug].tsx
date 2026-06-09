@@ -6,12 +6,10 @@ import HeadTag from "../../../components/ui/headTag";
 import PostUserInfo from "../../../components/ui/postUserInfo";
 import RecentPostsBox from "../../../components/ui/recentPostsBox";
 import Link from "next/link";
-import { limit, where } from 'firebase/firestore';
-
 import { jsonLdDateFormat, uiDateFormat } from "../../../components/ui/uiUtils";
-import { getDocument, queryOnce } from "../../../firebase/firestore";
+import { adminGetDocument, getAdminFirestore } from "../../../firebase/firebaseAdmin";
 import { PostDisplayType, PostType, User } from "../../../firebase/types";
-import { getPostBySlug, getPosts } from "../../../service/PostService";
+import { getPostBySlugAdmin, getPostsAdmin } from "../../../service/PostServiceAdmin";
 import ShowImage2, { ImageDisplayType, getImageBucketUrl } from '../../../components/ui/showImage2';
 
 type PageType = PostDisplayType & {
@@ -31,7 +29,7 @@ export async function getStaticPaths() {
     // what pages are generated during the build or on-demand
     // For example, you could only generate the top products
     // const topProducts = await getTopProducts()
-    const topPosts = await getPosts({ limit: 20, public: true });
+    const topPosts = await getPostsAdmin({ limit: 20 });
     const paths = topPosts.map(post => ({ params: { category: post.category, slug: post.slug } }))
     return {
         paths,
@@ -40,15 +38,14 @@ export async function getStaticPaths() {
 }
 
 export const getStaticProps = (async (context) => {
-    const postDoc = await getPostBySlug(context.params.category as string, context.params.slug as string);
+    const postDoc = await getPostBySlugAdmin(context.params.category as string, context.params.slug as string);
     const draftRaw = JSON.parse(postDoc.edState);
     const postBody = draftToHtml(draftRaw);
     const authorPromise: Promise<User> = (async () => {
-        const byUserIdField = await queryOnce<User>({
-            path: 'users',
-            queryConstraints: [where('id', '==', postDoc.userId), limit(1)]
-        });
-        const byDocId = await getDocument<User>({ path: 'users', pathSegments: [postDoc.userId] });
+        const db = getAdminFirestore();
+        const byUserIdSnap = await db.collection('users').where('id', '==', postDoc.userId).limit(1).get();
+        const byUserIdField = byUserIdSnap.docs.map(d => ({ id: d.id, ...(d.data() as User) }));
+        const byDocId = await adminGetDocument<User>('users', postDoc.userId);
         const resolved = byUserIdField[0] || byDocId;
 
         if (!resolved) {
@@ -81,7 +78,7 @@ export const getStaticProps = (async (context) => {
             profilePic: resolved.profilePic,
         };
     })();
-    const recentPostsPromise = getPosts({ limit: 5, public: true });
+    const recentPostsPromise = getPostsAdmin({ limit: 5 });
     const imagesPromise: Promise<ImageDisplayType[]> = (async () => {
         const { probeRemoteImage } = await import('../../../lib/imageProbe');
         return Promise.all(

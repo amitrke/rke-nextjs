@@ -1,4 +1,3 @@
-import { where } from 'firebase/firestore'
 import { GetStaticProps, InferGetStaticPropsType } from 'next'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -7,9 +6,9 @@ import HeadTag from '../../components/ui/headTag'
 import PostUserInfo from '../../components/ui/postUserInfo'
 import { getImageBucketUrl } from '../../components/ui/showImage'
 import { jsonLdDateFormat, uiDateFormat } from '../../components/ui/uiUtils'
-import { getDocument, queryOnce } from '../../firebase/firestore'
+import { adminGetDocument, getAdminFirestore } from '../../firebase/firebaseAdmin'
 import { User } from '../../firebase/types'
-import { AlbumType } from '../account/editAlbum'
+import type { AlbumType } from '../account/editAlbum'
 import styles from '../../styles/AlbumDetails.module.css'
 
 type AlbumPropType = {
@@ -20,14 +19,12 @@ type AlbumPropType = {
 }
 
 export async function getStaticPaths() {
-    const topPosts = await queryOnce<AlbumType>({
-        path: `albums`,
-        queryConstraints: [
-            where("public", "==", true),
-            where("approved", "==", true)
-        ]
-    })
-    const paths = topPosts.map(post => ({ params: { aid: post.id } }))
+    const db = getAdminFirestore();
+    const snapshot = await db.collection('albums')
+        .where('public', '==', true)
+        .where('approved', '==', true)
+        .get();
+    const paths = snapshot.docs.map(doc => ({ params: { aid: doc.id } }))
     return {
         paths,
         fallback: 'blocking', // generate new pages on-demand
@@ -36,7 +33,7 @@ export async function getStaticPaths() {
 
 export const getStaticProps = (async (context) => {
     const aid = context.params.aid as string;
-    const albumDoc = await getDocument<AlbumType>({ path: `albums`, pathSegments: [aid] })
+    const albumDoc = await adminGetDocument<AlbumType>('albums', aid)
 
     if (!albumDoc) {
         return {
@@ -50,7 +47,7 @@ export const getStaticProps = (async (context) => {
         };
     }
 
-    const userDoc = await getDocument<User>({ path: `users`, pathSegments: [albumDoc.userId] })
+    const userDoc = await adminGetDocument<User>('users', albumDoc.userId)
 
     if (!userDoc) {
         return {

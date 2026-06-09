@@ -1,5 +1,5 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
-import { getPaginatedPosts } from '../../../service/PostService';
+import { getPaginatedPostsAdmin } from '../../../service/PostServiceAdmin';
 import Pagination from '../../../components/ui/pagination';
 import PublicPostList from '../../../components/ui/publicPostList';
 import HeadTag from '../../../components/ui/headTag';
@@ -70,7 +70,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
         return { notFound: true };
     }
     const page = Number(pageParam);
-    const { posts, totalCount } = await getPaginatedPosts({ limit: 12, page });
+    const { posts, totalCount } = await getPaginatedPostsAdmin({ limit: 12, page });
 
     return {
         props: {
@@ -83,7 +83,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    const { totalCount } = await getPaginatedPosts({ limit: 12, page: 1 });
+    const { totalCount } = await getPaginatedPostsAdmin({ limit: 12, page: 1 });
     const totalPages = Math.ceil(totalCount / 12);
 
     const paths = Array.from({ length: totalPages }, (_, i) => ({

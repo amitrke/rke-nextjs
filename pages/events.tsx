@@ -1,5 +1,5 @@
-import { getEvents } from '../service/PostService';
-import { Event } from '../service/PostService';
+import { getEventsAdmin } from '../service/PostServiceAdmin';
+import type { Event } from '../service/PostService';
 import HeadTag from '../components/ui/headTag';
 import EventList from '../components/ui/eventList';
 
@@ -53,7 +53,7 @@ export default function EventsPage({ events }: EventsPageProps) {
 }
 
 export async function getStaticProps() {
-    const events = await getEvents({ limit: 50 }); // Fetch up to 50 upcoming events
+    const events = await getEventsAdmin({ limit: 50 }); // Fetch up to 50 upcoming events
     return {
         props: {
             events,

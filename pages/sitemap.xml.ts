@@ -1,7 +1,6 @@
-import { where } from "firebase/firestore";
-import { queryOnce } from "../firebase/firestore";
+import { getAdminFirestore } from "../firebase/firebaseAdmin";
 import { PostType } from "../firebase/types";
-import { AlbumType } from "./account/editAlbum";
+import type { AlbumType } from "./account/editAlbum";
 
 const DEFAULT_SITE_URL = 'https://www.roorkee.org';
 
@@ -123,24 +122,13 @@ function SiteMap() {
 
 export async function getServerSideProps({ res }) {
     const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || DEFAULT_SITE_URL).replace(/\/+$/, '');
-    const postsPromise = queryOnce<PostType>(
-        {
-            path: `posts`, queryConstraints: [
-                where("public", "==", true)
-            ]
-        }
-    )
-
-    const albumsPromise = queryOnce<AlbumType>(
-        {
-            path: `albums`, queryConstraints: [
-                where("public", "==", true),
-                where("approved", "==", true)
-            ]
-        }
-    )
-
-    const [posts, albums] = await Promise.all([postsPromise, albumsPromise]);
+    const db = getAdminFirestore();
+    const [postsSnap, albumsSnap] = await Promise.all([
+        db.collection('posts').where('public', '==', true).get(),
+        db.collection('albums').where('public', '==', true).where('approved', '==', true).get(),
+    ]);
+    const posts = postsSnap.docs.map(d => ({ id: d.id, ...(d.data() as PostType) }));
+    const albums = albumsSnap.docs.map(d => ({ id: d.id, ...(d.data() as AlbumType) }));
 
     // We generate the XML sitemap with the posts data
     const sitemap = generateSiteMap(siteUrl, posts, albums);

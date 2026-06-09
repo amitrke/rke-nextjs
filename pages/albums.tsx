@@ -2,9 +2,8 @@ import AlbumList from '../components/ui/albumList';
 import HeadTag from '../components/ui/headTag';
 import EmptyState from '../components/ui/EmptyState';
 import { uiDateFormat } from '../components/ui/uiUtils';
-import { queryOnce } from '../firebase/firestore';
-import { AlbumType } from './account/editAlbum';
-import { where } from 'firebase/firestore';
+import type { AlbumType } from './account/editAlbum';
+import { getAdminFirestore } from '../firebase/firebaseAdmin';
 import { InferGetStaticPropsType } from 'next';
 import { getImageBucketUrl } from '../components/ui/showImage2';
 import styles from '../styles/AlbumsPage.module.css';
@@ -48,13 +47,12 @@ export default function Page({
 }
 
 export async function getStaticProps() {
-    const dbList = await queryOnce<AlbumType>({
-        path: `albums`,
-        queryConstraints: [
-            where("public", "==", true),
-            where("approved", "==", true)
-        ]
-    })
+    const db = getAdminFirestore();
+    const snapshot = await db.collection('albums')
+        .where('public', '==', true)
+        .where('approved', '==', true)
+        .get();
+    const dbList = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as AlbumType) }));
     const bucketUrlMap = {}
     dbList.forEach(x => {
         const url = getImageBucketUrl(x.images[0], 's', x.userId);
