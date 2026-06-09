@@ -1,6 +1,6 @@
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { Card, Col, Container, Image, Row } from "../../components/ui/tw";
-import { getDocument } from '../../firebase/firestore';
+import { adminGetDocument } from '../../firebase/firebaseAdmin';
 import { uiRound, uiDateFormat } from '../../components/ui/uiUtils';
 import Head from 'next/head';
 
@@ -214,7 +214,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps<{ weather: Weather | null; lastUpdated: string }> = async () => {
-    const weather = await getDocument<Weather>({ path: 'weather', pathSegments: ['roorkee-in'] });
+    const weather = await adminGetDocument<Weather>('weather', 'roorkee-in');
     return {
         props: {
             weather: weather ?? null,

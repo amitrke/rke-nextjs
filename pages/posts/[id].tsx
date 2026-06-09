@@ -1,5 +1,5 @@
 import ShowImage from "../../components/ui/showImage";
-import { getDocument } from "../../firebase/firestore";
+import { adminGetDocument } from "../../firebase/firebaseAdmin";
 import { PostType } from "../../firebase/types";
 import DOMPurify from 'isomorphic-dompurify';
 import { Col, Container, Row } from "../../components/ui/tw";
@@ -8,7 +8,7 @@ import Link from "next/link";
 import HeadTag from "../../components/ui/headTag";
 
 import PostUserInfo from "../../components/ui/postUserInfo";
-import { getPosts } from "../../service/PostService";
+import { getPostsAdmin, getPostWithAuthorAdmin } from "../../service/PostServiceAdmin";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import { ParsedUrlQuery } from "querystring";
 
@@ -29,7 +29,7 @@ export async function getStaticPaths() {
     // what pages are generated during the build or on-demand
     // For example, you could only generate the top products
     // const topProducts = await getTopProducts()
-    const topPosts = await getPosts({ limit: 20, public: true });
+    const topPosts = await getPostsAdmin({ limit: 20 });
     const paths = topPosts.map(post => ({ params: { id: post.id } }))
     return {
         paths,
@@ -37,11 +37,9 @@ export async function getStaticPaths() {
     }
 }
 
-import { getPostWithAuthor } from '../../service/PostService';
-
 export const getStaticProps: GetStaticProps = async (context) => {
     const { id } = context.params as IParams;
-    const post = await getDocument<PostType>({ path: 'posts', pathSegments: [id] });
+    const post = await adminGetDocument<PostType>('posts', id);
 
     if (!post) {
         return {
@@ -49,7 +47,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
         };
     }
 
-    const postDisplay = await getPostWithAuthor(post);
+    const postDisplay = await getPostWithAuthorAdmin(post);
     return {
         props: {
             post: postDisplay,

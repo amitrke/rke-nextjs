@@ -1,15 +1,13 @@
-import { orderBy, where } from "firebase/firestore";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import Link from "next/link";
 import { Col, Container, Image, Row } from "../../components/ui/tw";
 import HeadTag from "../../components/ui/headTag";
 import RecentPostsBox from "../../components/ui/recentPostsBox";
 import { uiDateFormat } from "../../components/ui/uiUtils";
-import { getDocument, queryOnce } from "../../firebase/firestore";
-import { User } from "../../firebase/types";
-import { getPosts } from "../../service/PostService";
-import { AlbumType } from "../account/editAlbum";
-import { PostType } from "../../firebase/types";
+import { adminGetDocument, getAdminFirestore } from "../../firebase/firebaseAdmin";
+import { User, PostType } from "../../firebase/types";
+import { getPostsAdmin } from "../../service/PostServiceAdmin";
+import type { AlbumType } from "../account/editAlbum";
 
 type UserPropType = {
     user: User,
@@ -20,8 +18,9 @@ type UserPropType = {
 }
 
 export async function getStaticPaths() {
-    const users = await queryOnce<User>({ path: 'users' });
-    const paths = users.map(user => ({ params: { id: user.id } }))
+    const db = getAdminFirestore();
+    const snapshot = await db.collection('users').get();
+    const paths = snapshot.docs.map(doc => ({ params: { id: doc.id } }))
     return {
         paths,
         fallback: 'blocking', // generate new pages on-demand
@@ -30,30 +29,22 @@ export async function getStaticPaths() {
 
 export const getStaticProps = (async (context) => {
     const userId = context.params.id as string;
-    const userPromise = getDocument<User>({ path: `users`, pathSegments: [userId] })
-    //Get posts of this user
-    const postsPromise = queryOnce<PostType>(
-        {
-            path: `posts`, queryConstraints: [
-                where("public", "==", true),
-                where("userId", "==", userId),
-                orderBy("updateDate", "desc")
-            ]
-        });
-
-
-    //Get albums of this user
-    const albumsPromise = queryOnce<AlbumType>(
-        {
-            path: `albums`, queryConstraints: [
-                where("public", "==", true),
-                where("approved", "==", true),
-                where("userId", "==", userId),
-                orderBy("updateDate", "desc")
-            ]
-        });
-
-    const recentPostsPromise = getPosts({ limit: 5, public: true });
+    const db = getAdminFirestore();
+    const userPromise = adminGetDocument<User>('users', userId);
+    const postsPromise = db.collection('posts')
+        .where('public', '==', true)
+        .where('userId', '==', userId)
+        .orderBy('updateDate', 'desc')
+        .get()
+        .then(snap => snap.docs.map(d => ({ id: d.id, ...(d.data() as PostType) })));
+    const albumsPromise = db.collection('albums')
+        .where('public', '==', true)
+        .where('approved', '==', true)
+        .where('userId', '==', userId)
+        .orderBy('updateDate', 'desc')
+        .get()
+        .then(snap => snap.docs.map(d => ({ id: d.id, ...(d.data() as AlbumType) })));
+    const recentPostsPromise = getPostsAdmin({ limit: 5 });
 
     const [user, posts, albums, recentPosts] = await Promise.all([userPromise, postsPromise, albumsPromise, recentPostsPromise])
 

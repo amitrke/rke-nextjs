@@ -2,8 +2,8 @@ import HeadTag from '../components/ui/headTag';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from '../styles/IndexDev.module.css';
-import { getDocument } from '../firebase/firestore';
-import { getAlbums, getEvents, getNews, getPostsWithDetails } from '../service/PostService';
+import { adminGetDocument } from '../firebase/firebaseAdmin';
+import { getAlbumsAdmin, getEventsAdmin, getNewsAdmin, getPostsWithDetailsAdmin } from '../service/PostServiceAdmin';
 import { CSSProperties, useEffect, useState } from 'react';
 import { Weather } from './weather/[id]';
 import { uiRound } from '../components/ui/uiUtils';
@@ -293,11 +293,11 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = defa
 export default IndexDev;
 
 export async function getStaticProps() {
-  const resp = await getDocument<HomepageConfig>({ path: 'appconfig', pathSegments: ['homepage'] });
-  const postDisplay = await getPostsWithDetails();
-  const news = await getNews({ limit: 8, preferredApiSource: 'newsdata.io' });
-  const events = await getEvents({ limit: 4 });
-  const allAlbums = await getAlbums({ limit: 12 });
+  const resp = await adminGetDocument<HomepageConfig>('appconfig', 'homepage');
+  const postDisplay = await getPostsWithDetailsAdmin();
+  const news = await getNewsAdmin({ limit: 8, preferredApiSource: 'newsdata.io' });
+  const events = await getEventsAdmin({ limit: 4 });
+  const allAlbums = await getAlbumsAdmin({ limit: 12 });
   const albums = allAlbums.filter(a => a.images && a.images.length > 0).slice(0, 6);
 
   return {
