@@ -1,6 +1,7 @@
 import { initializeApp, cert, App, getApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
+import type { Firestore } from 'firebase-admin/firestore';
 
 const firebasePrivateKey = process.env.FIREBASE_PRIVATE_KEY
 
@@ -37,3 +38,16 @@ export const getIsAdmin = async (userId: string): Promise<boolean> => {
 }
 
 export default initApp;
+
+export const getAdminFirestore = (): Firestore => {
+    const app = initApp();
+    return getFirestore(app);
+};
+
+export const adminGetDocument = async <T>(path: string, docId: string): Promise<T | undefined> => {
+    const docSnap = await getAdminFirestore().doc(`${path}/${docId}`).get();
+    if (docSnap.exists) {
+        return docSnap.data() as T;
+    }
+    return undefined;
+};

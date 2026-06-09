@@ -1,5 +1,5 @@
-import { getPaginatedNews } from '../../service/PostService';
-import { NewsArticle } from '../../service/PostService';
+import { getPaginatedNewsAdmin } from '../../service/PostServiceAdmin';
+import type { NewsArticle } from '../../service/PostService';
 import HeadTag from '../../components/ui/headTag';
 import NewsList from '../../components/ui/newsList';
 import Pagination from '../../components/ui/pagination';
@@ -60,7 +60,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     if (isNaN(page) || page < 1) {
         return { notFound: true };
     }
-    const { news, totalCount } = await getPaginatedNews({ limit: NEWS_PER_PAGE, page });
+    const { news, totalCount } = await getPaginatedNewsAdmin({ limit: NEWS_PER_PAGE, page });
 
     const totalPages = Math.ceil(Math.min(totalCount, MAX_NEWS_ITEMS) / NEWS_PER_PAGE);
 
