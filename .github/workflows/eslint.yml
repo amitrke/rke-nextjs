@@ -38,7 +38,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Install SARIF formatter
-        run: npm install --no-save @microsoft/eslint-formatter-sarif@3.1.0
+        run: npm install --no-save --legacy-peer-deps @microsoft/eslint-formatter-sarif@3.1.0
 
       - name: Run ESLint
         run: npx eslint . --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
