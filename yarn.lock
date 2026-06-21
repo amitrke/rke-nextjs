@@ -2274,10 +2274,10 @@ doctrine@^2.1.0:
   dependencies:
     esutils "^2.0.2"
 
-dompurify@*, dompurify@^3.4.10, dompurify@^3.4.8:
-  version "3.4.10"
-  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.4.10.tgz#96704295b4d8aeefcc8c7a90caa579b0ad69e46a"
-  integrity sha512-0xzNv0e7oYC6yyuOGZIABPM4qtg3QxLFniDNPP4ZP90wR8Yq3zgwpRbrNiT4N3IKqDbbYFEJLV+JWEs19aZ//w==
+dompurify@*, dompurify@^3.4.10, dompurify@^3.4.11:
+  version "3.4.11"
+  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.4.11.tgz#29c8ba496475f279ef4015784068452fb14a0680"
+  integrity sha512-zhlUV12GsaRzMsf9q5M254YhA4+VuF0fG+QFqu6aYpoGlKtz+w8//jBcGVYBgQkR5GHjUomejY84AV+/uPbWdw==
   optionalDependencies:
     "@types/trusted-types" "^2.0.7"
 
@@ -3585,12 +3585,12 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
-isomorphic-dompurify@^3.14.0:
-  version "3.16.0"
-  resolved "https://registry.yarnpkg.com/isomorphic-dompurify/-/isomorphic-dompurify-3.16.0.tgz#ed181a012a957b0a8aa917db678672dc4560446f"
-  integrity sha512-KzTJsMuVPqPwBOD0F6jKXoV/+v8CSx0rxVp+/67KV6Xbw++0zD/avT3bZsgwR0M5QRMiOE+QqQtoZLEJYy1C4Q==
+isomorphic-dompurify@^3.18.0:
+  version "3.18.0"
+  resolved "https://registry.yarnpkg.com/isomorphic-dompurify/-/isomorphic-dompurify-3.18.0.tgz#4a6b44e209e70ff47538d51bbc743e29ca8d9081"
+  integrity sha512-ajp0D8laIHeoYlhBTevpE2HUhqWaqLXFk6K/wV3Ok8kDraBZpZsifwVWaY8IfJntMRIo1VSksgKV+lXyet9Q7A==
   dependencies:
-    dompurify "^3.4.8"
+    dompurify "^3.4.11"
     jsdom "^29.1.1"
 
 iterator.prototype@^1.1.5:
