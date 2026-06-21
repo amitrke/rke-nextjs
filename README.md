@@ -128,3 +128,10 @@ npx @tailwindcss/upgrade
 yarn add next@latest react@latest react-dom@latest eslint-config-next@latest
 yarn upgrade -u
 ```
+
+```
+yarn audit
+yarn run audit:fix
+yarn upgrade-interactive --latest
+
+```
