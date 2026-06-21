@@ -41,7 +41,7 @@ jobs:
         run: npm install --no-save --legacy-peer-deps --prefix /tmp/eslint-formatter-sarif @microsoft/eslint-formatter-sarif@3.1.0
 
       - name: Run ESLint
-        run: npx eslint . --format /tmp/eslint-formatter-sarif/node_modules/@microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
+        run: npx eslint . --format /tmp/eslint-formatter-sarif/node_modules/@microsoft/eslint-formatter-sarif/sarif.js --output-file eslint-results.sarif
         continue-on-error: true
 
       - name: Upload analysis results to GitHub
