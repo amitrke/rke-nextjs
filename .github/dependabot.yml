@@ -12,4 +12,8 @@ updates:
     target-branch: "develop"
     labels:
       - "npm dependencies"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
     
