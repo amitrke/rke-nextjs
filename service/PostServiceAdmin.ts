@@ -113,16 +113,18 @@ export async function getNewsAdmin(
     const news = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as NewsArticle) }));
     const deduped = dedupeBySimilarTitle(news);
 
-    const prioritized = args.preferredApiSource
-        ? deduped.sort((a, b) => {
-            const aRank = a.apiSource === args.preferredApiSource ? 0 : 1;
-            const bRank = b.apiSource === args.preferredApiSource ? 0 : 1;
-            if (aRank !== bRank) return aRank - bRank;
-            return (b.expireAt || 0) - (a.expireAt || 0);
-        })
-        : deduped;
+    // Sort by actual article date, not fetch time. Ties (same publishedAt) fall back to preferredApiSource.
+    const sorted = deduped.sort((a, b) => {
+        const aTime = new Date(a.publishedAt || 0).getTime();
+        const bTime = new Date(b.publishedAt || 0).getTime();
+        if (aTime !== bTime) return bTime - aTime;
+        if (!args.preferredApiSource) return 0;
+        const aRank = a.apiSource === args.preferredApiSource ? 0 : 1;
+        const bRank = b.apiSource === args.preferredApiSource ? 0 : 1;
+        return aRank - bRank;
+    });
 
-    return prioritized.slice(0, args.limit).map(article => {
+    return sorted.slice(0, args.limit).map(article => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { expireAt, ...rest } = article;
         return { ...rest, formattedPubDate: uiDateFormat(new Date(article.publishedAt).getTime()) };
