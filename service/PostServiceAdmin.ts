@@ -5,64 +5,7 @@ import { getAdminFirestore } from '../firebase/firebaseAdmin';
 import { getImageBucketUrl } from '../components/ui/imageUtils';
 import type { ImageSize } from '../components/ui/imageUtils';
 import { uiDateFormat } from '../components/ui/uiUtils';
-
-// Title dedup utilities — mirrors PostService.ts (pure functions, no SDK deps)
-const STOP_WORDS = new Set([
-    "the","a","an","to","of","in","on","for","with","and","or","at","from","by","about","after","before","over","under","into","as","is","are","was","were","be","been","being","this","that","these","those","it","its","their","his","her","new","breaking"
-]);
-
-function normalizeTitle(raw: string): string {
-    if (!raw) return "";
-    return raw
-        .toLowerCase()
-        .replace(/https?:\/\/\S+/g, " ")
-        .replace(/[^a-z0-9\s]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-}
-
-function tokenizeTitle(raw: string): string[] {
-    return normalizeTitle(raw).split(" ").filter(t => t && !STOP_WORDS.has(t));
-}
-
-function jaccardSimilarity(a: string[], b: string[]): number {
-    if (a.length === 0 && b.length === 0) return 1;
-    const aSet = new Set(a);
-    const bSet = new Set(b);
-    let intersection = 0;
-    for (const t of aSet) { if (bSet.has(t)) intersection++; }
-    const union = aSet.size + bSet.size - intersection;
-    return union === 0 ? 0 : intersection / union;
-}
-
-function tokenCoverage(a: string[], b: string[]): number {
-    if (a.length === 0 || b.length === 0) return 0;
-    const aSet = new Set(a);
-    const bSet = new Set(b);
-    let intersection = 0;
-    for (const t of aSet) { if (bSet.has(t)) intersection++; }
-    const minLen = Math.min(aSet.size, bSet.size);
-    return minLen === 0 ? 0 : intersection / minLen;
-}
-
-function areTitlesSimilar(a: string, b: string): boolean {
-    const an = normalizeTitle(a);
-    const bn = normalizeTitle(b);
-    if (!an || !bn) return false;
-    if (an === bn) return true;
-    const at = tokenizeTitle(a);
-    const bt = tokenizeTitle(b);
-    if (at.length === 0 || bt.length === 0) return an === bn;
-    return jaccardSimilarity(at, bt) >= 0.75 || tokenCoverage(at, bt) >= 0.85;
-}
-
-function dedupeBySimilarTitle<T extends { title: string }>(items: T[]): T[] {
-    const result: T[] = [];
-    for (const item of items) {
-        if (!result.some(r => areTitlesSimilar(r.title, item.title))) result.push(item);
-    }
-    return result;
-}
+import { dedupeBySimilarTitle } from './newsDedup';
 
 function getImageUrls(items: Array<{ userId: string; images?: string[] }>, size: ImageSize): string[][] {
     return items.map(item => {
@@ -113,16 +56,18 @@ export async function getNewsAdmin(
     const news = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as NewsArticle) }));
     const deduped = dedupeBySimilarTitle(news);
 
-    const prioritized = args.preferredApiSource
-        ? deduped.sort((a, b) => {
-            const aRank = a.apiSource === args.preferredApiSource ? 0 : 1;
-            const bRank = b.apiSource === args.preferredApiSource ? 0 : 1;
-            if (aRank !== bRank) return aRank - bRank;
-            return (b.expireAt || 0) - (a.expireAt || 0);
-        })
-        : deduped;
+    // Sort by actual article date, not fetch time. Ties (same publishedAt) fall back to preferredApiSource.
+    const sorted = deduped.sort((a, b) => {
+        const aTime = new Date(a.publishedAt || 0).getTime();
+        const bTime = new Date(b.publishedAt || 0).getTime();
+        if (aTime !== bTime) return bTime - aTime;
+        if (!args.preferredApiSource) return 0;
+        const aRank = a.apiSource === args.preferredApiSource ? 0 : 1;
+        const bRank = b.apiSource === args.preferredApiSource ? 0 : 1;
+        return aRank - bRank;
+    });
 
-    return prioritized.slice(0, args.limit).map(article => {
+    return sorted.slice(0, args.limit).map(article => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { expireAt, ...rest } = article;
         return { ...rest, formattedPubDate: uiDateFormat(new Date(article.publishedAt).getTime()) };
