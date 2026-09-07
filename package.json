@@ -41,7 +41,7 @@
     "@typescript-eslint/eslint-plugin": "^8.66.0",
     "@typescript-eslint/parser": "^8.69.0",
     "eslint": "10.9.1",
-    "eslint-config-next": "^16.3.0",
+    "eslint-config-next": "^16.3.4",
     "eslint-plugin-react": "^7.37.5",
     "postcss": "^8.5.17",
     "sass": "^1.103.1",
