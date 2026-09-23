@@ -48,9 +48,10 @@ export async function getNewsAdmin(
     args: { limit: number; preferredApiSource?: string } = { limit: 8 }
 ): Promise<NewsArticle[]> {
     const db = getAdminFirestore();
+    // Read the whole collection (TTL keeps it small): expireAt reflects fetch time, not
+    // publish time, so a top-N-by-expireAt window can miss the newest articles.
     const snapshot = await db.collection('news')
         .orderBy('expireAt', 'desc')
-        .limit(args.limit * 4)
         .get();
 
     const news = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as NewsArticle) }));
