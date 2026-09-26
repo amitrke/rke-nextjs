@@ -12,6 +12,17 @@ updates:
     target-branch: "develop"
     labels:
       - "npm dependencies"
+    groups:
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      nextjs:
+        patterns:
+          - "next"
+          - "eslint-config-next"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
