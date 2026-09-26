@@ -48,7 +48,7 @@
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.69.0",
-    "yarn-audit-fix": "^10.1.1"
+    "yarn-audit-fix": "^11.0.4"
   },
   "resolutions": {
     "immutable": ">=3.8.3",
