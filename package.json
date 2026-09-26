@@ -27,7 +27,7 @@
     "next": "^16.3.4",
     "probe-image-size": "^7.4.0",
     "react": "^19.3.0",
-    "react-dom": "^19.2.8",
+    "react-dom": "^19.3.0",
     "react-draft-wysiwyg": "^1.15.0",
     "slugify": "^1.6.9"
   },
