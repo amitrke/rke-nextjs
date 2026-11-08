@@ -5,7 +5,7 @@ import { getFirebaseAuth } from '../../firebase/initFirebase'
 import dynamic from 'next/dynamic'
 import UploadFile, { UploadStatusType } from '../../components/storage/UploadFile'
 import ToastMsg, { ToastMsgProps } from '../../components/ui/toastMsg'
-import { BaseSyntheticEvent, useEffect, useState } from 'react'
+import { BaseSyntheticEvent, useEffect, useRef, useState } from 'react'
 import { arrayAppend, getDocument, write } from '../../firebase/firestore'
 import { useRouter } from 'next/router'
 import ShowImage from '../../components/ui/showImage'
@@ -39,6 +39,10 @@ const EditPost = () => {
     slug: ""
   })
 
+  // Public URL of the post as last saved, so a title/category change can also
+  // refresh the old URL's cached page.
+  const savedPathRef = useRef<string | undefined>(undefined);
+
   if (id && typeof (id) == "string" && post.id === "") {
     setPost({ ...post, id });
   }
@@ -59,6 +63,7 @@ const EditPost = () => {
       const post = await getDocument<PostType>({ path: `posts`, pathSegments: [postId] });
       if (post) {
         if (!post.id) post.id = postId;
+        savedPathRef.current = post.slug ? `/post/${post.category}/${post.slug}` : undefined;
         setPost(post);
       }
     } catch (error) {
@@ -123,6 +128,27 @@ const EditPost = () => {
         }
       } catch {
         toastCallback({ header: "Notice", body: "Post saved. Could not submit for review — please try again." });
+      }
+    }
+
+    // Refresh the live site's cached pages for this post so the change shows
+    // up immediately rather than after the ISR revalidate period.
+    if (savedId) {
+      const previousPath = savedPathRef.current;
+      savedPathRef.current = `/post/${data.category}/${slug}`;
+      try {
+        const idToken = await getFirebaseAuth().currentUser?.getIdToken();
+        const response = await fetch('/api/revalidatePost', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+          body: JSON.stringify({ postId: savedId, previousPath }),
+        });
+        const result = response.ok ? await response.json() as { failed?: string[] } : undefined;
+        if (!response.ok || (result?.failed?.length ?? 0) > 0) {
+          toastCallback({ header: "Notice", body: "Post saved, but the live page may take a while to update." });
+        }
+      } catch {
+        toastCallback({ header: "Notice", body: "Post saved, but the live page may take a while to update." });
       }
     }
 

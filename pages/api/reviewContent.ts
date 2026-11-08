@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import initApp, { verifyIdToken, getIsAdmin } from '../../firebase/firebaseAdmin';
 import { getFirestore } from 'firebase-admin/firestore';
+import { postPaths, revalidatePaths } from '../../lib/revalidatePost';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
@@ -77,6 +78,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             createdAt: now,
             read: false,
         });
+
+        // Approving or rejecting changes what the public post pages show, so
+        // refresh their cached copies now instead of waiting for ISR.
+        if (itemType === 'post') {
+            const postSnap = await db.doc(`posts/${itemId}`).get();
+            const post = postSnap.data();
+            if (post) {
+                await revalidatePaths(res, postPaths({ id: itemId, category: post.category, slug: post.slug, userId: post.userId }));
+            }
+        }
 
         return res.status(200).json({ success: true });
     } catch (error: unknown) {
