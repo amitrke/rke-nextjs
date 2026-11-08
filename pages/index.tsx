@@ -88,7 +88,9 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = defa
         description="Welcome to Roorkee.org - Your community hub for Roorkee town information, news, events, photo galleries, and local stories. Stay connected with fellow Roorkee residents."
         url="/"
         keywords={['Roorkee', 'Roorkee town', 'Roorkee community', 'IIT Roorkee', 'Roorkee news', 'Roorkee events', 'Roorkee photos']}
-        image="/og-image.png"
+        image="/android-chrome-512x512.png"
+        imageWidth={512}
+        imageHeight={512}
       />
       <script
         type="application/ld+json"
@@ -98,7 +100,7 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = defa
             '@type': 'Organization',
             'name': 'Roorkee.org',
             'url': 'https://www.roorkee.org',
-            'logo': 'https://www.roorkee.org/og-image.png',
+            'logo': 'https://www.roorkee.org/android-chrome-512x512.png',
             'description': 'Community hub for Roorkee town information, news, events, and local stories',
           },
           {

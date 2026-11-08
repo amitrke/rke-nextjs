@@ -49,6 +49,17 @@ module.exports = {
         destination: '/user/:userid',
         permanent: true,
       },
+      {
+        source: '/album',
+        destination: '/albums',
+        permanent: true,
+      },
+      {
+        // Legacy town pages, e.g. /town/education/iit-roorkee
+        source: '/town/:category/:slug',
+        destination: '/post/town/:slug',
+        permanent: true,
+      },
     ];
   },
 }

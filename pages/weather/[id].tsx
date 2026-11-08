@@ -3,6 +3,7 @@ import { Card, Col, Container, Image, Row } from "../../components/ui/tw";
 import { adminGetDocument } from '../../firebase/firebaseAdmin';
 import { uiRound, uiDateFormat } from '../../components/ui/uiUtils';
 import Head from 'next/head';
+import HeadTag from '../../components/ui/headTag';
 
 function dateTimeFormat(date: number, timezone_offset: number, timeZone: string): string {
     const d = new Date(date * 1000);
@@ -190,10 +191,13 @@ export default function Weather({ weather, lastUpdated }: InferGetStaticPropsTyp
             background: "linear-gradient(to bottom, #e0f7fa 0%, #b2ebf2 50%, #80deea 100%)",
             minHeight: '100vh'
         }}>
-            <Head>
-                <title>Weather - Roorkee</title>
-                <meta name="robots" content="noindex, nofollow" />
-            </Head>
+            <HeadTag
+                title="Roorkee Weather Today – Hourly & 7-Day Forecast | Roorkee.org"
+                description={`Current weather in Roorkee, Uttarakhand: ${uiRound(weather.current.temp, 0)}°C, ${weather.current.weather[0]?.description ?? ''}. Hourly forecast and 7-day outlook with temperature, humidity, wind and sunrise times.`}
+                url="/weather/roorkee-in"
+                keywords={['Roorkee weather', 'weather Roorkee', 'Roorkee weather today', 'Roorkee forecast', 'Roorkee temperature']}
+            />
+            <h1 className="sr-only">Roorkee Weather Today</h1>
             <Row className="justify-center">
                 <Col xs={12} md={10} lg={8} xl={6}>
                     <CurrentWeatherWidget {...weather.current} />
