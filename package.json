@@ -24,7 +24,7 @@
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
     "firebase": "^13.1.0",
-    "firebase-admin": "^14.3.0",
+    "firebase-admin": "^14.5.0",
     "immutable": "5.1.9",
     "js-cookie": "^3.0.8",
     "next": "^16.4.3",
