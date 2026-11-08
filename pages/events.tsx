@@ -13,8 +13,12 @@ export default function EventsPage({ events }: EventsPageProps) {
         '@context': 'https://schema.org',
         '@type': 'Event',
         'name': event.name,
-        'description': event.description,
+        'description': event.description || `${event.name} in Roorkee, Uttarakhand.`,
         'startDate': event.date,
+        // Holidays and community events are single-day, so they end on the day they start
+        'endDate': event.date,
+        'eventStatus': 'https://schema.org/EventScheduled',
+        'eventAttendanceMode': 'https://schema.org/OfflineEventAttendanceMode',
         'url': `${siteUrl}/events`,
         'location': {
             '@type': 'Place',
@@ -25,11 +29,6 @@ export default function EventsPage({ events }: EventsPageProps) {
                 'addressRegion': 'Uttarakhand',
                 'addressCountry': 'IN',
             },
-        },
-        'organizer': {
-            '@type': 'Organization',
-            'name': 'Roorkee.org',
-            'url': siteUrl,
         },
     }));
     return (
