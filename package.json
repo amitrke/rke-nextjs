@@ -25,13 +25,13 @@
     "firebase": "^13.1.0",
     "firebase-admin": "^14.3.0",
     "immutable": "5.1.9",
-    "isomorphic-dompurify": "^4.1.0",
     "js-cookie": "^3.0.8",
     "next": "^16.4.3",
     "probe-image-size": "^7.4.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-draft-wysiwyg": "^1.15.0",
+    "sanitize-html": "^2.18.1",
     "slugify": "^1.6.9"
   },
   "devDependencies": {
@@ -41,6 +41,7 @@
     "@types/dompurify": "^3.2.0",
     "@types/draft-js": "^0.11.20",
     "@types/react-draft-wysiwyg": "^1.13.9",
+    "@types/sanitize-html": "^2.16.2",
     "@typescript-eslint/eslint-plugin": "^8.66.0",
     "@typescript-eslint/parser": "^8.72.1",
     "eslint": "10.9.1",
