@@ -4,6 +4,7 @@ import { adminGetDocument } from '../../firebase/firebaseAdmin';
 import { uiRound, uiDateFormat } from '../../components/ui/uiUtils';
 import Head from 'next/head';
 import HeadTag from '../../components/ui/headTag';
+import { AirQuality, AirQualityWidget, pollutantLabel } from '../../components/ui/airQuality';
 
 function dateTimeFormat(date: number, timezone_offset: number, timeZone: string): string {
     const d = new Date(date * 1000);
@@ -77,6 +78,8 @@ export type Weather = {
     current: CurrentWeather;
     hourly: HourlyWeather[];
     daily: DailyWeather[];
+    /** India's National AQI, added by the updateWeather function. Absent on older documents. */
+    airQuality?: AirQuality;
 }
 
 //Current Weather Widget
@@ -192,15 +195,21 @@ export default function Weather({ weather, lastUpdated }: InferGetStaticPropsTyp
             minHeight: '100vh'
         }}>
             <HeadTag
-                title="Roorkee Weather Today – Hourly & 7-Day Forecast | Roorkee.org"
-                description={`Current weather in Roorkee, Uttarakhand: ${uiRound(weather.current.temp, 0)}°C, ${weather.current.weather[0]?.description ?? ''}. Hourly forecast and 7-day outlook with temperature, humidity, wind and sunrise times.`}
+                title="Roorkee Weather & AQI Today – Hourly & 7-Day Forecast | Roorkee.org"
+                description={`Current weather in Roorkee, Uttarakhand: ${uiRound(weather.current.temp, 0)}°C, ${weather.current.weather[0]?.description ?? ''}.${weather.airQuality ? ` Air quality: AQI ${weather.airQuality.aqi} (${weather.airQuality.category}), mainly ${pollutantLabel(weather.airQuality.dominantPollutant)}.` : ''} Hourly forecast and 7-day outlook.`}
                 url="/weather/roorkee-in"
-                keywords={['Roorkee weather', 'weather Roorkee', 'Roorkee weather today', 'Roorkee forecast', 'Roorkee temperature']}
+                keywords={['Roorkee weather', 'weather Roorkee', 'Roorkee weather today', 'Roorkee forecast', 'Roorkee temperature', 'Roorkee AQI', 'Roorkee air quality']}
             />
-            <h1 className="sr-only">Roorkee Weather Today</h1>
+            <h1 className="sr-only">Roorkee Weather and Air Quality Today</h1>
             <Row className="justify-center">
                 <Col xs={12} md={10} lg={8} xl={6}>
                     <CurrentWeatherWidget {...weather.current} />
+                    {weather.airQuality && (
+                        <AirQualityWidget
+                            airQuality={weather.airQuality}
+                            updatedAt={dateTimeFormat(weather.airQuality.dt, weather.timezone_offset, weather.timezone)}
+                        />
+                    )}
                     <HourlyWeatherWidget {...weather} />
                     <DailyWeatherWidget {...weather} />
                     <p className="mb-0 text-center text-xs" style={{ color: '#00695c' }}>Last updated at {lastUpdated}</p>
