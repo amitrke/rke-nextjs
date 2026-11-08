@@ -127,7 +127,7 @@ Firebase Functions run in a separate repository but interact with the same Fireb
 
 ## Configuration
 
-### Next.js Config (`next.config.js`)
+### Next.js Config (`next.config.mjs`)
 - Sass support with `styles` directory
 - Image optimization for Firebase Storage, OpenWeatherMap, placehold.co
 - Minimum cache TTL: 1,500,000ms
