@@ -1,5 +1,5 @@
 import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 
 export type RichTextEditorProps = {
@@ -9,18 +9,23 @@ export type RichTextEditorProps = {
 
 const RichTextEditor = (props: RichTextEditorProps) => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const initialized = useRef(false);
 
+  // Report every content change to the parent. Relying on onBlur lost edits,
+  // because react-draft-wysiwyg only fires it for some focus changes.
   const onEditorStateChange = (edState: EditorState) => {
-    setEditorState(edState)
+    const contentChanged = edState.getCurrentContent() !== editorState.getCurrentContent();
+    setEditorState(edState);
+    if (contentChanged) {
+      props.onEdStateChange(JSON.stringify(convertToRaw(edState.getCurrentContent())));
+    }
   };
 
-  const onBlur = () => {
-    const rawState = convertToRaw(editorState.getCurrentContent())
-    props.onEdStateChange(JSON.stringify(rawState))
-  }
-
+  // Load the saved content once. Re-loading on every initState change would
+  // reset the cursor now that each edit flows back in through initState.
   useEffect(() => {
-    if (props.initState.length > 1) {
+    if (!initialized.current && props.initState.length > 1) {
+      initialized.current = true;
       try {
         const contentAsJson = JSON.parse(props.initState);
         const rawContent = convertFromRaw(contentAsJson);
@@ -43,7 +48,6 @@ const RichTextEditor = (props: RichTextEditorProps) => {
         wrapperClassName="wrapperClassName"
         editorClassName="editorClassName"
         onEditorStateChange={onEditorStateChange}
-        onBlur={onBlur}
         toolbar={{
           options: ['inline', 'blockType', 'list', 'textAlign', 'link', 'embedded', 'emoji', 'image', 'remove', 'history'],
           inline: {

@@ -1,7 +1,7 @@
 import ShowImage from "../../components/ui/showImage";
 import { adminGetDocument } from "../../firebase/firebaseAdmin";
 import { PostType } from "../../firebase/types";
-import DOMPurify from 'isomorphic-dompurify';
+import { sanitizePostHtml } from "../../lib/sanitizePostHtml";
 import { Col, Container, Row } from "../../components/ui/tw";
 import { jsonLdDateFormat, uiDateFormat } from "../../components/ui/uiUtils";
 import Link from "next/link";
@@ -20,7 +20,7 @@ interface IParams extends ParsedUrlQuery {
 
 const createMarkup = (html: string) => {
     return {
-        __html: DOMPurify.sanitize(html)
+        __html: html // already sanitized in getStaticProps
     }
 }
 
@@ -48,6 +48,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     }
 
     const postDisplay = await getPostWithAuthorAdmin(post);
+    postDisplay.edState = sanitizePostHtml(postDisplay.edState ?? '');
     return {
         props: {
             post: postDisplay,

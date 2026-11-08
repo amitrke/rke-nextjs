@@ -87,14 +87,19 @@ const EditPost = () => {
       }
     }
 
+    // Write the freshly computed slug (setPost above won't update `post` until
+    // the next render). Admins skip moderation, so their public posts are
+    // approved directly; otherwise they'd never appear on public pages.
+    const data = post.public && isAdmin ? { ...post, slug, approved: true } : { ...post, slug };
+
     let savedId = post.id;
     if (post.id) {
-      await write({ path: `posts`, existingDocId: post.id, data: post });
+      await write({ path: `posts`, existingDocId: post.id, data });
       console.log(`Updated document id=${post.id}`);
     } else {
-      const doc = await write({ path: `posts`, data: post });
+      const doc = await write({ path: `posts`, data });
       savedId = doc.id;
-      setPost({ ...post, id: doc.id });
+      setPost({ ...data, id: doc.id });
       console.log(`doc id=${doc.id}`);
     }
 
