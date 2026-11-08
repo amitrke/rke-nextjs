@@ -36,45 +36,15 @@ function generateSiteMap(siteUrl: string, posts: PostType[], albums: AlbumType[]
              <changefreq>yearly</changefreq>
              <priority>0.3</priority>
      </url>
-         <url>
-             <loc>${siteUrl}/account-deletion</loc>
-             <changefreq>yearly</changefreq>
-             <priority>0.1</priority>
-         </url>
      <url>
              <loc>${siteUrl}/weather/roorkee-in</loc>
              <changefreq>daily</changefreq>
              <priority>0.8</priority>
      </url>
          <url>
-             <loc>${siteUrl}/posts/page/1</loc>
-             <changefreq>daily</changefreq>
-             <priority>0.8</priority>
-         </url>
-         <url>
              <loc>${siteUrl}/news/1</loc>
              <changefreq>daily</changefreq>
              <priority>0.8</priority>
-         </url>
-         <url>
-             <loc>${siteUrl}/news/2</loc>
-             <changefreq>daily</changefreq>
-             <priority>0.6</priority>
-         </url>
-         <url>
-             <loc>${siteUrl}/news/3</loc>
-             <changefreq>daily</changefreq>
-             <priority>0.6</priority>
-         </url>
-         <url>
-             <loc>${siteUrl}/news/4</loc>
-             <changefreq>daily</changefreq>
-             <priority>0.6</priority>
-         </url>
-         <url>
-             <loc>${siteUrl}/news/5</loc>
-             <changefreq>daily</changefreq>
-             <priority>0.6</priority>
          </url>
          <url>
              <loc>${siteUrl}/albums</loc>

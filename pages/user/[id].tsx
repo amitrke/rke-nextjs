@@ -48,8 +48,12 @@ export const getStaticProps = (async (context) => {
 
     const [user, posts, albums, recentPosts] = await Promise.all([userPromise, postsPromise, albumsPromise, recentPostsPromise])
 
+    if (!user) {
+        return { notFound: true, revalidate: 3600 };
+    }
+
     const props: UserPropType = {
-        user,
+        user: { ...user, id: userId },
         posts,
         albums,
         recentPosts,
@@ -69,7 +73,12 @@ export default function Page({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
     return (
         <Container>
-            <HeadTag title={`User - ${props.user.name}.`} />
+            <HeadTag
+                title={`${props.user.name} – Roorkee.org`}
+                description={`Posts and photo albums shared by ${props.user.name} on Roorkee.org, the community hub for Roorkee residents.`}
+                url={`/user/${props.user.id}`}
+                image={props.user.profilePic}
+            />
             <Row>
                 <Col md={8}>
                     <div className="flex items-center">
