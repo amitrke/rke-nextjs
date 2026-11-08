@@ -54,7 +54,8 @@
     "yarn-audit-fix": "^11.1.0"
   },
   "resolutions": {
-    "immutable": ">=3.8.3",
+    "**/draft-js/immutable": "^3.8.3",
+    "**/@types/draft-js/immutable": "^3.8.3",
     "lodash": ">=4.18.0",
     "uuid": ">=11.1.1",
     "jose": "^5.9.6"
