@@ -1,7 +1,11 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const path = require('path');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import sentryNextjsConfig from '@sentry/nextjs/config';
 
-module.exports = {
+const { withSentryConfig } = sentryNextjsConfig;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const nextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
   },
@@ -63,3 +67,20 @@ module.exports = {
     ];
   },
 }
+
+const hasSentryAuthToken = Boolean(process.env.SENTRY_AUTH_TOKEN);
+
+// Sentry error monitoring (see docs/error-monitoring.md). Runtime reporting only
+// happens when NEXT_PUBLIC_SENTRY_DSN is set; source maps are only generated and
+// uploaded when SENTRY_AUTH_TOKEN is set (with SENTRY_ORG / SENTRY_PROJECT).
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: !process.env.CI,
+  telemetry: false,
+  widenClientFileUpload: hasSentryAuthToken,
+  sourcemaps: {
+    disable: !hasSentryAuthToken,
+  },
+});

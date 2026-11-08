@@ -1,5 +1,5 @@
 import draftToHtml from 'draftjs-to-html';
-import DOMPurify from 'isomorphic-dompurify';
+import { sanitizePostHtml } from '../../../lib/sanitizePostHtml';
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import { Col, Container, Row, Badge, Card } from "../../../components/ui/tw";
 import HeadTag from "../../../components/ui/headTag";
@@ -20,7 +20,7 @@ type PageType = PostDisplayType & {
 
 const createMarkup = (html: string) => {
     return {
-        __html: DOMPurify.sanitize(html)
+        __html: html // already sanitized in getStaticProps
     }
 }
 
@@ -39,8 +39,11 @@ export async function getStaticPaths() {
 
 export const getStaticProps = (async (context) => {
     const postDoc = await getPostBySlugAdmin(context.params.category as string, context.params.slug as string);
+    if (!postDoc) {
+        return { notFound: true, revalidate: 3600 };
+    }
     const draftRaw = JSON.parse(postDoc.edState);
-    const postBody = draftToHtml(draftRaw);
+    const postBody = sanitizePostHtml(draftToHtml(draftRaw));
     const authorPromise: Promise<User> = (async () => {
         const db = getAdminFirestore();
         const byUserIdSnap = await db.collection('users').where('id', '==', postDoc.userId).limit(1).get();
