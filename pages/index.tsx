@@ -6,6 +6,7 @@ import { adminGetDocument } from '../firebase/firebaseAdmin';
 import { getAlbumsAdmin, getEventsAdmin, getNewsAdmin, getPostsWithDetailsAdmin } from '../service/PostServiceAdmin';
 import { CSSProperties, useEffect, useState } from 'react';
 import { Weather } from './weather/[id]';
+import { AqiBadge } from '../components/ui/airQuality';
 import { uiRound } from '../components/ui/uiUtils';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmptyState from '../components/ui/EmptyState';
@@ -150,6 +151,9 @@ function IndexDev({ posts = [], news = [], events = [], albums = [], data = defa
                             </div>
                             <div className={styles.temp}>{todayWeather.temp}</div>
                             <div className={styles.conditionText}>{todayWeather.condition}</div>
+                            {weather.airQuality && (
+                              <div className="mt-1"><AqiBadge airQuality={weather.airQuality} /></div>
+                            )}
                           </div>
                           <div className={styles.weatherWidget}>
                             <h4>Tomorrow</h4>
