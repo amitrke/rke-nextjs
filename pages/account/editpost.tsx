@@ -5,7 +5,7 @@ import { getFirebaseAuth } from '../../firebase/initFirebase'
 import dynamic from 'next/dynamic'
 import UploadFile, { UploadStatusType } from '../../components/storage/UploadFile'
 import ToastMsg, { ToastMsgProps } from '../../components/ui/toastMsg'
-import { BaseSyntheticEvent, useEffect, useState } from 'react'
+import { BaseSyntheticEvent, useEffect, useRef, useState } from 'react'
 import { arrayAppend, getDocument, write } from '../../firebase/firestore'
 import { useRouter } from 'next/router'
 import ShowImage from '../../components/ui/showImage'
@@ -17,6 +17,36 @@ const Editor = dynamic(() => import("../../components/ui/richTextEditor"), {
 })
 
 import { PostType } from '../../firebase/types';
+
+const postJson = async (url: string, body: unknown): Promise<Response> => {
+  const idToken = await getFirebaseAuth().currentUser?.getIdToken();
+  return fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+    body: JSON.stringify(body),
+  });
+}
+
+const submitPostForReview = async (postId: string): Promise<'ok' | 'failed'> => {
+  try {
+    const response = await postJson('/api/submitForReview', { itemId: postId, itemType: 'post' });
+    return response.ok ? 'ok' : 'failed';
+  } catch {
+    return 'failed';
+  }
+}
+
+// Returns false if the refresh call failed or any page couldn't be refreshed.
+const refreshLivePages = async (postId: string, previousPath?: string): Promise<boolean> => {
+  try {
+    const response = await postJson('/api/revalidatePost', { postId, previousPath });
+    if (!response.ok) return false;
+    const result = await response.json() as { failed?: string[] };
+    return (result.failed?.length ?? 0) === 0;
+  } catch {
+    return false;
+  }
+}
 
 const EditPost = () => {
   const router = useRouter()
@@ -39,6 +69,10 @@ const EditPost = () => {
     slug: ""
   })
 
+  // Public URL of the post as last saved, so a title/category change can also
+  // refresh the old URL's cached page.
+  const savedPathRef = useRef<string | undefined>(undefined);
+
   if (id && typeof (id) == "string" && post.id === "") {
     setPost({ ...post, id });
   }
@@ -59,6 +93,7 @@ const EditPost = () => {
       const post = await getDocument<PostType>({ path: `posts`, pathSegments: [postId] });
       if (post) {
         if (!post.id) post.id = postId;
+        savedPathRef.current = post.slug ? `/post/${post.category}/${post.slug}` : undefined;
         setPost(post);
       }
     } catch (error) {
@@ -105,24 +140,19 @@ const EditPost = () => {
 
     // If user wants this public and is not an admin, submit for moderation
     if (post.public && !isAdmin && savedId) {
-      try {
-        const auth = getFirebaseAuth();
-        const idToken = await auth.currentUser?.getIdToken();
-        const response = await fetch('/api/submitForReview', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`,
-          },
-          body: JSON.stringify({ itemId: savedId, itemType: 'post' }),
-        });
-        if (response.ok) {
-          toastCallback({ header: "Submitted", body: "Your post has been submitted for review. It will be visible once approved by a moderator." });
-        } else {
-          toastCallback({ header: "Notice", body: "Post saved. Submission for review encountered an issue — please try again." });
-        }
-      } catch {
-        toastCallback({ header: "Notice", body: "Post saved. Could not submit for review — please try again." });
+      const result = await submitPostForReview(savedId);
+      toastCallback(result === 'ok'
+        ? { header: "Submitted", body: "Your post has been submitted for review. It will be visible once approved by a moderator." }
+        : { header: "Notice", body: "Post saved. Could not submit for review — please try again." });
+    }
+
+    // Refresh the live site's cached pages for this post so the change shows
+    // up immediately rather than after the ISR revalidate period.
+    if (savedId) {
+      const previousPath = savedPathRef.current;
+      savedPathRef.current = `/post/${data.category}/${slug}`;
+      if (!(await refreshLivePages(savedId, previousPath))) {
+        toastCallback({ header: "Notice", body: "Post saved, but the live page may take a while to update." });
       }
     }
 
