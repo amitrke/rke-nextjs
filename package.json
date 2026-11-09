@@ -49,7 +49,7 @@
     "eslint-plugin-react": "^7.37.5",
     "postcss": "^8.5.29",
     "sass": "^1.107.0",
-    "tailwindcss": "^4.3.3",
+    "tailwindcss": "^4.3.4",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.2",
     "yarn-audit-fix": "^11.1.0"
