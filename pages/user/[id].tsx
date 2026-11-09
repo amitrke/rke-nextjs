@@ -18,11 +18,9 @@ type UserPropType = {
 }
 
 export async function getStaticPaths() {
-    const db = getAdminFirestore();
-    const snapshot = await db.collection('users').get();
-    const paths = snapshot.docs.map(doc => ({ params: { id: doc.id } }))
+    // Generate profiles on demand (fallback: 'blocking') instead of reading every user on each build.
     return {
-        paths,
+        paths: [],
         fallback: 'blocking', // generate new pages on-demand
     }
 }

@@ -1,5 +1,5 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
-import { getPaginatedPostsAdmin } from '../../../service/PostServiceAdmin';
+import { getPaginatedPostsAdmin, getPostsCountAdmin } from '../../../service/PostServiceAdmin';
 import Pagination from '../../../components/ui/pagination';
 import PublicPostList from '../../../components/ui/publicPostList';
 import HeadTag from '../../../components/ui/headTag';
@@ -72,18 +72,24 @@ export const getStaticProps: GetStaticProps = async (context) => {
     const page = Number(pageParam);
     const { posts, totalCount } = await getPaginatedPostsAdmin({ limit: 12, page });
 
+    // Out-of-range pages (crawlers, typos) shouldn't be generated or kept around.
+    if (page > 1 && posts.length === 0) {
+        return { notFound: true, revalidate: 86400 };
+    }
+
     return {
         props: {
             posts,
             totalCount,
             page,
         },
-        revalidate: 3600, // revalidate every hour
+        // Page 1 is refreshed on demand when a post is saved/moderated (see lib/revalidatePost.ts).
+        revalidate: 86400,
     };
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    const { totalCount } = await getPaginatedPostsAdmin({ limit: 12, page: 1 });
+    const totalCount = await getPostsCountAdmin();
     const totalPages = Math.ceil(totalCount / 12);
 
     const paths = Array.from({ length: totalPages }, (_, i) => ({
