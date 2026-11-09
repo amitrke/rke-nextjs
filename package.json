@@ -44,7 +44,7 @@
     "@types/react-draft-wysiwyg": "^1.13.9",
     "@typescript-eslint/eslint-plugin": "^8.66.0",
     "@typescript-eslint/parser": "^8.72.1",
-    "eslint": "10.9.1",
+    "eslint": "10.14.0",
     "eslint-config-next": "^16.4.5",
     "eslint-plugin-react": "^7.37.5",
     "postcss": "^8.5.29",
