@@ -3632,10 +3632,10 @@ find-up@^5.0.0:
     locate-path "^6.0.0"
     path-exists "^4.0.0"
 
-firebase-admin@^14.5.0:
-  version "14.5.0"
-  resolved "https://registry.yarnpkg.com/firebase-admin/-/firebase-admin-14.5.0.tgz#0e96df589c1772fd43ad7f2521b9001d5f38e1d5"
-  integrity sha512-DElmgmaH9aPXu2dWXGQiDoan33UfTnbfAAKaue4fwEZxmpdaNrTk5DmuFn+vVDki2KZ6TiaC0IHRWcEzcDxB3Q==
+firebase-admin@^14.5.1:
+  version "14.5.1"
+  resolved "https://registry.yarnpkg.com/firebase-admin/-/firebase-admin-14.5.1.tgz#2956fd8d6fddb57913b8a2383c23e1c18133212c"
+  integrity sha512-3NSWRREeFCET2tyiOd0ENvRFdagi9voBRGCiNbGSIRbwuMJh2Eh/dcmItNWd82rcqd+fyW5/77/oZOZxC27/sA==
   dependencies:
     "@fastify/busboy" "^3.0.0"
     "@firebase/database-compat" "^2.1.4"
