@@ -165,16 +165,25 @@ export async function getPaginatedPostsAdmin(
     args: { limit: number; page: number }
 ): Promise<{ posts: PostDisplayType[]; totalCount: number }> {
     const db = getAdminFirestore();
-    const snapshot = await db.collection('posts')
+    const baseQuery = db.collection('posts')
         .where('public', '==', true)
-        .where('approved', '==', true)
+        .where('approved', '==', true);
+
+    // count() aggregation bills 1 read per 1000 index entries instead of one per document.
+    const countSnap = await baseQuery.count().get();
+    const totalCount = countSnap.data().count;
+
+    const start = (args.page - 1) * args.limit;
+    if (start >= totalCount) return { posts: [], totalCount };
+
+    // offset still bills the skipped docs, but we never read past the requested page.
+    const snapshot = await baseQuery
         .orderBy('updateDate', 'desc')
+        .offset(start)
+        .limit(args.limit)
         .get();
 
-    const allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as PostType) }));
-    const totalCount = allPosts.length;
-    const start = (args.page - 1) * args.limit;
-    const paginatedPosts = allPosts.slice(start, start + args.limit);
+    const paginatedPosts = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as PostType) }));
 
     const userIds = [...new Set(paginatedPosts.map(p => p.userId))].filter(Boolean);
     const users: User[] = [];
@@ -193,6 +202,16 @@ export async function getPaginatedPostsAdmin(
     }));
 
     return { posts, totalCount };
+}
+
+export async function getPostsCountAdmin(): Promise<number> {
+    const db = getAdminFirestore();
+    const countSnap = await db.collection('posts')
+        .where('public', '==', true)
+        .where('approved', '==', true)
+        .count()
+        .get();
+    return countSnap.data().count;
 }
 
 export async function getPaginatedNewsAdmin(

@@ -104,6 +104,8 @@ export async function getServerSideProps({ res }) {
     const sitemap = generateSiteMap(siteUrl, posts, albums);
 
     res.setHeader('Content-Type', 'text/xml');
+    // Cache at the Vercel edge so crawler hits don't each read every post and album.
+    res.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
     res.statusCode = 200;
     // we send the XML to the browser
     res.write(sitemap);

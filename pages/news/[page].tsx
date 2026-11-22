@@ -57,8 +57,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async (context) => {
     const page = parseInt(context.params.page as string, 10);
     // Validate that page is a positive integer
-    if (isNaN(page) || page < 1) {
-        return { notFound: true };
+    // Pages beyond MAX_NEWS_ITEMS are never linked, so skip the read entirely.
+    if (isNaN(page) || page < 1 || page > Math.ceil(MAX_NEWS_ITEMS / NEWS_PER_PAGE)) {
+        return { notFound: true, revalidate: 86400 };
     }
     const { news, totalCount } = await getPaginatedNewsAdmin({ limit: NEWS_PER_PAGE, page });
 
@@ -70,6 +71,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
             page,
             totalPages,
         },
-        revalidate: 3600, // Regenerate page every hour
+        revalidate: 21600, // News is fetched every 12 hours; regenerate every 6
     };
 };
